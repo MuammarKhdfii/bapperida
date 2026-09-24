@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indeks Inovasi Daerah 2026</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="badge">PENILAIAN 2026</div>
+      <h1>Indeks Inovasi Daerah</h1>
+      <p>Form penilaian otomatis berdasarkan parameter pada Excel Indikator Penilaian Indeks Inovasi Daerah 2026.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="score-board">
+      <div class="score-card">
+        <span>Skor SPD</span>
+        <strong id="scoreSPD">0</strong>
+        <small>Maks. 63</small>
+      </div>
+      <div class="score-card">
+        <span>Skor SID</span>
+        <strong id="scoreSID">0</strong>
+        <small>Maks. 187</small>
+      </div>
+      <div class="score-card total">
+        <span>Total Skor</span>
+        <strong id="scoreTotal">0</strong>
+        <small>Maks. 250</small>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div>
+        <h2>Dashboard Penjumlahan</h2>
+        <p>Lihat perhitungan otomatis <b>Parameter × Bobot</b> untuk semua 36 aspek.</p>
+      </div>
+      <div class="actions">
+        <button id="viewDashboardBtn" class="btn primary">📊 Lihat Dashboard</button>
+        <button id="resetBtn" class="btn secondary">Reset</button>
+        <button id="printBtn" class="btn">Cetak Hasil</button>
+      </div>
+    </section>
+
+    <div id="dashboardModal" class="modal">
+      <div class="modal-content excel-style">
+        <div class="modal-header">
+          <div>
+            <h2>📊 Dashboard Penjumlahan Otomatis</h2>
+            <p class="modal-subtitle">Perhitungan Parameter × Bobot untuk 36 Aspek Indeks Inovasi Daerah 2026</p>
+          </div>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="dashboard-stats">
+            <div class="stat-card spd">
+              <div class="stat-icon">📋</div>
+              <div class="stat-content">
+                <div class="stat-label">Total SPD (1-15)</div>
+                <div class="stat-value" id="dashboardSPDTotal">0.00</div>
+                <div class="stat-max">Maksimal: 63</div>
+              </div>
+            </div>
+            <div class="stat-card sid">
+              <div class="stat-icon">💡</div>
+              <div class="stat-content">
+                <div class="stat-label">Total SID (16-36)</div>
+                <div class="stat-value" id="dashboardSIDTotal">0.00</div>
+                <div class="stat-max">Maksimal: 187</div>
+              </div>
+            </div>
+            <div class="stat-card total">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-content">
+                <div class="stat-label">Total Keseluruhan</div>
+                <div class="stat-value grand" id="dashboardGrandTotal">0.00</div>
+                <div class="stat-max">Maksimal: 250</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="dashboard-table-wrapper">
+            <table id="dashboardTable" class="dashboard-table excel">
+              <thead>
+                <tr>
+                  <th class="col-no">No</th>
+                  <th class="col-name">Nama Indikator</th>
+                  <th class="col-bobot">Bobot</th>
+                  <th class="col-param">Param 1</th>
+                  <th class="col-param">Param 2</th>
+                  <th class="col-param">Param 3</th>
+                  <th class="col-nilai">Nilai</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="toolbar">
+      <div>
+        <h2>Penilaian Indikator</h2>
+        <p>Pilih salah satu parameter pada setiap indikator. Nilai akan dihitung otomatis: <b>nomor parameter × bobot</b>.</p>
+      </div>
+    </section>
+
+    <div id="indicatorContainer"></div>
+
+    <section class="summary">
+      <h2>Ringkasan Nilai</h2>
+      <div class="summary-grid">
+        <div><span>SPD</span><b id="summarySPD">0 / 63</b></div>
+        <div><span>SID</span><b id="summarySID">0 / 187</b></div>
+        <div><span>Total</span><b id="summaryTotal">0 / 250</b></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Persentase skor maksimal</span><b id="percentage">0%</b></div>
+        <div class="progress"><div id="progressBar"></div></div>
+      </div>
+    </section>
+
+    <section class="note">
+      <b>Catatan:</b>
+      Bobot indikator nomor 5, 6, 7, 8, 10, dan 11 pada file Excel terbaca sebagai tanggal
+      <code>01/05/2026</code>, bukan angka bobot. Agar total maksimal SPD sesuai keterangan Excel
+      yaitu 63, website ini menggunakan bobot 2, 2, 2, 2, 1, 1 untuk keenam indikator tersebut.
+      Silakan koreksi bobot tersebut jika dokumen sumber memiliki angka resmi yang berbeda.
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
