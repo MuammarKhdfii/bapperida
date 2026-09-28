@@ -396,7 +396,8 @@
     renderLandingRanking();
   }
 
-  function renderLandingRanking() {
+  // Pastikan fungsi dapat diakses secara global
+  window.renderLandingRanking = function() {
     const all  = loadRankingData();
     const data = currentTab === "semua" ? all : all.filter(i => i.kategori === currentTab);
     const cont = document.getElementById("landingRankingContainer");
@@ -421,9 +422,9 @@
       </details>`;
     }
     cont.innerHTML = html;
-  }
+  };
 
-  function clearAllData() {
+  window.clearAllData = function() {
     if (!confirm("Hapus semua data penilaian yang tersimpan?\nTindakan ini tidak dapat dibatalkan.")) return;
     localStorage.removeItem(KEY_ALL);
     localStorage.removeItem(KEY_LAST);
@@ -431,7 +432,14 @@
     renderLandingRanking();
     updateStatusCards("");
     sel.value = "";
-  }
+  };
+
+  window.switchTab = function(btn, tab) {
+    document.querySelectorAll("#landingRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTab = tab;
+    renderLandingRanking();
+  };
 
   // Render ranking saat halaman dimuat
   renderLandingRanking();

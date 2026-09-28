@@ -38,6 +38,20 @@ const juriState  = { [SESSION.nama]: { radio:{}, monev:{}, monevKet:{}, videoUrl
 
 let namaInovasi = "";
 
+// ── Fungsi Logout Juri (harus didefinisikan di atas untuk onclick di HTML) ──
+window.logoutJuri = function() {
+  try {
+    // Simpan data jika fungsi saveAll tersedia
+    if (typeof saveAll === 'function') {
+      saveAll(false);
+    }
+  } catch(e) {
+    console.warn('Error saat menyimpan:', e);
+  }
+  // Panggil logout dari auth.js
+  logout();
+};
+
 // ── Init ──
 initScrollTop("scrollTopBtn");
 namaInovasi = localStorage.getItem("iid2026_selected") || "";
@@ -136,11 +150,6 @@ function loginJuri(idx) {
   render();
   calculate();
   window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function logoutJuri() {
-  saveAll(false);
-  logout(); // dari auth.js — bersihkan session dan redirect ke login
 }
 
 // ── Render Kriteria Judul ──
@@ -461,33 +470,42 @@ function doSaveWithValidation() {
 }
 
 // ── Event listeners ──
-document.getElementById("saveBtn").addEventListener("click", doSaveWithValidation);
-document.getElementById("fabSave").addEventListener("click", doSaveWithValidation);
+const saveBtnEl = document.getElementById("saveBtn");
+if (saveBtnEl) saveBtnEl.addEventListener("click", doSaveWithValidation);
 
-document.getElementById("resetBtn").addEventListener("click", () => {
-  
-  if (!confirm(`Reset semua penilaian untuk ${SESSION.nama}?`)) return;
-  judulState[SESSION.nama] = {};
-  juriState[SESSION.nama]  = { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} };
-  render(); calculate();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
+const fabSaveEl = document.getElementById("fabSave");
+if (fabSaveEl) fabSaveEl.addEventListener("click", doSaveWithValidation);
 
-document.getElementById("expandAllBtn").addEventListener("click", function() {
-  const collapsed = this.dataset.state === "collapsed";
-  document.querySelectorAll(".indicator:not(.indicator-special-input) .options, .indicator .ket, .indicator .result, .kriteria-desc").forEach(el => {
-    el.style.display = collapsed ? "" : "none";
+const resetBtnEl = document.getElementById("resetBtn");
+if (resetBtnEl) {
+  resetBtnEl.addEventListener("click", () => {
+    if (!confirm(`Reset semua penilaian untuk ${SESSION.nama}?`)) return;
+    judulState[SESSION.nama] = {};
+    juriState[SESSION.nama]  = { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} };
+    render(); calculate();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
-  this.textContent  = collapsed ? "🔽 Buka Semua" : "🔼 Tutup Semua";
-  this.dataset.state = collapsed ? "" : "collapsed";
-});
+}
+
+const expandAllBtnEl = document.getElementById("expandAllBtn");
+if (expandAllBtnEl) {
+  expandAllBtnEl.addEventListener("click", function() {
+    const collapsed = this.dataset.state === "collapsed";
+    document.querySelectorAll(".indicator:not(.indicator-special-input) .options, .indicator .ket, .indicator .result, .kriteria-desc").forEach(el => {
+      el.style.display = collapsed ? "" : "none";
+    });
+    this.textContent  = collapsed ? "🔽 Buka Semua" : "🔼 Tutup Semua";
+    this.dataset.state = collapsed ? "" : "collapsed";
+  });
+}
 
 window.addEventListener("beforeunload", () => saveAll(false));
 
 // ── Print ──
-document.getElementById("printBtn").addEventListener("click", () => {
-  if (!activeJuri) { alert("Pilih juri terlebih dahulu."); return; }
-  saveJudulStateLocal(); saveIndikatorStateLocal();
+const printBtnEl = document.getElementById("printBtn");
+if (printBtnEl) {
+  printBtnEl.addEventListener("click", () => {
+    saveJudulStateLocal(); saveIndikatorStateLocal();
   document.getElementById("pNamaInovasi").textContent = namaInovasi || "—";
   document.getElementById("pNamaJuri").textContent    = SESSION.nama;
   document.getElementById("pSignJuri").textContent    = `( ${SESSION.nama} )`;
@@ -522,11 +540,12 @@ document.getElementById("printBtn").addEventListener("click", () => {
   document.getElementById("pTotalIndikator").textContent = totInd.toFixed(2);
   document.getElementById("pMaxIndikator").textContent   = `Maks: ${maxInd.toFixed(0)}`;
   const total = totJudul + totInd;
-  document.getElementById("pTotalGabungan").textContent = total.toFixed(2);
-  document.getElementById("pMaxGabungan").textContent   = `Maks: ${(63+maxInd).toFixed(0)}`;
-  document.getElementById("pTotalSkor").textContent     = `${total.toFixed(2)} / ${(63+maxInd).toFixed(0)}`;
-  window.print();
-});
+    document.getElementById("pTotalGabungan").textContent = total.toFixed(2);
+    document.getElementById("pMaxGabungan").textContent   = `Maks: ${(63+maxInd).toFixed(0)}`;
+    document.getElementById("pTotalSkor").textContent     = `${total.toFixed(2)} / ${(63+maxInd).toFixed(0)}`;
+    window.print();
+  });
+}
 
 // ── Init ──
 renderSessionGrid();

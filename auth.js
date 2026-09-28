@@ -119,8 +119,12 @@ function login(username, password) {
 
 // ── Logout ───────────────────────────────
 function logout() {
+  if (!confirm("Anda yakin ingin keluar?\n\nSemua data yang belum disimpan akan hilang.")) {
+    return false;
+  }
   clearSession();
   window.location.href = "login.html";
+  return true;
 }
 
 // ══════════════════════════════════════════
