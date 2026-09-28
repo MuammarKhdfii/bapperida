@@ -96,40 +96,14 @@
       transform:translateY(-1px);
     }
     .input-wrap .pw-toggle{
-      position:absolute;right:14px;top:50%;transform:translateY(-50%);
+      position:absolute;right:14px;top:63%;transform:translateY(-50%);
       background:none;border:none;cursor:pointer;
       font-size:18px;color:#9ca3af;
       transition:.2s;padding:4px 8px;border-radius:6px;
+      display:flex;align-items:center;justify-content:center;
+      line-height:1;
     }
     .input-wrap .pw-toggle:hover{background:#f3f4f6;color:#3b82f6}
-
-    /* Role badges hint */
-    .role-hint{
-      background:linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
-      border:2px solid #e0e7ff;border-radius:16px;
-      padding:18px;margin-bottom:24px;
-      box-shadow:0 4px 12px rgba(0,0,0,.04);
-    }
-    .role-hint-title{
-      font-size:12px;font-weight:800;color:#6b7280;
-      text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;
-      display:flex;align-items:center;gap:6px;
-    }
-    .role-hint-title::before{content:"👥";font-size:14px}
-    .role-row{
-      display:flex;align-items:center;gap:10px;
-      margin-bottom:8px;font-size:13px;color:#374151;
-      padding:4px 0;
-    }
-    .role-row:last-child{margin-bottom:0}
-    .role-badge{
-      font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;
-      white-space:nowrap;flex-shrink:0;
-      box-shadow:0 2px 4px rgba(0,0,0,.08);
-    }
-    .rb-admin{background:linear-gradient(135deg,#a78bfa,#8b5cf6);color:white}
-    .rb-judul{background:linear-gradient(135deg,#34d399,#10b981);color:white}
-    .rb-sid{background:linear-gradient(135deg,#60a5fa,#3b82f6);color:white}
 
     /* Submit */
     .login-btn{
@@ -203,14 +177,6 @@
     </div>
     <div class="login-org">BAPPERIDA Kota Metro</div>
     <div class="login-title">Sistem Penilaian Inovasi Daerah </div>
-  </div>
-
-  <div class="role-hint">
-    <div class="role-hint-title">Akun yang tersedia</div>
-    <div class="role-row"><span class="role-badge rb-admin">Super Admin</span> username: <b>admin</b></div>
-    <div class="role-row"><span class="role-badge rb-judul">Juri Judul</span> eva.rolia · arif.joko · mustafa</div>
-    <div class="role-row"><span class="role-badge rb-sid">Juri SID</span> sowiyah · etik.puji</div>
-    <div style="font-size:11px;color:#9ca3af;margin-top:6px">Semua password: <b>juri2027</b> (kecuali admin: <b>admin2027</b>)</div>
   </div>
 
   <div id="loginError" class="login-error"></div>
