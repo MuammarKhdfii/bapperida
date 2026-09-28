@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penilaian Judul Inovasi — BAPPERIDA 2027</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+<div id="mainContent">
+
+  <header class="hero hero-judul">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">PENILAIAN JUDUL INOVASI</div>
+        <h1>Penilaian Judul Inovasi</h1>
+        <p>6 kriteria kualitas judul — nilai parameter (1/2/3) × bobot</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Info Inovasi -->
+    <section class="info-form" id="infoSection">
+      <h2>Inovasi yang Dinilai</h2>
+      <div id="inovasiCardJudul" class="inovasi-card" style="display:none">
+        <div class="inovasi-card-header">
+          <div class="inovasi-card-icon">📋</div>
+          <div class="inovasi-card-meta">
+            <div class="inovasi-card-judul" id="icJudul">—</div>
+            <div class="inovasi-card-badges">
+              <span class="inovasi-badge badge-pd"     id="icPD">—</span>
+              <span class="inovasi-badge badge-bentuk" id="icBentuk">—</span>
+              <span class="inovasi-badge badge-tahun"  id="icTahun">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="inovasi-card-body">
+          <div class="inovasi-card-label">📋 Ringkasan Inovasi</div>
+          <p id="icRingkasan">—</p>
+        </div>
+      </div>
+      <div id="noInovasiWarn" class="warn-box">
+        ⚠️ Inovasi belum dipilih. <a href="index.html">Kembali ke halaman utama</a> untuk memilih inovasi.
+      </div>
+
+      <!-- Pilih Juri -->
+      <div class="juri-panel-header" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+        <div class="juri-panel-badge badge-judul">👩‍⚖️ Pilih Juri Penilai Judul</div>
+      </div>
+      <div id="juriTabsJudul" class="juri-tabs juri-tabs-judul">
+        <span class="juri-tab-label">Sesi:</span>
+        <button class="juri-tab juri-tab-judul" data-juri="Dr. Ir. Eva Rolia, M.T., M.K.M.">Dr. Ir. Eva Rolia, M.T., M.K.M.</button>
+        <button class="juri-tab juri-tab-judul" data-juri="Ir. Arif Joko Arwoko">Ir. Arif Joko Arwoko</button>
+        <button class="juri-tab juri-tab-judul" data-juri="Mustafa Akhyar, S.E.">Mustafa Akhyar, S.E.</button>
+      </div>
+
+      <!-- Status juri -->
+      <div id="juriStatusRow" class="juri-status-row" style="display:none">
+        <span class="juri-status-label">Status:</span>
+        <div id="juriStatusBadges" class="juri-status-badges"></div>
+        <span id="juriStatusSummary" class="juri-status-summary"></span>
+      </div>
+    </section>
+
+    <!-- Score Board -->
+    <div class="score-section-label">
+      <span class="score-section-icon">📊</span>
+      <span>Skor Penilaian Judul</span>
+    </div>
+    <section class="score-board">
+      <div class="score-card score-card-judul">
+        <span>Juri Aktif</span>
+        <strong id="scoreJuriAktif">—</strong>
+        <small>Sesi penilaian judul</small>
+      </div>
+      <div class="score-card">
+        <span>Skor Judul</span>
+        <strong id="scoreJudul">0</strong>
+        <small>6 Kriteria</small>
+      </div>
+      <div class="score-card total">
+        <span>Persentase</span>
+        <strong id="scoreJudulPct">0%</strong>
+        <small>Dari nilai maks (63)</small>
+      </div>
+    </section>
+
+    <!-- Toolbar kriteria -->
+    <section class="toolbar">
+      <div>
+        <h2>6 Kriteria Penilaian Judul</h2>
+        <p>Pilih parameter untuk setiap kriteria. Skor = <b>nilai (1/2/3) × bobot</b>.</p>
+      </div>
+      <div class="actions">
+        <button id="expandAllBtn" class="btn btn-text-only">🔽 Buka Semua</button>
+        <button id="saveBtn"     class="btn btn-save-judul">💾 Simpan Penilaian</button>
+        <button id="resetBtn"    class="btn secondary">↺ Reset</button>
+        <button id="printBtn"    class="btn btn-print">🖨️ Cetak</button>
+      </div>
+    </section>
+
+    <!-- Kartu kriteria -->
+    <div id="judulContainer"></div>
+
+    <!-- Summary -->
+    <section class="summary" id="summarySec">
+      <h2>Ringkasan Penilaian Judul</h2>
+      <div id="summaryJuri" class="summary-info" style="display:none">
+        <div><span>Inovasi</span><b id="sumInovasi">—</b></div>
+        <div><span>Juri</span><b id="sumJuri">—</b></div>
+      </div>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Persentase skor dari nilai maksimal</span>
+          <b id="summaryPct">0%</b>
+        </div>
+        <div class="progress"><div id="progressBar"></div></div>
+      </div>
+    </section>
+
+    <!-- Navigasi -->
+    <div class="step-actions" style="margin:20px 0 40px">
+      <a href="index.html" class="btn btn-step-back">🏠 Beranda</a>
+    </div>
+
+  </main>
+</div>
+
+<!-- Print area -->
+<div id="printArea" class="print-area">
+  <div class="print-header">
+    <div class="print-logo-area">
+      <div class="print-logo-placeholder">🏛️</div>
+      <div class="print-org">
+        <div class="print-org-name">BAPPERIDA KOTA METRO</div>
+        <div class="print-org-sub">Badan Perencanaan, Penelitian dan Pengembangan Daerah</div>
+      </div>
+    </div>
+    <div class="print-title-block">
+      <h1 class="print-title">FORMULIR PENILAIAN JUDUL INOVASI</h1>
+      <h2 class="print-subtitle">Indeks Inovasi Daerah Kota Metro 2027</h2>
+    </div>
+  </div>
+  <div class="print-divider"></div>
+  <div class="print-meta-grid">
+    <div class="print-meta-item"><span class="print-meta-label">Nama Inovasi</span><span class="print-meta-value" id="pNamaInovasi">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Nama Juri</span><span class="print-meta-value" id="pNamaJuri">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="pTanggal">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="pTotalSkor">—</span></div>
+  </div>
+  <table class="print-table">
+    <thead>
+      <tr>
+        <th class="pt-no">No</th>
+        <th class="pt-nama">Kriteria Penilaian</th>
+        <th class="pt-bobot">Bobot</th>
+        <th class="pt-param">Nilai</th>
+        <th class="pt-nilai">Skor</th>
+        <th class="pt-ket">Deskripsi Pilihan</th>
+      </tr>
+    </thead>
+    <tbody id="pTableBody"></tbody>
+    <tfoot>
+      <tr class="print-total-row">
+        <td colspan="4" class="print-total-label">TOTAL SKOR PENILAIAN JUDUL</td>
+        <td class="print-total-value" id="pTotal">0.00</td>
+        <td class="print-total-max">Maks: 63</td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="print-signature">
+    <div class="print-sign-block">
+      <div class="print-sign-label">Diperiksa,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name">( _________________________ )</div>
+      <div class="print-sign-role">Koordinator</div>
+    </div>
+    <div class="print-sign-block">
+      <div class="print-sign-label">Dinilai oleh,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name" id="pSignJuri">( _________________________ )</div>
+      <div class="print-sign-role">Juri Penilai</div>
+    </div>
+  </div>
+  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2027 — BAPPERIDA Kota Metro</div>
+</div>
+
+<button id="scrollTopBtn" class="scroll-top-btn">↑</button>
+<button id="fabSaveJudul" class="fab-save fab-save-judul" title="Simpan Penilaian Judul" aria-label="Simpan">
+  <span class="fab-icon" id="fabIconJudul">💾</span>
+  <span class="fab-label">Simpan Penilaian</span>
+</button>
+
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="judul.js"></script>
+</body>
+</html>

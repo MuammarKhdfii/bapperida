@@ -1,0 +1,186 @@
+/* ══════════════════════════════════════════
+   penilaian.css — 1 Form Penilaian
+══════════════════════════════════════════ */
+
+/* Hero */
+.hero-penilaian {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+}
+.hero-back-pill {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  color: white; font-size: 13px; font-weight: 700;
+  padding: 8px 16px; border-radius: 999px;
+  text-decoration: none;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.hero-back-pill:hover { background: rgba(255,255,255,.25); }
+
+/* ── Session Login ── */
+.session-login {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 28px 24px;
+  margin: 24px 0;
+  box-shadow: var(--shadow);
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  animation: fadeSlideUp .4s ease both;
+}
+.session-login-icon { font-size: 40px; flex-shrink: 0; }
+.session-login-body { flex: 1; }
+.session-login-body h2 { margin: 0 0 4px; font-size: 20px; font-weight: 900; }
+.session-login-body p  { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+
+.session-juri-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Kartu juri */
+.session-juri-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: transform .18s, box-shadow .18s, border-color .18s, background .18s;
+  animation: fadeSlideUp .35s ease both;
+  position: relative; overflow: hidden;
+}
+.session-juri-card::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #155eef, #7c3aed, #06b6d4);
+  border-radius: 14px 14px 0 0;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.session-juri-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(21,94,239,.15);
+  border-color: var(--primary);
+  background: #eff6ff;
+}
+.session-juri-card:hover::before { opacity: 1; }
+.session-juri-card:active { transform: scale(.97); }
+
+.sjc-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, #155eef, #7c3aed);
+  color: white; font-size: 18px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sjc-info { flex: 1; min-width: 0; }
+.sjc-nama {
+  font-size: 13px; font-weight: 800; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sjc-role { font-size: 11px; color: var(--muted); margin: 2px 0 6px; }
+.sjc-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.sjc-tag  {
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px;
+}
+.tag-judul { background: #dcfce7; color: #166534; }
+.tag-ind   { background: #dbeafe; color: #1e40af; }
+.sjc-status { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; }
+.sjc-pct    { font-size: 11px; font-weight: 800; color: var(--muted); }
+
+/* ── Session Bar (aktif) ── */
+.session-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  background: linear-gradient(135deg, #1e1b4b, #312e81, #4338ca);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin: 20px 0 0;
+  color: white;
+  animation: fadeSlideDown .3s ease both;
+}
+.session-bar-info { display: flex; align-items: center; gap: 12px; }
+.session-bar-icon { font-size: 24px; }
+.session-bar-nama { font-size: 14px; font-weight: 800; }
+.session-bar-role { font-size: 11px; opacity: .75; margin-top: 2px; }
+.session-logout-btn {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  color: white; font-size: 13px; font-weight: 700; font-family: inherit;
+  padding: 7px 14px; border-radius: 9px; cursor: pointer;
+  transition: background .15s; white-space: nowrap;
+}
+.session-logout-btn:hover { background: rgba(255,255,255,.25); }
+
+/* ── Section header Judul / Indikator ── */
+.penilaian-section-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-top: 24px;
+  position: relative; overflow: hidden;
+}
+.section-judul {
+  background: linear-gradient(135deg, #134e5e, #1a7a5c);
+  color: white;
+}
+.section-indikator {
+  background: linear-gradient(135deg, #1e1b4b, #4338ca);
+  color: white;
+}
+.psh-icon  { font-size: 28px; flex-shrink: 0; }
+.psh-title { font-size: 16px; font-weight: 900; }
+.psh-sub   { font-size: 12px; opacity: .8; margin-top: 3px; }
+.psh-score {
+  margin-left: auto;
+  background: rgba(255,255,255,.2);
+  padding: 6px 14px;
+  border-radius: 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.psh-score span { font-size: 22px; font-weight: 900; display: block; }
+.psh-score small { font-size: 11px; opacity: .8; }
+
+/* Score board penilaian */
+.penilaian-scores { grid-template-columns: 1fr 1fr 1fr 1fr !important; margin: 16px 0 12px; }
+
+/* Indicator warn */
+.indicator-required-warn {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239,68,68,.25) !important;
+  animation: warnPulse .4s ease;
+}
+@keyframes warnPulse {
+  0%   { transform: translateX(-4px); }
+  25%  { transform: translateX( 4px); }
+  50%  { transform: translateX(-2px); }
+  100% { transform: translateX( 0); }
+}
+
+/* Save button */
+.btn-save-all {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(16,185,129,.35);
+  font-size: 14px !important;
+  padding: 11px 22px !important;
+}
+.btn-save-all:hover { box-shadow: 0 8px 22px rgba(16,185,129,.5) !important; transform: translateY(-2px); }
+
+@media(max-width:760px) {
+  .session-juri-grid   { grid-template-columns: 1fr; }
+  .session-login       { flex-direction: column; }
+  .penilaian-scores    { grid-template-columns: 1fr 1fr !important; }
+  .psh-score           { display: none; }
+}
+@media print {
+  .session-bar, .session-login, .penilaian-section-header,
+  .toolbar, .step-actions, #fabSave, #scrollTopBtn { display: none !important; }
+}

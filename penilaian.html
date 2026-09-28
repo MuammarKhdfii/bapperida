@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Penilaian Inovasi — BAPPERIDA 2027</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="penilaian.css">
+</head>
+<body>
+
+<!-- ══ PRINT AREA ══ -->
+<div id="printArea" class="print-area">
+  <div class="print-header">
+    <div class="print-logo-area">
+      <div class="print-logo-placeholder">🏛️</div>
+      <div class="print-org">
+        <div class="print-org-name">BAPPERIDA KOTA METRO</div>
+        <div class="print-org-sub">Badan Perencanaan, Penelitian dan Pengembangan Daerah</div>
+      </div>
+    </div>
+    <div class="print-title-block">
+      <h1 class="print-title">FORMULIR PENILAIAN INOVASI DAERAH</h1>
+      <h2 class="print-subtitle">Indeks Inovasi Daerah Kota Metro 2027</h2>
+    </div>
+  </div>
+  <div class="print-divider"></div>
+  <div class="print-meta-grid">
+    <div class="print-meta-item"><span class="print-meta-label">Nama Inovasi</span><span class="print-meta-value" id="pNamaInovasi">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Nama Juri</span><span class="print-meta-value" id="pNamaJuri">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="pTanggal">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="pTotalSkor">—</span></div>
+  </div>
+  <div class="print-section-heading">A. PENILAIAN JUDUL INOVASI</div>
+  <table class="print-table">
+    <thead><tr><th class="pt-no">No</th><th class="pt-nama">Kriteria</th><th class="pt-bobot">Bobot</th><th class="pt-param">Nilai</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Pilihan</th></tr></thead>
+    <tbody id="pTableJudul"></tbody>
+    <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label">TOTAL SKOR JUDUL</td><td class="print-total-value" id="pTotalJudul">0.00</td><td class="print-total-max">Maks: 63</td></tr></tfoot>
+  </table>
+  <div class="print-section-heading" style="margin-top:16pt">B. PENILAIAN INDIKATOR SID</div>
+  <table class="print-table">
+    <thead><tr><th class="pt-no">No</th><th class="pt-nama">Nama Indikator</th><th class="pt-bobot">Bobot</th><th class="pt-param">Param</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Parameter</th></tr></thead>
+    <tbody id="pTableIndikator"></tbody>
+    <tfoot>
+      <tr class="print-total-row"><td colspan="4" class="print-total-label">TOTAL SKOR INDIKATOR</td><td class="print-total-value" id="pTotalIndikator">0.00</td><td id="pMaxIndikator"></td></tr>
+      <tr class="print-total-row" style="background:#0b4acb"><td colspan="4" class="print-total-label">TOTAL GABUNGAN</td><td class="print-total-value" id="pTotalGabungan">0.00</td><td class="print-total-max" id="pMaxGabungan"></td></tr>
+    </tfoot>
+  </table>
+  <div class="print-signature">
+    <div class="print-sign-block">
+      <div class="print-sign-label">Diperiksa,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name">( _________________________ )</div>
+      <div class="print-sign-role">Koordinator</div>
+    </div>
+    <div class="print-sign-block">
+      <div class="print-sign-label">Dinilai oleh,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name" id="pSignJuri">( _________________________ )</div>
+      <div class="print-sign-role">Juri Penilai</div>
+    </div>
+  </div>
+  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2027 — BAPPERIDA Kota Metro</div>
+</div>
+
+<!-- ══ KONTEN UTAMA ══ -->
+<div id="mainContent">
+
+  <header class="hero hero-penilaian">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge" id="heroBadgeRole">FORM PENILAIAN INOVASI 2027</div>
+        <h1 id="heroJudulInovasi">Form Penilaian</h1>
+        <p id="heroPDInovasi">Pilih juri untuk mulai menilai</p>
+      </div>
+      <div id="sessionNav" class="session-nav-header"></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ══ SESSION LOGIN: Pilih Juri ══ -->
+    <section class="session-login" id="sessionLogin">
+      <div class="session-login-icon">👤</div>
+      <div class="session-login-body">
+        <h2>Pilih Sesi Penilaian Anda</h2>
+        <p>Setiap juri memiliki sesi penilaian tersendiri. Data tersimpan terpisah per juri.</p>
+        <div class="session-juri-grid" id="sessionJuriGrid"></div>
+      </div>
+    </section>
+
+    <!-- ══ SESSION AKTIF ══ -->
+    <div id="sessionActive" style="display:none">
+
+      <!-- Info sesi -->
+      <div class="session-bar" id="sessionBar">
+        <div class="session-bar-info">
+          
+          <div>
+            <div class="session-bar-nama" id="sessionNamaJuri">—</div>
+            <div class="session-bar-role" id="sessionRoleJuri">—</div>
+          </div>
+        </div>
+        <button class="session-logout-btn" onclick="logoutJuri()">↩ Ganti Juri</button>
+      </div>
+
+      <!-- Inovasi card -->
+      <div id="inovasiCardPenilaian" class="inovasi-card" style="margin:16px 0">
+        <div class="inovasi-card-header">
+          <div class="inovasi-card-icon">📋</div>
+          <div class="inovasi-card-meta">
+            <div class="inovasi-card-judul" id="icJudul">—</div>
+            <div class="inovasi-card-badges">
+              <span class="inovasi-badge badge-pd"     id="icPD">—</span>
+              <span class="inovasi-badge badge-bentuk" id="icBentuk">—</span>
+              <span class="inovasi-badge badge-tahun"  id="icTahun">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="inovasi-card-body">
+          <div class="inovasi-card-label">📋 Ringkasan</div>
+          <p id="icRingkasan">—</p>
+        </div>
+      </div>
+
+      <!-- Score Board gabungan -->
+      <section class="score-board penilaian-scores">
+        <div class="score-card score-card-judul">
+          <span>Skor Judul</span>
+          <strong id="scoreJudul">0</strong>
+          <small>Maks 63</small>
+        </div>
+        <div class="score-card">
+          <span>Skor Indikator</span>
+          <strong id="scoreSID">0</strong>
+          <small>SID aktif</small>
+        </div>
+        <div class="score-card total">
+          <span>Total Gabungan</span>
+          <strong id="scoreGabungan">0</strong>
+          <small id="scoreGabunganMax">/ —</small>
+        </div>
+        <div class="score-card score-card-pct">
+          <span>Kelengkapan</span>
+          <strong id="scoreLengkap">0%</strong>
+          <small id="scoreLengkapDetail">0 / 0 item</small>
+        </div>
+      </section>
+
+      <!-- Progress bar -->
+      <div class="progress-wrap" style="margin:0 0 24px">
+        <div class="progress-label">
+          <span>Progres pengisian</span>
+          <b id="progressLabel">0%</b>
+        </div>
+        <div class="progress"><div id="progressBar"></div></div>
+      </div>
+
+      <!-- Toolbar aksi -->
+      <section class="toolbar">
+        <div>
+          <h2>Form Penilaian</h2>
+          <p>Isi semua kriteria judul dan indikator SID. Semua wajib diisi sebelum menyimpan.</p>
+        </div>
+        <div class="actions">
+          <button id="expandAllBtn" class="btn btn-text-only">🔽 Buka Semua</button>
+          <button id="printBtn"     class="btn btn-print">🖨️ Cetak</button>
+          <button id="resetBtn"     class="btn secondary">↺ Reset</button>
+          
+        </div>
+      </section>
+
+      <!-- ══ BAGIAN A: PENILAIAN JUDUL ══ -->
+      <div class="section-judul-wrapper">
+        <div class="penilaian-section-header section-judul">
+          <div class="psh-icon">📋</div>
+          <div>
+            <div class="psh-title">A. Penilaian Judul Inovasi</div>
+            <div class="psh-sub">6 kriteria kualitas · Skor = nilai (1–3) × bobot · Maks 63</div>
+          </div>
+          <div class="psh-score">
+            <span id="scoreJudulHeader">0</span>
+            <small>/ 63</small>
+          </div>
+        </div>
+        <div id="judulContainer"></div>
+      </div>
+
+      <!-- ══ BAGIAN B: PENILAIAN INDIKATOR ══ -->
+      <div class="section-indikator-wrapper">
+        <div class="penilaian-section-header section-indikator" style="margin-top:32px">
+          <div class="psh-icon">📊</div>
+          <div>
+            <div class="psh-title">B. Penilaian Indikator SID</div>
+            <div class="psh-sub">Indikator No. 16–35 · Nilai = parameter (1–3) × bobot</div>
+          </div>
+          <div class="psh-score">
+            <span id="scoreSIDHeader">0</span>
+            <small id="scoreSIDMax">/ —</small>
+          </div>
+        </div>
+        <div id="indicatorContainer"></div>
+      </div>
+
+      <!-- Summary -->
+      <section class="summary" style="margin-top:28px">
+        <h2>Ringkasan Nilai</h2>
+        <div class="summary-info" id="summaryInfo" style="display:none">
+          <div><span>Inovasi</span><b id="sumInovasi">—</b></div>
+          <div><span>Juri</span><b id="sumJuri">—</b></div>
+        </div>
+        <div class="summary-grid">
+          <div><span>Skor Judul</span><b id="sumJudul">0</b></div>
+          <div><span>Skor Indikator</span><b id="sumIndikator">0</b></div>
+          <div><span>Total Gabungan</span><b id="sumTotal">0</b></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Persentase kelengkapan</span><b id="summaryPct">0%</b></div>
+          <div class="progress"><div id="progressBar2"></div></div>
+        </div>
+      </section>
+
+      <div style="margin:20px 0 60px;display:flex;justify-content:flex-end">
+        <a href="index.html" class="btn btn-step-back">🏠 Beranda</a>
+      </div>
+
+    </div><!-- /#sessionActive -->
+
+  </main>
+</div>
+
+<!-- FAB Simpan -->
+<button id="fabSave" class="fab-save" title="Simpan Penilaian">
+  <span class="fab-icon" id="fabIcon">💾</span>
+  <span class="fab-label">Simpan</span>
+</button>
+<button id="scrollTopBtn" class="scroll-top-btn">↑</button>
+
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script src="penilaian.js"></script>
+</body>
+</html>

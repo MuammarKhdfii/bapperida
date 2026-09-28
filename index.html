@@ -3,138 +3,438 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indeks Inovasi Daerah 2026</title>
+  <title>Sistem Penilaian Inovasi Daerah 2027 — BAPPERIDA Kota Metro</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
 </head>
 <body>
-  <header class="hero">
-    <div class="container">
-      <div class="badge">PENILAIAN 2026</div>
-      <h1>Indeks Inovasi Daerah</h1>
-      <p>Form penilaian otomatis berdasarkan parameter pada Excel Indikator Penilaian Indeks Inovasi Daerah 2026.</p>
+<div id="mainContent">
+
+  <header class="hero hero-landing">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">BAPPERIDA KOTA METRO · 2027</div>
+        <h1>Sistem Penilaian<br>Inovasi Daerah</h1>
+      </div>
+      <div id="sessionNav" class="session-nav-header"></div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="score-board">
-      <div class="score-card">
-        <span>Skor SPD</span>
-        <strong id="scoreSPD">0</strong>
-        <small>Maks. 63</small>
-      </div>
-      <div class="score-card">
-        <span>Skor SID</span>
-        <strong id="scoreSID">0</strong>
-        <small>Maks. 187</small>
-      </div>
-      <div class="score-card total">
-        <span>Total Skor</span>
-        <strong id="scoreTotal">0</strong>
-        <small>Maks. 250</small>
-      </div>
-    </section>
+  <main class="container landing-main">
 
-    <section class="toolbar">
-      <div>
-        <h2>Dashboard Penjumlahan</h2>
-        <p>Lihat perhitungan otomatis <b>Parameter × Bobot</b> untuk semua 36 aspek.</p>
-      </div>
-      <div class="actions">
-        <button id="viewDashboardBtn" class="btn primary">📊 Lihat Dashboard</button>
-        <button id="resetBtn" class="btn secondary">Reset</button>
-        <button id="printBtn" class="btn">Cetak Hasil</button>
-      </div>
-    </section>
+    <!-- Greeting per role — muncul setelah login -->
+    <div id="roleGreeting" class="role-greeting" style="display:none"></div>
 
-    <div id="dashboardModal" class="modal">
-      <div class="modal-content excel-style">
-        <div class="modal-header">
-          <div>
-            <h2>📊 Dashboard Penjumlahan Otomatis</h2>
-            <p class="modal-subtitle">Perhitungan Parameter × Bobot untuk 36 Aspek Indeks Inovasi Daerah 2026</p>
-          </div>
-          <button class="close-modal">&times;</button>
+    <!-- Pemilih Inovasi Global -->
+    <section class="landing-inovasi-picker">
+      <div class="picker-label">
+        <span class="picker-icon">🔍</span>
+        <div>
+          <div class="picker-title">Pilih Inovasi yang Akan Dinilai</div>
+          <div class="picker-sub">Pilih inovasi dulu, lalu masuk ke halaman penilaian</div>
         </div>
-        <div class="modal-body">
-          <div class="dashboard-stats">
-            <div class="stat-card spd">
-              <div class="stat-icon">📋</div>
-              <div class="stat-content">
-                <div class="stat-label">Total SPD (1-15)</div>
-                <div class="stat-value" id="dashboardSPDTotal">0.00</div>
-                <div class="stat-max">Maksimal: 63</div>
-              </div>
-            </div>
-            <div class="stat-card sid">
-              <div class="stat-icon">💡</div>
-              <div class="stat-content">
-                <div class="stat-label">Total SID (16-36)</div>
-                <div class="stat-value" id="dashboardSIDTotal">0.00</div>
-                <div class="stat-max">Maksimal: 187</div>
-              </div>
-            </div>
-            <div class="stat-card total">
-              <div class="stat-icon">🎯</div>
-              <div class="stat-content">
-                <div class="stat-label">Total Keseluruhan</div>
-                <div class="stat-value grand" id="dashboardGrandTotal">0.00</div>
-                <div class="stat-max">Maksimal: 250</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="dashboard-table-wrapper">
-            <table id="dashboardTable" class="dashboard-table excel">
-              <thead>
-                <tr>
-                  <th class="col-no">No</th>
-                  <th class="col-name">Nama Indikator</th>
-                  <th class="col-bobot">Bobot</th>
-                  <th class="col-param">Param 1</th>
-                  <th class="col-param">Param 2</th>
-                  <th class="col-param">Param 3</th>
-                  <th class="col-nilai">Nilai</th>
-                </tr>
-              </thead>
-              <tbody id="dashboardTableBody"></tbody>
-            </table>
-          </div>
+      </div>
+      <div class="select-wrapper picker-select-wrap">
+        <select id="globalInovasi" onchange="onGlobalInovasiChange()">
+          <option value="">— Pilih Inovasi —</option>
+          <option>Digitalisasi Laporan Ikhtisar Pengawasan APIP</option>
+          <option>Klinik Konsultasi Pengawasan APIP</option>
+          <option>Klinik Inovasi Daerah Kota Metro (Kovi Darat)</option>
+          <option>Tanah Harapan 2.0</option>
+          <option>SITEGGRASI SP2D (Sistem Terintegrasi Penerbitan SP2D Elektronik)</option>
+          <option>JEJAK DANA (Jaringan Evaluasi dan Jejak Aliran Dana Non-Kas Daerah)</option>
+          <option>CERMAT RKUD (Cash Early Reminder, Monitoring dan Analisis Terpadu RKUD)</option>
+          <option>METAS (Metro Asset Service)</option>
+          <option>Sistem Informasi Dashboard Data ASN</option>
+          <option>SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)</option>
+          <option>SYNDTAKER (Pemanfaatan Synology Drive Guna Mewujudkan Efektivitas dan Efisiensi Tata Kelola Perencanaan di Bagian Keuangan Sekretariat DPRD)</option>
+          <option>TAPE UDANG (Penggunaan Taplink Dalam Penyelenggaraan Rapat-Rapat Bagian Perundangan dan Persidangan di Sekretariat DPRD Kota Metro)</option>
+          <option>BIDIKSIPA (Bantuan Pendidikan Guru PAUD yang sedang menempuh S1)</option>
+          <option>PPKSP (Pendampingan Permasalahan Kekerasan di Satuan Pendidikan)</option>
+          <option>Ayo Sekolah</option>
+          <option>GEMAR SEHATI (Gerakan menuju Remaja Sehat dan Aktif)</option>
+          <option>SATRIA (Sasaran terjadwal Rutin Air Limbah)</option>
+          <option>SIGAP TPU (Sistem Informasi Geospasial Tempat Pemakaman Umum)</option>
+          <option>SIGAP PSU (Sistem Informasi Geospasial Prasarana, dan Utilitas Umum)</option>
+          <option>RESPONTIBKUMDA (Responsif Penertiban hukum Daerah Kota Metro)</option>
+          <option>SRIKANDI BAHAGIA (Strategi responsive dan Inovatif Praja Wanita)</option>
+          <option>RESEP TAWA (Reaksi Cepat Tanggap Satwa)</option>
+          <option>HANJAK SAGITA (Harapan, Akses, Jaringan, dan Kemandirian)</option>
+          <option>LENTERA KENCANA (Layanan Terintegrasi dan Responsif)</option>
+          <option>SEKOLAH KELUARGA SAI BANGGA</option>
+          <option>QUARSA (Gerakan Qurban Aman dan Sehat)</option>
+          <option>SIEMBEK SEHAT</option>
+          <option>TELAM (Teras Pangan Lokal Kota Metro)</option>
+          <option>PosTer Pangan (Pos pengawasan Terpadu Keamanan Pangan)</option>
+          <option>Gerakan Metro Peduli Pangan</option>
+          <option>BESOLEK (Besuk Online Efektif)</option>
+          <option>PERMATA (Peternakan Mandiri Ayam Perkotaan)</option>
+          <option>SIKEPAY (Sistem Informasi Kepatuhan dan Pembayaran Retribusi Sampah)</option>
+          <option>SABAR (Sakai Sambayan Bersih dan Retribusi)</option>
+          <option>MEKHANAI ADMINDUK</option>
+          <option>Jemput Bola SI APDI</option>
+          <option>SI AKSI (Sistem Integrasi Akta, KK, dan KIA Siap Melayani)</option>
+          <option>TERANGIN</option>
+          <option>SINADI (Sistem Informasi Layanan Digital)</option>
+          <option>Jumat Djajan Metro Bahagia</option>
+          <option>KLIK-MPP</option>
+          <option>LARIS (Layanan Asistensi Registrasi Perizinan Berusaha Pedagang Pasar)</option>
+          <option>GEMALA HUB</option>
+          <option>Titik Baca Koleksi Digital/E-book</option>
+          <option>Gebyar IKM Kota Metro</option>
+          <option>GEBRAK SIAGA (Gerakan Bersama Latihan Kesiapsiagaan Bencana)</option>
+          <option>PEKA SEKELIK PBJ</option>
+          <option>RAKOR CERDAS</option>
+          <option>PETRA (Pengajuan dan Tracking Produk Hukum)</option>
+          <option>IBU SITE (Informasi Bagian Umum Berbasis Website)</option>
+          <option>AMAD (Alih Media Arsip Digital)</option>
+          <option>SI CANTIK (Sahabat Ibu Cakap Literasi Keuangan Syariah)</option>
+          <option>PELITA METRO UTARA</option>
+          <option>KALAP (Kantor Lapangan)</option>
+          <option>KLIB PBB</option>
+          <option>GERCEP PDN</option>
+          <option>JEMPOL SIMOTI</option>
+          <option>SIMDAPLH</option>
+          <option>DULUR PENTING (Dua Telur untuk Penurunan Stunting)</option>
+          <option>Pa K Ce (Pasar Kuliner Ngece)</option>
+          <option>EDUMY (Edukasi Mingguan RSUD Jenderal Ahmad Yani)</option>
+          <option>AMBULAN SIAGA (Jemput Sakit Pulang Sehat)</option>
+          <option>Bincang Sehat Sumber Sari Bantul</option>
+          <option>Pelayanan Kesehatan terpadu Bahagia</option>
+          <option>Ambulance Sehat (Dokter Spesialis Keliling)</option>
+          <option>STIMIKOL (Stiker Minum Obat dan Kontrol)</option>
+          <option>PENGANTIN (Pengantar obat Rutin)</option>
+          <option>GAS CEK (Gerakan Aksi Skrining dan Cek Kesehatan)</option>
+          <option>GAS JENTIK (Gerakan Aksi Santri Pantau Jentik)</option>
+          <option>MARI PERGI KE PELANGI</option>
+          <option>KEMUDI (Kader Edukasi Melalui Teknologi Digital)</option>
+          <option>CERDAS PTM</option>
+          <option>GEMA DUET TB Serius Terpadu</option>
+          <option>MACAN SETIA (Remaja Cantik Sehat Tanpa Anemia)</option>
+          <option>PETASAN BANTING (Pemantauan dan Pengentasan Balita Stunting)</option>
+          <option>BUNDA MANIS</option>
+          <option>PENDEKAR MIKAT</option>
+          <option>BINAR KENTARA</option>
+          <option>SI TAQWA</option>
+          <option>Pramuka Bergerak, Sekolah Berdampak</option>
+          <option>SI PANDU HATI</option>
+          <option>SMART BERKARAKTER</option>
+          <option>SEBALUNG (Sehari Berbahasa Lampung)</option>
+          <option>PROLASIA</option>
+          <option>PKN (Perpustakaan Kami Nyaman)</option>
+          <option>KREASI</option>
+          <option>JUR-LINK (Jurnal Online Via Link)</option>
+          <option>TISAKU (Tiket Sampahku)</option>
+          <option>DEBAR BERSINAR</option>
+          <option>SARI BELANG (Sai Hari Berbudaya Lampung)</option>
+          <option>BERHIAS (Bersih, Hijau, Sehat)</option>
+          <option>GELAS ANTIK</option>
+          <option>SATU PERSONAL (Sabtu Permainan Tradisional)</option>
+          <option>SMART-MU</option>
+          <option>SELASIH (Selasa Berliterasi Hebat)</option>
+          <option>SEMAR</option>
+          <option>MANTAB (Manasik Haji dan edukasi Tentang Amal Berkurban)</option>
+          <option>SIBUNI (Literasi Budaya dan Seni)</option>
+          <option>BINTANG BBQ</option>
+          <option>E-SAPA SPANDA</option>
+          <option>PANTER MASEHI</option>
+          <option>GEMA SUCI</option>
+          <option>PELITA QURANI</option>
+          <option>SIGARAN ATI</option>
+          <option>KELINTANG MAS</option>
+        </select>
+      </div>
+      <!-- Status inovasi yang dipilih -->
+      <div id="inovasiStatusBar" class="inovasi-status-bar" style="display:none"></div>
+    </section>
+
+    <!-- Warning Box - Muncul jika belum pilih inovasi -->
+    <div id="warningNoInovasi" class="warn-box" style="display:none; margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 24px;">⚠️</span>
+        <div>
+          <strong style="display: block; margin-bottom: 4px;">Belum Memilih Inovasi!</strong>
+          <span>Silakan pilih inovasi terlebih dahulu pada dropdown di atas sebelum melakukan penilaian.</span>
         </div>
       </div>
     </div>
 
-    <section class="toolbar">
-      <div>
-        <h2>Penilaian Indikator</h2>
-        <p>Pilih salah satu parameter pada setiap indikator. Nilai akan dihitung otomatis: <b>nomor parameter × bobot</b>.</p>
+    <!-- 2 Kartu Navigasi Utama -->
+    <!-- 1 Kartu Masuk Form Penilaian -->
+    <div class="landing-enter-wrap">
+      <div class="landing-enter-card" id="cardPenilaian" onclick="goPenilaian()">
+        <div class="lc-glow"></div>
+        <div class="lec-icon">📋</div>
+        <div class="lec-content">
+          <h2 class="lec-title">Mulai Penilaian Inovasi</h2>
+          <p class="lec-desc">Penilaian <strong>Judul</strong> (6 kriteria) &amp; <strong>Indikator SID</strong> dalam satu form. Pilih sesi juri untuk mulai.</p>
+          <div class="lec-juri-row">
+            <span class="lec-juri-badge badge-judul-sm">Juri Judul: Eva Rolia · Arif Joko · Mustafa Akhyar</span>
+            <span class="lec-juri-badge badge-ind-sm">📊 Juri Indikator: Sowiyah · Etik P.H. · Eva Rolia</span>
+          </div>
+          <div class="lc-status" id="statusPenilaian">
+            <span class="lc-status-dot dot-idle"></span>
+            <span class="lc-status-text">Pilih inovasi terlebih dahulu</span>
+          </div>
+        </div>
+        <div class="lc-arrow">→</div>
       </div>
+    </div>
+
+    <!-- Dashboard Ranking -->
+    <section class="landing-ranking" id="rankingSection">
+      <div class="ranking-section-header">
+        <div>
+          <h2 class="ranking-section-title">🏅 Dashboard Perangkingan Inovasi</h2>
+          <p class="ranking-section-sub">Total skor = rata-rata <b>Penilaian Judul</b> + rata-rata <b>Penilaian Indikator</b> dari semua juri</p>
+        </div>
+        <div class="ranking-section-actions">
+          <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
+          <button onclick="clearAllData()" class="rk-action-btn rk-btn-clear">🗑️ Hapus Data</button>
+        </div>
+      </div>
+
+      <!-- Tab kategori -->
+      <div class="ranking-tabs" id="landingRankingTabs">
+        <button class="ranking-tab active" data-tab="semua"  onclick="switchTab(this,'semua')">📋 Semua</button>
+        <button class="ranking-tab"        data-tab="opd"    onclick="switchTab(this,'opd')">🏛️ OPD</button>
+        <button class="ranking-tab"        data-tab="pendidikan" onclick="switchTab(this,'pendidikan')">🎓 UPTD Pendidikan</button>
+        <button class="ranking-tab"        data-tab="kesehatan"  onclick="switchTab(this,'kesehatan')">🏥 UPTD Kesehatan</button>
+      </div>
+
+      <div id="landingRankingContainer" class="landing-ranking-list"></div>
     </section>
 
-    <div id="indicatorContainer"></div>
+    <div class="landing-secondary"></div>
 
-    <section class="summary">
-      <h2>Ringkasan Nilai</h2>
-      <div class="summary-grid">
-        <div><span>SPD</span><b id="summarySPD">0 / 63</b></div>
-        <div><span>SID</span><b id="summarySID">0 / 187</b></div>
-        <div><span>Total</span><b id="summaryTotal">0 / 250</b></div>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-label"><span>Persentase skor maksimal</span><b id="percentage">0%</b></div>
-        <div class="progress"><div id="progressBar"></div></div>
-      </div>
-    </section>
-
-    <section class="note">
-      <b>Catatan:</b>
-      Bobot indikator nomor 5, 6, 7, 8, 10, dan 11 pada file Excel terbaca sebagai tanggal
-      <code>01/05/2026</code>, bukan angka bobot. Agar total maksimal SPD sesuai keterangan Excel
-      yaitu 63, website ini menggunakan bobot 2, 2, 2, 2, 1, 1 untuk keenam indikator tersebut.
-      Silakan koreksi bobot tersebut jika dokumen sumber memiliki angka resmi yang berbeda.
-    </section>
   </main>
+</div>
 
-  <script src="data.js"></script>
-  <script src="script.js"></script>
+<button id="scrollTopBtn" class="scroll-top-btn">↑</button>
+
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+  // ── Auth check ──
+  (function() {
+    const s = getSession();
+    if (!s)                 { window.location.replace("login.html");    return; }
+    if (s.role === "admin") { window.location.replace("dashboard.html"); return; }
+    // juri_judul & juri_sid tetap di index.html untuk pilih inovasi
+  })();
+
+  initScrollTop("scrollTopBtn");
+  renderSessionNav("sessionNav");
+
+  const sel = document.getElementById("globalInovasi");
+
+  // Restore inovasi terakhir
+  const last = getLastInovasi();
+  if (last) { sel.value = last; onGlobalInovasiChange(); }
+
+  function onGlobalInovasiChange() {
+    const judul = sel.value;
+    localStorage.setItem("iid2026_selected", judul);
+    updateStatusCards(judul);
+    
+    // Sembunyikan warning box jika inovasi dipilih
+    const warningBox = document.getElementById("warningNoInovasi");
+    if (judul && warningBox) {
+      warningBox.style.display = "none";
+    }
+  }
+
+  function updateStatusCards(judul) {
+    const bar = document.getElementById("inovasiStatusBar");
+    if (!judul) {
+      bar.style.display = "none";
+      setStatus("statusPenilaian", "idle", "Pilih inovasi terlebih dahulu");
+      return;
+    }
+    const st    = getInovasiStatus(judul);
+    const total = st.judulJuri + st.indikatorJuri;
+    if (total >= 5)      setStatus("statusPenilaian", "complete", "✅ Semua juri sudah menilai");
+    else if (total > 0)  setStatus("statusPenilaian", "partial",  `${total}/5 sesi juri selesai`);
+    else                 setStatus("statusPenilaian", "idle",     "Belum ada penilaian");
+
+    bar.style.display = "flex";
+    const meta = daftarInovasi.find(i => i.judul === judul) || {};
+    bar.innerHTML = `
+      <span class="isb-icon">🏛️</span>
+      <span class="isb-pd">${meta.perangkatDaerah || "—"}</span>
+      <span class="isb-sep">·</span>
+      <span class="isb-bentuk">${meta.bentuk || "—"}</span>
+      <span class="isb-sep">·</span>
+      <span class="isb-tahun">📅 ${meta.waktu || "—"}</span>`;
+  }
+
+  function setStatus(id, type, text) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const dot  = el.querySelector(".lc-status-dot");
+    const span = el.querySelector(".lc-status-text");
+    dot.className  = "lc-status-dot dot-" + type;
+    span.textContent = text;
+  }
+
+  function goPenilaian() {
+    const judul = sel.value;
+    const warningBox = document.getElementById("warningNoInovasi");
+    
+    if (!judul) {
+      // Tampilkan warning box
+      warningBox.style.display = "block";
+      
+      // Scroll ke warning box
+      warningBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      
+      // Tambahkan efek shake pada warning box
+      warningBox.style.animation = "shake 0.5s";
+      setTimeout(() => {
+        warningBox.style.animation = "";
+      }, 500);
+      
+      // Focus pada dropdown
+      sel.focus();
+      
+      return;
+    }
+    
+    // Sembunyikan warning jika ada
+    warningBox.style.display = "none";
+    
+    localStorage.setItem("iid2026_selected", judul);
+    document.getElementById("cardPenilaian").classList.add("card-clicked");
+    setTimeout(() => { window.location.href = "penilaian.html"; }, 350);
+  }
+
+  // ══════════════════════════════════════════
+  //  DASHBOARD RANKING
+  // ══════════════════════════════════════════
+  function getKategori(pd) {
+    if (!pd) return "opd";
+    const p = pd.toLowerCase();
+    if (p.includes("puskesmas") || p.includes("rsud")) return "kesehatan";
+    if (p.includes("sd negeri") || p.includes("smp negeri") || p.includes("sd aisyah") ||
+        p.includes("sd muhammadiyah") || p.includes("sdit")) return "pendidikan";
+    return "opd";
+  }
+
+  function loadRankingData() {
+    const all = loadAllDraf();
+    return Object.entries(all).map(([judulKey, draf]) => {
+      // Rata-rata skor indikator
+      const sp      = draf.skorPerJuri    || {};
+      const sjp     = draf.skorJudulPerJuri || {};
+      const indArr  = Object.values(sp).filter(s => s > 0);
+      const judArr  = Object.values(sjp).filter(s => s > 0);
+      const avgInd  = indArr.length  > 0 ? indArr.reduce((a,b)=>a+b,0)  / indArr.length  : 0;
+      const avgJud  = judArr.length  > 0 ? judArr.reduce((a,b)=>a+b,0)  / judArr.length  : 0;
+      const total   = parseFloat((avgInd + avgJud).toFixed(2));
+      const meta    = daftarInovasi.find(i => i.judul === judulKey) || {};
+      return {
+        judul: judulKey,
+        perangkatDaerah: meta.perangkatDaerah || "—",
+        kategori: getKategori(meta.perangkatDaerah),
+        avgInd:  parseFloat(avgInd.toFixed(2)),
+        avgJud:  parseFloat(avgJud.toFixed(2)),
+        total,
+        judulJuri: judArr.length,
+        indJuri:   indArr.length,
+        savedAt: draf.savedAt || ""
+      };
+    }).sort((a,b) => b.total - a.total);
+  }
+
+  function renderRankingCard(item, rank) {
+    const medal = rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":`<span class="rk-rank-num">#${rank}</span>`;
+    const rkClass = rank<=3 ? `rank-top rank-${rank}` : rank<=10 ? "rank-normal" : "rank-below";
+    const date = item.savedAt
+      ? new Date(item.savedAt).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})
+      : "";
+    return `
+      <div class="rk-card ${rkClass}">
+        <div class="rk-rank">${medal}</div>
+        <div class="rk-content">
+          <div class="rk-header">
+            <div class="rk-judul">${esc(item.judul)}</div>
+            <div class="rk-avg">
+              <span class="rk-avg-label">Total</span>
+              <span class="rk-avg-val">${item.total.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="rk-meta">
+            <span class="rk-pd">🏛️ ${esc(item.perangkatDaerah)}</span>
+            ${date ? `<span class="rk-date">💾 ${date}</span>` : ""}
+          </div>
+          <div class="rk-juri-row">
+            <div class="rk-juri-cell ${item.avgJud>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">Judul</span>
+              <span class="rk-juri-val">${item.avgJud>0 ? item.avgJud.toFixed(2) : "—"}</span>
+            </div>
+            <div class="rk-juri-cell ${item.avgInd>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">📊 Indikator</span>
+              <span class="rk-juri-val">${item.avgInd>0 ? item.avgInd.toFixed(2) : "—"}</span>
+            </div>
+            <div class="rk-juri-cell juri-total">
+              <span class="rk-juri-name">Juri dinilai</span>
+              <span class="rk-juri-val">J:${item.judulJuri}/3 · I:${item.indJuri}/3</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  let currentTab = "semua";
+
+  function switchTab(btn, tab) {
+    document.querySelectorAll("#landingRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTab = tab;
+    renderLandingRanking();
+  }
+
+  function renderLandingRanking() {
+    const all  = loadRankingData();
+    const data = currentTab === "semua" ? all : all.filter(i => i.kategori === currentTab);
+    const cont = document.getElementById("landingRankingContainer");
+
+    if (data.length === 0) {
+      cont.innerHTML = `
+        <div class="rk-empty">
+          <div class="rk-empty-icon">📭</div>
+          <div class="rk-empty-title">Belum ada data penilaian</div>
+          <div class="rk-empty-sub">Nilai beberapa inovasi di halaman Penilaian Judul dan Penilaian Indikator, lalu klik 💾 Simpan.</div>
+        </div>`;
+      return;
+    }
+
+    const top10 = data.slice(0, 10);
+    const rest  = data.slice(10);
+    let html    = top10.map((item, i) => renderRankingCard(item, i + 1)).join("");
+    if (rest.length) {
+      html += `<details class="rk-rest">
+        <summary class="rk-rest-toggle">Lihat ${rest.length} inovasi lainnya ▾</summary>
+        <div class="rk-rest-list">${rest.map((item,i) => renderRankingCard(item, 11+i)).join("")}</div>
+      </details>`;
+    }
+    cont.innerHTML = html;
+  }
+
+  function clearAllData() {
+    if (!confirm("Hapus semua data penilaian yang tersimpan?\nTindakan ini tidak dapat dibatalkan.")) return;
+    localStorage.removeItem(KEY_ALL);
+    localStorage.removeItem(KEY_LAST);
+    localStorage.removeItem("iid2026_selected");
+    renderLandingRanking();
+    updateStatusCards("");
+    sel.value = "";
+  }
+
+  // Render ranking saat halaman dimuat
+  renderLandingRanking();
+</script>
 </body>
 </html>

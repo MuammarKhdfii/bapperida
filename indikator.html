@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penilaian Indikator SID — BAPPERIDA 2027</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+<div id="mainContent">
+
+  <header class="hero hero-indikator">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">PENILAIAN INDIKATOR SID</div>
+        <h1>Penilaian Indikator SID</h1>
+        <p>Indikator No. 16–35 · Nilai = parameter (1/2/3) × bobot</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Info Inovasi -->
+    <section class="info-form">
+      <h2>Inovasi yang Dinilai</h2>
+      <div id="inovasiCardInd" class="inovasi-card" style="display:none">
+        <div class="inovasi-card-header">
+          <div class="inovasi-card-icon">📊</div>
+          <div class="inovasi-card-meta">
+            <div class="inovasi-card-judul" id="icJudulInd">—</div>
+            <div class="inovasi-card-badges">
+              <span class="inovasi-badge badge-pd"     id="icPDInd">—</span>
+              <span class="inovasi-badge badge-bentuk" id="icBentukInd">—</span>
+              <span class="inovasi-badge badge-tahun"  id="icTahunInd">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="inovasi-card-body">
+          <div class="inovasi-card-label">📋 Ringkasan Inovasi</div>
+          <p id="icRingkasanInd">—</p>
+        </div>
+      </div>
+      <div id="noInovasiWarnInd" class="warn-box">
+        ⚠️ Inovasi belum dipilih. <a href="index.html">Kembali ke halaman utama</a> untuk memilih inovasi.
+      </div>
+
+      <!-- Pilih Juri Indikator -->
+      <div class="juri-panel-header" style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+        <div class="juri-panel-badge badge-indikator">👩‍⚖️ Pilih Juri Penilai Indikator</div>
+      </div>
+      <div id="juriTabs" class="juri-tabs">
+        <span class="juri-tab-label">Sesi:</span>
+        <button class="juri-tab" data-juri="Prof. Dr. Dra. Sowiyah M.Pd.">Prof. Dr. Dra. Sowiyah M.Pd.</button>
+        <button class="juri-tab" data-juri="Prof. Dr. Ir. Etik Puji Handayani, M.Si.">Prof. Dr. Ir. Etik Puji Handayani, M.Si.</button>
+        <button class="juri-tab" data-juri="Dr. Ir. Eva Rolia, M.T., M.K.M.">Dr. Ir. Eva Rolia, M.T., M.K.M.</button>
+      </div>
+
+      <!-- Status juri -->
+      <div id="juriStatusRow" class="juri-status-row" style="display:none">
+        <span class="juri-status-label">Status:</span>
+        <div id="juriStatusBadges" class="juri-status-badges"></div>
+        <span id="juriStatusSummary" class="juri-status-summary"></span>
+      </div>
+    </section>
+
+    <!-- Score Board -->
+    <span id="scoreSPD" style="display:none">—</span>
+    <div class="score-section-label">
+      <span class="score-section-icon">📊</span>
+      <span>Skor Penilaian Indikator</span>
+    </div>
+    <section class="score-board">
+      <div class="score-card">
+        <span>Skor SID
+          <span class="tooltip-wrap">
+            <button class="tooltip-btn" aria-label="Info">ℹ️</button>
+            <span class="tooltip-box">Skor indikator No. 16–35. Dihitung: nilai parameter × bobot.</span>
+          </span>
+        </span>
+        <strong id="scoreSID">0</strong>
+        <small>No. 16–35</small>
+      </div>
+      <div class="score-card total">
+        <span>Total Skor</span>
+        <strong id="scoreTotal">0</strong>
+        <small>Indikator Aktif</small>
+      </div>
+      <div class="score-card score-card-pct">
+        <span>Persentase</span>
+        <strong id="scorePct">0%</strong>
+        <small>Dari nilai maks</small>
+      </div>
+    </section>
+
+    <!-- Toolbar -->
+    <section class="toolbar">
+      <div>
+        <h2>Penilaian Indikator SID</h2>
+        <p>Isi indikator <b>No. 16–35</b>. SPD (1–15) dan No. 36 dikecualikan.</p>
+      </div>
+      <div class="actions">
+        <button id="viewDashboardBtn" class="btn primary">📊 Dashboard</button>
+        <button id="viewRankingBtn"   class="btn btn-ranking">📊 Ranking</button>
+        <div class="split-btn-wrap" id="exportSplitWrap">
+          <button class="btn btn-print split-main" id="printBtn">🖨️ Cetak</button>
+          <button class="btn btn-print split-arrow" id="exportDropdownToggle" aria-expanded="false">▾</button>
+          <div class="split-dropdown" id="exportDropdown">
+            <button class="split-option" id="exportPdfBtn"><span class="split-icon">📄</span><span>Simpan PDF</span></button>
+            <button class="split-option" id="exportExcelBtn"><span class="split-icon">📊</span><span>Unduh Excel</span></button>
+          </div>
+        </div>
+        <button id="saveBtn"      class="btn btn-save-ind">💾 Simpan</button>
+        <button id="expandAllBtn" class="btn btn-text-only">🔽 Buka Semua</button>
+        <button id="resetBtn"     class="btn secondary">↺ Reset</button>
+      </div>
+    </section>
+
+    <!-- Dashboard Modal -->
+    <div id="dashboardModal" class="modal">
+      <div class="modal-content excel-style">
+        <div class="modal-header">
+          <div>
+            <h2>📊 Dashboard Penjumlahan</h2>
+            <p class="modal-subtitle">Parameter × Bobot — SID No. 16–35</p>
+            <div id="dashboardInfo" class="dashboard-info">
+              <span>📋 Inovasi: <b id="dashboardNamaInovasi">—</b></span>
+              <span>👤 Juri: <b id="dashboardNamaJuri">—</b></span>
+            </div>
+          </div>
+          <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="dashboard-stats">
+            <div class="stat-card spd spd-skip">
+              <div class="stat-icon">🚫</div>
+              <div class="stat-content">
+                <div class="stat-label">SPD (1–15)</div>
+                <div class="stat-value" id="dashboardSPDTotal">—</div>
+                <div class="stat-max">Dikecualikan</div>
+              </div>
+            </div>
+            <div class="stat-card sid">
+              <div class="stat-icon">💡</div>
+              <div class="stat-content">
+                <div class="stat-label">Total SID (16–35)</div>
+                <div class="stat-value" id="dashboardSIDTotal">0.00</div>
+                <div class="stat-max">Indikator aktif</div>
+              </div>
+            </div>
+            <div class="stat-card total">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-content">
+                <div class="stat-label">Total</div>
+                <div class="stat-value grand" id="dashboardGrandTotal">0.00</div>
+                <div class="stat-max">Indikator aktif</div>
+              </div>
+            </div>
+          </div>
+          <div class="dashboard-table-wrapper">
+            <table class="dashboard-table excel">
+              <thead>
+                <tr>
+                  <th class="col-no">No</th><th class="col-name">Nama Indikator</th>
+                  <th class="col-bobot">Bobot</th><th class="col-param">Param 1</th>
+                  <th class="col-param">Param 2</th><th class="col-param">Param 3</th>
+                  <th class="col-nilai">Nilai</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking Modal -->
+    <div id="rankingModal" class="modal">
+      <div class="modal-content ranking-style">
+        <div class="modal-header ranking-header">
+          <div>
+            <h2>📊 Dashboard Perangkingan</h2>
+            <p class="modal-subtitle">Rata-rata skor semua juri — Inovasi Daerah 2027</p>
+            <div class="ranking-juri-info" id="rankingJuriInfo"></div>
+          </div>
+          <div class="ranking-header-right">
+            <button id="rankingRefreshBtn" class="btn-refresh">🔄 Refresh</button>
+            <button id="rankingClearBtn"   class="btn-clear-data">🗑️ Hapus</button>
+            <button class="close-modal close-ranking">&times;</button>
+          </div>
+        </div>
+        <div class="modal-body ranking-body">
+          <div class="ranking-tabs">
+            <button class="ranking-tab active" data-tab="opd">🏛️ OPD</button>
+            <button class="ranking-tab" data-tab="pendidikan">🎓 UPTD Pendidikan</button>
+            <button class="ranking-tab" data-tab="kesehatan">🏥 UPTD Kesehatan</button>
+          </div>
+          <div class="ranking-panel active" id="panel-opd">
+            <div class="ranking-panel-header"><div class="ranking-panel-title">🏛️ Ranking — OPD</div><div class="ranking-panel-sub">Inspektorat · Badan · Dinas · Sekretariat · Kecamatan</div></div>
+            <div id="ranking-list-opd" class="ranking-list"></div>
+          </div>
+          <div class="ranking-panel" id="panel-pendidikan">
+            <div class="ranking-panel-header"><div class="ranking-panel-title">🎓 Ranking — UPTD Pendidikan</div><div class="ranking-panel-sub">SD · SMP Negeri & Swasta · SDIT</div></div>
+            <div id="ranking-list-pendidikan" class="ranking-list"></div>
+          </div>
+          <div class="ranking-panel" id="panel-kesehatan">
+            <div class="ranking-panel-header"><div class="ranking-panel-title">🏥 Ranking — UPTD Kesehatan</div><div class="ranking-panel-sub">Puskesmas · RSUD</div></div>
+            <div id="ranking-list-kesehatan" class="ranking-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container Indikator -->
+    <div id="indicatorContainer"></div>
+
+    <!-- Summary -->
+    <section class="summary">
+      <h2>Ringkasan Nilai Indikator</h2>
+      <div id="summaryInfo" class="summary-info" style="display:none">
+        <div><span>Inovasi</span><b id="summaryNamaInovasi">—</b></div>
+        <div><span>Juri</span><b id="summaryNamaJuri">—</b></div>
+      </div>
+      <div class="summary-grid">
+        <div><span>SID (16–35)</span><b id="summarySID">0</b></div>
+        <div><span>Total</span><b id="summaryTotal">0</b></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Persentase skor maksimal</span><b id="percentage">0%</b></div>
+        <div class="progress"><div id="progressBar"></div></div>
+      </div>
+    </section>
+
+    <!-- Navigasi -->
+    <div class="step-actions" style="margin:20px 0 40px">
+      <a href="index.html" class="btn btn-step-back">🏠 Beranda</a>
+    </div>
+
+  </main>
+</div>
+
+<!-- Print area -->
+<div id="printArea" class="print-area">
+  <div class="print-header">
+    <div class="print-logo-area">
+      <div class="print-logo-placeholder">🏛️</div>
+      <div class="print-org">
+        <div class="print-org-name">BAPPERIDA KOTA METRO</div>
+        <div class="print-org-sub">Badan Perencanaan, Penelitian dan Pengembangan Daerah</div>
+      </div>
+    </div>
+    <div class="print-title-block">
+      <h1 class="print-title">FORMULIR PENILAIAN INDIKATOR SID</h1>
+      <h2 class="print-subtitle">Indeks Inovasi Daerah Kota Metro 2027</h2>
+    </div>
+  </div>
+  <div class="print-divider"></div>
+  <div class="print-meta-grid">
+    <div class="print-meta-item"><span class="print-meta-label">Nama Inovasi</span><span class="print-meta-value" id="printNamaInovasi">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Nama Juri</span><span class="print-meta-value" id="printNamaJuri">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="printTanggal">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="printSkorTotal">—</span></div>
+  </div>
+  <div class="print-note-spd"><strong>⚠ Catatan:</strong> SPD No. 1–15 dan No. 36 dikecualikan. Penilaian hanya indikator SID No. 16–35.</div>
+  <table class="print-table">
+    <thead>
+      <tr>
+        <th class="pt-no">No</th><th class="pt-nama">Nama Indikator</th>
+        <th class="pt-bobot">Bobot</th><th class="pt-param">Param</th>
+        <th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Parameter</th>
+      </tr>
+    </thead>
+    <tbody id="printTableBody"></tbody>
+    <tfoot>
+      <tr class="print-total-row">
+        <td colspan="4" class="print-total-label">TOTAL SKOR SID</td>
+        <td class="print-total-value" id="printTotalSkor">0.00</td>
+        <td class="print-total-max" id="printMaxSkor"></td>
+      </tr>
+      <tr class="print-pct-row">
+        <td colspan="4" class="print-pct-label">PERSENTASE</td>
+        <td colspan="2" class="print-pct-value" id="printPercentage">0%</td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="print-signature">
+    <div class="print-sign-block">
+      <div class="print-sign-label">Diperiksa,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name">( _________________________ )</div>
+      <div class="print-sign-role">Koordinator</div>
+    </div>
+    <div class="print-sign-block">
+      <div class="print-sign-label">Dinilai oleh,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name" id="printSignJuri">( _________________________ )</div>
+      <div class="print-sign-role">Juri Penilai</div>
+    </div>
+  </div>
+  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2027 — BAPPERIDA Kota Metro</div>
+</div>
+
+<button id="fabSave" class="fab-save"><span class="fab-icon" id="fabIcon">💾</span><span class="fab-label">Simpan</span></button>
+<button id="scrollTopBtn" class="scroll-top-btn">↑</button>
+
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="indikator.js"></script>
+</body>
+</html>

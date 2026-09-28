@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin — BAPPERIDA 2027</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+  <style>
+    /* ── Dashboard Admin ── */
+    .hero-admin {
+      background: linear-gradient(135deg,#4c1d95,#7c3aed,#9333ea) !important;
+      background-size:300% 300% !important;
+      animation: gradientShift 8s ease infinite !important;
+    }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .dash-stat {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.07);
+      border: 1.5px solid #e4e7ec;
+      animation: fadeSlideUp .4s ease both;
+      text-align: center;
+    }
+    .dash-stat:nth-child(2){animation-delay:.06s}
+    .dash-stat:nth-child(3){animation-delay:.12s}
+    .dash-stat-icon { font-size: 32px; margin-bottom: 8px; }
+    .dash-stat-val  { font-size: 36px; font-weight: 900; color: #155eef; }
+    .dash-stat-lbl  { font-size: 12px; color: #667085; font-weight: 700; margin-top: 4px; }
+
+    /* Tabel rekap */
+    .rekap-section { margin: 32px 0; }
+    .rekap-title {
+      font-size: 18px; font-weight: 900;
+      background: linear-gradient(135deg,#7c3aed,#4c1d95);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .rekap-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.07);
+    }
+    .rekap-table thead { background: linear-gradient(135deg,#7c3aed,#4c1d95); color: white; }
+    .rekap-table th { padding: 12px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+    .rekap-table td { padding: 12px 14px; border-bottom: 1px solid #f0f2f5; }
+    .rekap-table tr:last-child td { border-bottom: none; }
+    .rekap-table tr:hover td { background: #f8fafc; }
+    .skor-cell { font-weight: 800; color: #155eef; }
+    .total-cell { font-weight: 900; color: #7c3aed; font-size: 15px; }
+    .badge-lengkap   { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-partial   { background: #fef9c3; color: #78350f; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-kosong    { background: #f3f4f6; color: #9ca3af; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+
+    /* Rekap per juri */
+    .juri-rekap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .juri-rekap-card {
+      background: white; border-radius: 14px; padding: 18px;
+      border: 1.5px solid #e4e7ec;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+    .juri-rekap-nama { font-size: 13px; font-weight: 800; color: #172033; margin-bottom: 4px; }
+    .juri-rekap-role { font-size: 11px; color: #667085; margin-bottom: 12px; }
+    .juri-rekap-skor { display: flex; justify-content: space-between; font-size: 12px; color: #344054; }
+    .juri-rekap-skor b { color: #155eef; }
+
+    .empty-state { text-align: center; padding: 48px; color: #9ca3af; }
+    .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+
+    @media(max-width:760px) {
+      .dash-grid { grid-template-columns: 1fr; }
+      .juri-rekap-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+
+  <header class="hero hero-admin">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">🛡️ SUPER ADMIN — BAPPERIDA 2027</div>
+        <h1>Dashboard Rekapitulasi</h1>
+        <p>Seluruh data penilaian inovasi dari semua juri</p>
+      </div>
+      <div id="sessionNav" class="session-nav-header"></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Stat Cards -->
+    <div class="dash-grid" id="dashStats"></div>
+
+    <!-- Toolbar -->
+    <section class="toolbar">
+      <div>
+        <h2>Rekap Penilaian</h2>
+        <p>Data diambil langsung dari localStorage semua juri yang sudah menyimpan penilaian.</p>
+      </div>
+      <div class="actions">
+        <button onclick="loadDashboard()" class="btn primary">🔄 Refresh Data</button>
+        <a href="index.html" class="btn secondary">🏠 Beranda</a>
+      </div>
+    </section>
+
+    <!-- Tabel rekap per inovasi -->
+    <div class="rekap-section">
+      <div class="rekap-title">📋 Rekap Semua Inovasi</div>
+      <div id="rekapTable"></div>
+    </div>
+
+    <!-- Rekap per juri -->
+    <div class="rekap-section">
+      <div class="rekap-title">👤 Rekap per Juri</div>
+      <div id="rekapJuri" class="juri-rekap-grid"></div>
+    </div>
+
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+<script>
+  // ── Route Guard: hanya admin ──
+  const SESSION = requireAuth("admin");
+  if (!SESSION) throw new Error("Unauthorized");
+
+  renderSessionNav("sessionNav");
+
+  const JURI_JUDUL_LIST = [
+    "Dr. Ir. Eva Rolia, M.T., M.K.M.",
+    "Ir. Arif Joko Arwoko",
+    "Mustafa Akhyar, S.E."
+  ];
+  const JURI_SID_LIST = [
+    "Prof. Dr. Dra. Sowiyah M.Pd.",
+    "Prof. Dr. Ir. Etik Puji Handayani, M.Si.",
+    "Dr. Ir. Eva Rolia, M.T., M.K.M."
+  ];
+
+  function loadDashboard() {
+    const all = loadAllDraf();
+    const inovasiList = Object.entries(all);
+
+    // ── Stat cards ──
+    const totalInovasi   = inovasiList.length;
+    const selesaiJudul   = inovasiList.filter(([,d]) => {
+      return JURI_JUDUL_LIST.filter(j => d.judulState?.[j] && Object.values(d.judulState[j]).some(v=>v)).length === JURI_JUDUL_LIST.length;
+    }).length;
+    const selesaiSID     = inovasiList.filter(([,d]) => {
+      return JURI_SID_LIST.filter(j => d.juriState?.[j] && Object.values(d.juriState[j].radio||{}).some(v=>v)).length >= 2;
+    }).length;
+
+    document.getElementById("dashStats").innerHTML = `
+      <div class="dash-stat">
+        <div class="dash-stat-icon">📊</div>
+        <div class="dash-stat-val">${totalInovasi}</div>
+        <div class="dash-stat-lbl">Inovasi Terdata</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon">📊</div>
+        <div class="dash-stat-val">${selesaiJudul}</div>
+        <div class="dash-stat-lbl">Judul Dinilai Lengkap</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon">✅</div>
+        <div class="dash-stat-val">${selesaiSID}</div>
+        <div class="dash-stat-lbl">SID Dinilai ≥2 Juri</div>
+      </div>`;
+
+    // ── Tabel rekap ──
+    if (inovasiList.length === 0) {
+      document.getElementById("rekapTable").innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <div>Belum ada data penilaian. Juri perlu login dan menyimpan penilaian terlebih dahulu.</div>
+        </div>`;
+      return;
+    }
+
+    // Hitung total gabungan per inovasi
+    const rows = inovasiList.map(([judulKey, d]) => {
+      const judulArr = JURI_JUDUL_LIST.map(j => {
+        if (!d.judulState?.[j]) return null;
+        let t = 0;
+        kriteriaJudul.forEach(k => { const v = d.judulState[j]?.[k.no]||""; if(v) t += Number(v)*k.bobot; });
+        return t;
+      }).filter(v => v !== null && v > 0);
+
+      const sidArr = JURI_SID_LIST.map(j => {
+        if (!d.juriState?.[j]) return null;
+        let t = 0;
+        sidIndicators.filter(i=>!i.type).forEach(i => { const v=d.juriState[j]?.radio?.[i.originalNo]||""; if(v) t+=Number(v)*i.bobot; });
+        return t;
+      }).filter(v => v !== null && v > 0);
+
+      const avgJudul = judulArr.length > 0 ? judulArr.reduce((a,b)=>a+b,0)/judulArr.length : 0;
+      const avgSID   = sidArr.length   > 0 ? sidArr.reduce((a,b)=>a+b,0)/sidArr.length     : 0;
+      const total    = avgJudul + avgSID;
+      const meta     = daftarInovasi.find(i=>i.judul===judulKey) || {};
+
+      let status = 'kosong';
+      if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
+      else if (judulArr.length > 0 || sidArr.length > 0) status = 'partial';
+
+      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: d.savedAt||"" };
+    }).sort((a,b) => b.total - a.total);
+
+    let html = `
+      <table class="rekap-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama Inovasi</th>
+            <th>OPD</th>
+            <th>Skor Judul</th>
+            <th>Skor SID</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    rows.forEach((r, i) => {
+      const badgeCls = r.status === 'lengkap' ? 'badge-lengkap' : r.status === 'partial' ? 'badge-partial' : 'badge-kosong';
+      const badgeTxt = r.status === 'lengkap' ? '✅ Lengkap' : r.status === 'partial' ? '⏳ Sebagian' : '—';
+      html += `
+        <tr>
+          <td>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td>
+          <td><b>${esc(r.judulKey)}</b></td>
+          <td style="font-size:11px;color:#667085">${esc(r.meta.perangkatDaerah||"—")}</td>
+          <td class="skor-cell">${r.avgJudul>0?r.avgJudul.toFixed(2):"—"} <small style="font-weight:400;color:#9ca3af">(${r.judulJuri}/3)</small></td>
+          <td class="skor-cell">${r.avgSID>0?r.avgSID.toFixed(2):"—"} <small style="font-weight:400;color:#9ca3af">(${r.sidJuri}/3)</small></td>
+          <td class="total-cell">${r.total>0?r.total.toFixed(2):"—"}</td>
+          <td><span class="${badgeCls}">${badgeTxt}</span></td>
+        </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    document.getElementById("rekapTable").innerHTML = html;
+
+    // ── Rekap per juri ──
+    const allJuri = [...JURI_JUDUL_LIST, ...JURI_SID_LIST.filter(j => !JURI_JUDUL_LIST.includes(j))];
+    let juriHtml = "";
+    allJuri.forEach(juri => {
+      const isJudul = JURI_JUDUL_LIST.includes(juri);
+      const isSID   = JURI_SID_LIST.includes(juri);
+      let totalSkor = 0, count = 0;
+      inovasiList.forEach(([,d]) => {
+        if (isJudul && d.judulState?.[juri]) {
+          let t=0; kriteriaJudul.forEach(k=>{const v=d.judulState[juri]?.[k.no]||"";if(v)t+=Number(v)*k.bobot;}); if(t>0){totalSkor+=t;count++;}
+        }
+        if (isSID && d.juriState?.[juri]) {
+          let t=0; sidIndicators.filter(i=>!i.type).forEach(i=>{const v=d.juriState[juri]?.radio?.[i.originalNo]||"";if(v)t+=Number(v)*i.bobot;}); if(t>0){totalSkor+=t;count++;}
+        }
+      });
+      const roleLabel = isJudul && isSID ? "Juri Judul & SID" : isJudul ? "Juri Judul Inovasi" : "Juri Penilaian SID";
+      juriHtml += `
+        <div class="juri-rekap-card">
+          <div class="juri-rekap-nama">${esc(juri)}</div>
+          <div class="juri-rekap-role">${roleLabel}</div>
+          <div class="juri-rekap-skor">
+            <span>Inovasi dinilai: <b>${count}</b></span>
+            <span>Rata-rata skor: <b>${count>0?(totalSkor/count).toFixed(2):"—"}</b></span>
+          </div>
+        </div>`;
+    });
+    document.getElementById("rekapJuri").innerHTML = juriHtml;
+  }
+
+  function esc(v) {
+    return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
