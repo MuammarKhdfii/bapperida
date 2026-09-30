@@ -35,6 +35,7 @@ if (!SHOW_SID) {
 // judulState / juriState hanya untuk user ini
 const judulState = { [SESSION.nama]: {} };
 const juriState  = { [SESSION.nama]: { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} } };
+const notesState = { [SESSION.nama]: { catatan: "", rekomendasi: "" } };
 
 let namaInovasi = "";
 
@@ -66,6 +67,26 @@ if (namaInovasi) {
   document.getElementById("icBentuk").textContent    = "📂 " + (meta.bentuk || "—");
   document.getElementById("icTahun").textContent     = "📅 " + (meta.waktu || "—");
   document.getElementById("icRingkasan").textContent = meta.ringkasan || "—";
+  
+  // Populate Google Drive links
+  const gdriveCard = document.getElementById("googleDriveCard");
+  const gdriveContainer = document.getElementById("gdriveLinksContainer");
+  
+  if (meta.googleDriveLinks && meta.googleDriveLinks.length > 0) {
+    gdriveCard.style.display = "block";
+    gdriveContainer.innerHTML = meta.googleDriveLinks.map((link, idx) => `
+      <div class="gdrive-link-item">
+        <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="gdrive-link" title="${link.description}">
+          <span class="gdrive-link-icon">📄</span>
+          <span class="gdrive-link-text">${link.name}</span>
+          <span class="gdrive-link-arrow">→</span>
+        </a>
+        <div class="gdrive-tooltip">${link.description}</div>
+      </div>
+    `).join("");
+  } else {
+    gdriveCard.style.display = "none";
+  }
 } else {
   document.getElementById("heroJudulInovasi").textContent = "Form Penilaian";
   document.getElementById("heroPDInovasi").textContent    = "Kembali ke beranda untuk memilih inovasi";
@@ -77,6 +98,20 @@ if (namaInovasi && allDraf[namaInovasi]) {
   const d = allDraf[namaInovasi];
   if (d.judulState?.[SESSION.nama]) judulState[SESSION.nama] = d.judulState[SESSION.nama];
   if (d.juriState?.[SESSION.nama])  juriState[SESSION.nama]  = d.juriState[SESSION.nama];
+  if (d.notesState?.[SESSION.nama]) notesState[SESSION.nama] = d.notesState[SESSION.nama];
+  
+  // Check if this is edit mode
+  const isEditMode = (d.skorPerJuri && d.skorPerJuri[SESSION.nama] > 0) || 
+                     (d.skorJudulPerJuri && d.skorJudulPerJuri[SESSION.nama] > 0);
+  
+  if (isEditMode) {
+    // Show edit mode badge
+    const heroBadge = document.getElementById("heroBadgeRole");
+    if (heroBadge) {
+      heroBadge.innerHTML = `✏️ MODE EDIT PENILAIAN`;
+      heroBadge.style.background = "linear-gradient(135deg, #0ea5e9, #0284c7)";
+    }
+  }
 }
 
 // Sembunyikan session login grid, tampilkan form langsung
@@ -93,6 +128,33 @@ if (barRole) barRole.textContent = SESSION.label;
 
 render();
 calculate();
+loadNotesState();
+
+// ── Load Notes State ──
+function loadNotesState() {
+  const notesCatatan = document.getElementById("notesCatatan");
+  const notesRekomendasi = document.getElementById("notesRekomendasi");
+  
+  if (notesCatatan) {
+    notesCatatan.value = notesState[SESSION.nama]?.catatan || "";
+    notesCatatan.addEventListener("input", saveNotesState);
+  }
+  
+  if (notesRekomendasi) {
+    notesRekomendasi.value = notesState[SESSION.nama]?.rekomendasi || "";
+    notesRekomendasi.addEventListener("input", saveNotesState);
+  }
+}
+
+function saveNotesState() {
+  const notesCatatan = document.getElementById("notesCatatan");
+  const notesRekomendasi = document.getElementById("notesRekomendasi");
+  
+  notesState[SESSION.nama] = {
+    catatan: notesCatatan?.value || "",
+    rekomendasi: notesRekomendasi?.value || ""
+  };
+}
 
 // ── Render kartu pilih juri ──
 function renderSessionGrid() {
@@ -388,59 +450,86 @@ function calculate() {
 
 // ── Simpan ──
 function saveAll(showAnim = false) {
+  console.log('=== saveAll START ===');
   
   saveJudulStateLocal();
   saveIndikatorStateLocal();
+  saveNotesState();
 
-  // Hitung skor per juri
-  const skorJudulPerJuri = {};
-  SEMUA_JURI.filter(j => j.tipe.includes("judul")).forEach(j => {
-    let t = 0;
-    kriteriaJudul.forEach(k => { const v = judulState[j.nama]?.[k.no] || ""; if (v) t += Number(v) * k.bobot; });
-    skorJudulPerJuri[j.nama] = parseFloat(t.toFixed(2));
-  });
-  const skorPerJuri = {};
-  SEMUA_JURI.filter(j => j.tipe.includes("indikator")).forEach(j => {
-    let t = 0;
-    sidIndicators.filter(i => !i.type).forEach(i => { const v = juriState[j.nama]?.radio?.[i.originalNo] || ""; if (v) t += Number(v) * i.bobot; });
-    skorPerJuri[j.nama] = parseFloat(t.toFixed(2));
-  });
+  // Hitung skor untuk juri yang sedang login
+  let skorJudul = 0;
+  if (SHOW_JUDUL) {
+    kriteriaJudul.forEach(k => {
+      const v = judulState[SESSION.nama]?.[k.no] || "";
+      if (v) skorJudul += Number(v) * k.bobot;
+    });
+  }
+
+  let skorInd = 0;
+  if (SHOW_SID) {
+    sidIndicators.filter(i => !i.type).forEach(i => {
+      const v = juriState[SESSION.nama]?.radio?.[i.originalNo] || "";
+      if (v) skorInd += Number(v) * i.bobot;
+    });
+  }
+
+  console.log('Skor Judul:', skorJudul);
+  console.log('Skor Indikator:', skorInd);
 
   const all = loadAllDraf();
-  all[namaInovasi] = {
-    ...all[namaInovasi],
-    namaInovasi,
-    savedAt: new Date().toISOString(),
-    judulState: JSON.parse(JSON.stringify(judulState)),
-    juriState:  JSON.parse(JSON.stringify(juriState)),
-    skorJudulPerJuri,
-    skorPerJuri,
-    activeJuri: SESSION.nama
-  };
+  
+  // Update atau create entry
+  if (!all[namaInovasi]) {
+    all[namaInovasi] = {
+      namaInovasi,
+      judulState: {},
+      juriState: {},
+      notesState: {},
+      skorJudulPerJuri: {},
+      skorPerJuri: {}
+    };
+  }
+
+  // Update state untuk juri ini
+  all[namaInovasi].judulState[SESSION.nama] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
+  all[namaInovasi].juriState[SESSION.nama] = JSON.parse(JSON.stringify(juriState[SESSION.nama]));
+  all[namaInovasi].notesState[SESSION.nama] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
+  all[namaInovasi].skorJudulPerJuri[SESSION.nama] = parseFloat(skorJudul.toFixed(2));
+  all[namaInovasi].skorPerJuri[SESSION.nama] = parseFloat(skorInd.toFixed(2));
+  all[namaInovasi].savedAt = new Date().toISOString();
+  all[namaInovasi].activeJuri = SESSION.nama;
+
+  console.log('Saving data:', all[namaInovasi]);
+  
   saveAllDraf(all);
   setLastInovasi(namaInovasi);
 
+  console.log('=== saveAll COMPLETE ===');
+
   if (!showAnim) return;
 
-  // Animasi tombol
-  const saveBtn = document.getElementById("saveBtn");
+  // Animasi tombol FAB
   const fabIcon = document.getElementById("fabIcon");
   const fab     = document.getElementById("fabSave");
-  if (saveBtn) {
-    const orig = saveBtn.textContent;
-    saveBtn.textContent = "✅ Tersimpan!";
-    saveBtn.style.background = "linear-gradient(135deg,#10b981,#059669)";
-    setTimeout(() => { saveBtn.textContent = orig; saveBtn.style.background = ""; }, 2000);
-  }
   if (fab && fabIcon) {
-    fab.classList.add("saved"); fabIcon.textContent = "✅";
-    setTimeout(() => { fab.classList.remove("saved"); fabIcon.textContent = "💾"; }, 2000);
+    fab.classList.add("saved"); 
+    fabIcon.textContent = "✅";
+    setTimeout(() => { 
+      fab.classList.remove("saved"); 
+      fabIcon.textContent = "💾"; 
+    }, 2000);
   }
 }
 
 function doSaveWithValidation() {
-  if (!activeJuri)   { alert("Pilih juri terlebih dahulu."); return; }
-  if (!namaInovasi)  { alert("Inovasi belum dipilih."); return; }
+  console.log('=== doSaveWithValidation START ===');
+  console.log('namaInovasi:', namaInovasi);
+  console.log('SESSION:', SESSION);
+  
+  if (!namaInovasi) { 
+    alert("Inovasi belum dipilih."); 
+    return; 
+  }
 
   saveJudulStateLocal();
   saveIndikatorStateLocal();
@@ -452,6 +541,9 @@ function doSaveWithValidation() {
   const belumInd = SHOW_SID
     ? sidIndicators.filter(i => !i.type && i.parameter?.length > 0 && !document.querySelector(`input[name="ind-${i.originalNo}"]:checked`))
     : [];
+
+  console.log('Belum judul:', belumJudul.length);
+  console.log('Belum ind:', belumInd.length);
 
   if (belumJudul.length > 0 || belumInd.length > 0) {
     let msg = "❌ Penilaian belum lengkap!\n\nBelum diisi:\n";
@@ -465,17 +557,69 @@ function doSaveWithValidation() {
     return;
   }
 
+  console.log('=== Validation passed, saving... ===');
   document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
+  
+  // Check if this is an edit (user already assessed before)
+  const allDraf = loadAllDraf();
+  const existingDraf = allDraf[namaInovasi];
+  const isEdit = existingDraf && 
+    ((existingDraf.skorPerJuri && existingDraf.skorPerJuri[SESSION.nama] > 0) ||
+     (existingDraf.skorJudulPerJuri && existingDraf.skorJudulPerJuri[SESSION.nama] > 0));
+  
+  // Save
   saveAll(true);
+  
+  console.log('=== Save complete ===');
+  
+  // Show success message
+  if (isEdit) {
+    alert('✅ Penilaian berhasil diperbarui!\n\nKlik OK untuk kembali ke halaman utama.');
+  } else {
+    alert('✅ Penilaian berhasil disimpan!\n\nKlik OK untuk kembali ke halaman utama.');
+  }
+  
+  // Redirect ke index.html dengan kategori yang sesuai
+  const meta = daftarInovasi.find(i => i.judul === namaInovasi) || {};
+  const kategori = getKategoriInovasi(meta.perangkatDaerah);
+  
+  console.log('Redirecting to:', `index.html#tab-${kategori}`);
+  
+  window.location.href = `index.html#tab-${kategori}`;
+}
+
+// Expose ke global scope
+window.doSaveWithValidation = doSaveWithValidation;
+
+// Fungsi untuk menentukan kategori inovasi
+function getKategoriInovasi(pd) {
+  if (!pd) return "opd";
+  const p = pd.toLowerCase();
+  
+  console.log('Checking kategori for:', pd);
+  
+  // Kesehatan
+  if (p.includes("puskesmas") || p.includes("rsud") || p.includes("kesehatan")) {
+    console.log('-> kesehatan');
+    return "kesehatan";
+  }
+  
+  // Pendidikan
+  if (p.includes("dinas pendidikan") || p.includes("pendidikan dan kebudayaan") ||
+      p.includes("sd negeri") || p.includes("smp negeri") || p.includes("sma negeri") ||
+      p.includes("sd aisyah") || p.includes("sd muhammadiyah") || p.includes("sdit") ||
+      p.includes("uptd pendidikan") || p.includes("sekolah")) {
+    console.log('-> pendidikan');
+    return "pendidikan";
+  }
+  
+  // Default: OPD
+  console.log('-> opd (default)');
+  return "opd";
 }
 
 // ── Event listeners ──
-const saveBtnEl = document.getElementById("saveBtn");
-if (saveBtnEl) saveBtnEl.addEventListener("click", doSaveWithValidation);
-
-const fabSaveEl = document.getElementById("fabSave");
-if (fabSaveEl) fabSaveEl.addEventListener("click", doSaveWithValidation);
-
+// Reset button
 const resetBtnEl = document.getElementById("resetBtn");
 if (resetBtnEl) {
   resetBtnEl.addEventListener("click", () => {
@@ -505,44 +649,49 @@ window.addEventListener("beforeunload", () => saveAll(false));
 const printBtnEl = document.getElementById("printBtn");
 if (printBtnEl) {
   printBtnEl.addEventListener("click", () => {
-    saveJudulStateLocal(); saveIndikatorStateLocal();
-  document.getElementById("pNamaInovasi").textContent = namaInovasi || "—";
-  document.getElementById("pNamaJuri").textContent    = SESSION.nama;
-  document.getElementById("pSignJuri").textContent    = `( ${SESSION.nama} )`;
-  document.getElementById("pTanggal").textContent     = new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+    saveJudulStateLocal(); 
+    saveIndikatorStateLocal();
+    saveNotesState();
+    
+    document.getElementById("pNamaInovasi").textContent = namaInovasi || "—";
+    document.getElementById("pNamaJuri").textContent    = SESSION.nama;
+    document.getElementById("pSignJuri").textContent    = `( ${SESSION.nama} )`;
+    document.getElementById("pTanggal").textContent     = new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
 
-  // Tabel judul
-  let totJudul = 0;
-  const tbJ = document.getElementById("pTableJudul"); tbJ.innerHTML = "";
-  kriteriaJudul.forEach(k => {
-    const v = judulState[SESSION.nama]?.[k.no] || "";
-    const s = v ? Number(v) * k.bobot : 0; totJudul += s;
-    const tr = document.createElement("tr"); tr.className = s > 0 ? "pt-filled" : "pt-empty";
-    tr.innerHTML = `<td class="pt-no">${k.no}</td><td class="pt-nama">${esc(k.nama)}</td><td class="pt-bobot">${k.bobot}</td><td class="pt-param">${v||"—"}</td><td class="pt-nilai">${s>0?s.toFixed(2):"—"}</td><td class="pt-ket">${v?esc(k.parameter[Number(v)-1]):"—"}</td>`;
-    tbJ.appendChild(tr);
-  });
-  document.getElementById("pTotalJudul").textContent = totJudul.toFixed(2);
+    // Tabel judul (6 kriteria)
+    let totJudul = 0;
+    const tbJ = document.getElementById("pTableJudul"); 
+    tbJ.innerHTML = "";
+    kriteriaJudul.forEach(k => {
+      const v = judulState[SESSION.nama]?.[k.no] || "";
+      const s = v ? Number(v) * k.bobot : 0; 
+      totJudul += s;
+      const tr = document.createElement("tr"); 
+      tr.className = s > 0 ? "pt-filled" : "pt-empty";
+      tr.innerHTML = `
+        <td class="pt-no">${k.no}</td>
+        <td class="pt-nama">${esc(k.nama)}</td>
+        <td class="pt-bobot">${k.bobot}</td>
+        <td class="pt-param">${v||"—"}</td>
+        <td class="pt-nilai">${s>0?s.toFixed(2):"—"}</td>
+        <td class="pt-ket">${v?esc(k.parameter[Number(v)-1]):"—"}</td>`;
+      tbJ.appendChild(tr);
+    });
+    document.getElementById("pTotalJudul").textContent = totJudul.toFixed(2);
+    
+    // Update total skor di meta
+    const pTotalSkor = document.getElementById("pTotalSkor");
+    if (pTotalSkor) {
+      pTotalSkor.textContent = `${totJudul.toFixed(2)} / 63`;
+    }
 
-  // Tabel indikator
-  let totInd = 0;
-  const maxInd = sidIndicators.filter(i=>!i.type&&i.parameter?.length>0).reduce((s,i)=>s+3*i.bobot,0);
-  const tbI = document.getElementById("pTableIndikator"); tbI.innerHTML = "";
-  sidIndicators.forEach(item => {
-    const tr = document.createElement("tr");
-    if (item.type === "monev") { const v=juriState[SESSION.nama]?.monev?.[item.originalNo]||"0"; tr.className="pt-special"; tr.innerHTML=`<td>${item.displayNo}</td><td>${esc(item.nama)}</td><td>—</td><td colspan="2">📋 ${v} dok</td><td>—</td>`; tbI.appendChild(tr); return; }
-    if (item.type === "video") { const u=juriState[SESSION.nama]?.videoUrl?.[item.originalNo]||""; tr.className="pt-special"; tr.innerHTML=`<td>${item.displayNo}</td><td>${esc(item.nama)}</td><td>—</td><td colspan="2">🎥 ${u?"Tersedia":"Belum"}</td><td>—</td>`; tbI.appendChild(tr); return; }
-    const v = juriState[SESSION.nama]?.radio?.[item.originalNo] || "";
-    const s = v ? Number(v)*item.bobot : 0; totInd += s;
-    tr.className = s>0?"pt-filled":"pt-empty";
-    tr.innerHTML = `<td class="pt-no">${item.displayNo}</td><td class="pt-nama">${esc(item.nama)}</td><td class="pt-bobot">${item.bobot}</td><td class="pt-param">${v||"—"}</td><td class="pt-nilai">${s>0?s.toFixed(2):"—"}</td><td class="pt-ket">${v?esc(item.parameter[Number(v)-1]||""):"—"}</td>`;
-    tbI.appendChild(tr);
-  });
-  document.getElementById("pTotalIndikator").textContent = totInd.toFixed(2);
-  document.getElementById("pMaxIndikator").textContent   = `Maks: ${maxInd.toFixed(0)}`;
-  const total = totJudul + totInd;
-    document.getElementById("pTotalGabungan").textContent = total.toFixed(2);
-    document.getElementById("pMaxGabungan").textContent   = `Maks: ${(63+maxInd).toFixed(0)}`;
-    document.getElementById("pTotalSkor").textContent     = `${total.toFixed(2)} / ${(63+maxInd).toFixed(0)}`;
+    // Catatan dan Rekomendasi
+    const catatan = notesState[SESSION.nama]?.catatan || "Tidak ada catatan";
+    const rekomendasi = notesState[SESSION.nama]?.rekomendasi || "Tidak ada rekomendasi";
+    document.getElementById("pCatatan").textContent = catatan;
+    document.getElementById("pRekomendasi").textContent = rekomendasi;
+
+    // Print
     window.print();
   });
 }

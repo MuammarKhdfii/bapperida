@@ -7,21 +7,42 @@ const daftarInovasi = [
     perangkatDaerah: "Inspektorat Daerah",
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",
-    ringkasan: "Digitalisasi Laporan Ikhtisar Pengawasan APIP merupakan langkah transformasi pengelolaan dan konsolidasi data hasil pengawasan internal pemerintah daerah dari sistem manual menjadi sistem terintegrasi secara elektronik. Inovasi ini menyajikan rangkuman (ikhtisar) hasil pemeriksaan, reviu, evaluasi, dan pemantauan secara real-time, akurat, dan terstruktur. Melalui platform ini, Kepala Daerah dan Sekretaris Daerah mendapatkan gambaran menyeluruh mengenai kinerja tata kelola, peta risiko, serta tingkat kepatuhan OPD sebagai bahan pengambilan keputusan strategis."
+    ringkasan: "Digitalisasi Laporan Ikhtisar Pengawasan APIP merupakan langkah transformasi pengelolaan dan konsolidasi data hasil pengawasan internal pemerintah daerah dari sistem manual menjadi sistem terintegrasi secara elektronik. Inovasi ini menyajikan rangkuman (ikhtisar) hasil pemeriksaan, reviu, evaluasi, dan pemantauan secara real-time, akurat, dan terstruktur. Melalui platform ini, Kepala Daerah dan Sekretaris Daerah mendapatkan gambaran menyeluruh mengenai kinerja tata kelola, peta risiko, serta tingkat kepatuhan OPD sebagai bahan pengambilan keputusan strategis.",
+    googleDriveLinks: [
+      {
+        name: "Folder Dokumen Inovasi",
+        url: "https://drive.google.com/drive/u/0/folders/1wdIF8TQFcD8KJPbKFiMoBKj5lqAoPPY3",
+        description: "Folder berisi semua dokumen pendukung inovasi Digitalisasi Laporan Ikhtisar Pengawasan APIP"
+      }
+    ]
   },
   {
     judul: "Klinik Konsultasi Pengawasan APIP",
     perangkatDaerah: "Inspektorat Daerah",
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",
-    ringkasan: "Klinik Konsultasi dan Pengawasan APIP merupakan transformasi layanan pengawasan dari model konvensional yang berfokus pada penindakan (watchdog) menjadi pendekatan reaktif-preventif dan kemitraan (consultative partner). Layanan ini hadir sebagai fasilitas pusat konsultasi, reviu, serta pendampingan tata kelola pemerintahan, keuangan, dan manajemen risiko bagi seluruh OPD. Melalui skema tatap muka maupun online, inovasi ini bertujuan mencegah pelanggaran sejak dini (Early Warning System), percepatan perbaikan tata kelola, dan memberikan nilai tambah dalam pencapaian tujuan strategis perangkat daerah."
+    ringkasan: "Klinik Konsultasi dan Pengawasan APIP merupakan transformasi layanan pengawasan dari model konvensional yang berfokus pada penindakan (watchdog) menjadi pendekatan reaktif-preventif dan kemitraan (consultative partner). Layanan ini hadir sebagai fasilitas pusat konsultasi, reviu, serta pendampingan tata kelola pemerintahan, keuangan, dan manajemen risiko bagi seluruh OPD. Melalui skema tatap muka maupun online, inovasi ini bertujuan mencegah pelanggaran sejak dini (Early Warning System), percepatan perbaikan tata kelola, dan memberikan nilai tambah dalam pencapaian tujuan strategis perangkat daerah.",
+    googleDriveLinks: [
+      {
+        name: "Folder Dokumen Inovasi",
+        url: "https://drive.google.com/drive/u/0/folders/1wdIF8TQFcD8KJPbKFiMoBKj5lqAoPPY3",
+        description: "Folder berisi semua dokumen pendukung inovasi Klinik Konsultasi Pengawasan APIP"
+      }
+    ]
   },
   {
     judul: "Klinik Inovasi Daerah Kota Metro (Kovi Darat)",
     perangkatDaerah: "Badan Perencanaan Pembangunan Daerah, Riset dan Inovasi Daerah",
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",
-    ringkasan: "Klinik Inovasi Daerah Kota Metro (Kovi Darat) merupakan inovasi yang diinisiasi oleh Bapperida Kota Metro sebagai wadah konsultasi, pendampingan, dan fasilitasi bagi OPD serta masyarakat dalam pengembangan inovasi daerah secara terpadu dan berkesinambungan."
+    ringkasan: "Klinik Inovasi Daerah Kota Metro (Kovi Darat) merupakan inovasi yang diinisiasi oleh Bapperida Kota Metro sebagai wadah konsultasi, pendampingan, dan fasilitasi bagi OPD serta masyarakat dalam pengembangan inovasi daerah secara terpadu dan berkesinambungan.",
+    googleDriveLinks: [
+      {
+        name: "Folder Dokumen Inovasi",
+        url: "https://drive.google.com/drive/u/0/folders/1wdIF8TQFcD8KJPbKFiMoBKj5lqAoPPY3",
+        description: "Folder berisi semua dokumen pendukung inovasi Klinik Inovasi Daerah Kota Metro"
+      }
+    ]
   },
   {
     judul: "Tanah Harapan 2.0",

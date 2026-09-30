@@ -184,3 +184,281 @@
   .session-bar, .session-login, .penilaian-section-header,
   .toolbar, .step-actions, #fabSave, #scrollTopBtn { display: none !important; }
 }
+
+/* ══════════════════════════════════════════
+   GOOGLE DRIVE CARD
+══════════════════════════════════════════ */
+.gdrive-card {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #38bdf8;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.15);
+  animation: fadeSlideUp .5s ease both;
+}
+
+.gdrive-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.gdrive-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.gdrive-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0c4a6e;
+  letter-spacing: -0.01em;
+}
+
+.gdrive-body {
+  margin-top: 12px;
+}
+
+.gdrive-desc {
+  font-size: 13px;
+  color: #475569;
+  margin: 0 0 12px;
+}
+
+.gdrive-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gdrive-link-item {
+  position: relative;
+}
+
+.gdrive-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border: 1.5px solid #bae6fd;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #0c4a6e;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all .2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+
+.gdrive-link:hover {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-color: #38bdf8;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+}
+
+.gdrive-link:hover .gdrive-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.gdrive-link-icon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.gdrive-link-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gdrive-link-arrow {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0ea5e9;
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+
+.gdrive-link:hover .gdrive-link-arrow {
+  transform: translateX(4px);
+}
+
+/* Tooltip */
+.gdrive-tooltip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  z-index: 100;
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  max-width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: all .2s ease;
+  pointer-events: none;
+}
+
+.gdrive-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 20px;
+  border: 6px solid transparent;
+  border-bottom-color: #1e293b;
+}
+
+@media(max-width: 760px) {
+  .gdrive-card {
+    padding: 16px;
+  }
+  
+  .gdrive-title {
+    font-size: 16px;
+  }
+  
+  .gdrive-link {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .gdrive-tooltip {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    max-width: calc(100% - 32px);
+  }
+}
+
+/* ══════════════════════════════════════════
+   NOTES AND RECOMMENDATIONS SECTION
+══════════════════════════════════════════ */
+.notes-section {
+  animation: fadeSlideUp .6s ease both;
+}
+
+.notes-section h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notes-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.notes-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 2px solid #fbbf24;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.notes-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notes-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #78350f;
+  cursor: pointer;
+}
+
+.notes-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.notes-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1f2937;
+  background: white;
+  resize: vertical;
+  transition: all .2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2), 0 0 0 3px rgba(251, 191, 36, 0.15);
+}
+
+.notes-textarea::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.notes-hint {
+  font-size: 11px;
+  color: #92400e;
+  font-style: italic;
+  padding-left: 4px;
+}
+
+.notes-textarea:focus + .notes-hint {
+  color: #b45309;
+}
+
+/* Dark theme */
+[data-theme="dark"] .notes-card {
+  background: linear-gradient(135deg, #1e1b15, #2d2415);
+  border-color: #d97706;
+}
+
+[data-theme="dark"] .notes-textarea {
+  background: #1a1a1a;
+  color: #e5e7eb;
+  border-color: #d97706;
+}
+
+@media(max-width: 760px) {
+  .notes-card {
+    padding: 18px;
+    gap: 20px;
+  }
+  
+  .notes-section h2 {
+    font-size: 18px;
+  }
+  
+  .notes-textarea {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+}

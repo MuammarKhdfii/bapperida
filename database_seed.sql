@@ -58,7 +58,7 @@ INSERT INTO kriteria_judul (nomor_kriteria, nama_kriteria, bobot, deskripsi, uru
 (3, 'Kelayakan & Kemudahan Implementasi', 4, 
  'Tingkat kemudahan pelaksanaan inovasi ditinjau dari ketersediaan sumber daya, regulasi, dan kapasitas OPD pelaksana.', 3),
 
-(4, 'Keberlanjutan & Skalabilitas', 3, 
+(4, 'Keberlanjutan', 3, 
  'Potensi inovasi untuk dipertahankan jangka panjang dan direplikasi oleh OPD atau daerah lain.', 4),
 
 (5, 'Kolaborasi & Keterlibatan Pemangku Kepentingan', 2, 

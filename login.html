@@ -142,6 +142,21 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
     .login-error.show{display:block}
 
+    /* Role selection buttons */
+    .role-select-btn{
+      width:100%;padding:12px 16px;margin:6px 0;
+      background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color:white;border:none;border-radius:10px;
+      font-size:14px;font-weight:700;font-family:inherit;
+      cursor:pointer;transition:all .2s ease;
+      box-shadow:0 4px 12px rgba(59,130,246,.3);
+    }
+    .role-select-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 16px rgba(59,130,246,.4);
+    }
+    .role-select-btn:active{transform:translateY(0) scale(.98)}
+
     /* Loading spinner */
     .spinner{
       display:inline-block;width:18px;height:18px;
@@ -173,7 +188,7 @@
   <div class="login-logo">
     <div class="login-logo-icon">
       <!-- Logo Kota Metro -->
-      <img src="logo-metro.jpg" alt="Logo Kota Metro" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231e3a8a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23fbbf24%22 font-size=%2232%22 font-weight=%22bold%22 font-family=%22Arial%22%3EMETRO%3C/text%3E%3C/svg%3E'">
+      <img src="logo-metro.png" alt="Logo Kota Metro" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231e3a8a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23fbbf24%22 font-size=%2232%22 font-weight=%22bold%22 font-family=%22Arial%22%3EMETRO%3C/text%3E%3C/svg%3E'">
     </div>
     <div class="login-org">BAPPERIDA Kota Metro</div>
     <div class="login-title">Sistem Penilaian Inovasi Daerah </div>
@@ -223,6 +238,8 @@
     if (e.key === "Enter") document.getElementById("password").focus();
   });
 
+  let pendingUser = null; // Untuk menyimpan user yang perlu pilih role
+
   function doLogin() {
     const btn      = document.getElementById("loginBtn");
     const errEl    = document.getElementById("loginError");
@@ -247,12 +264,65 @@
         btn.innerHTML = "Masuk";
         return;
       }
+      
+      // Jika perlu pilih role, tampilkan pilihan
+      if (result.needRoleSelection) {
+        pendingUser = result.user;
+        showRoleSelection(result.user);
+        btn.disabled = false;
+        btn.innerHTML = "Masuk";
+        return;
+      }
+      
       // Sukses — animasi lalu redirect
-      btn.innerHTML = "✅ Berhasil!";
+      btn.innerHTML = "Berhasil!";
       btn.style.background = "linear-gradient(135deg,#10b981,#059669)";
       setTimeout(() => { window.location.href = result.redirect; }, 700);
     }, 600);
   }
+
+  function showRoleSelection(user) {
+    const errEl = document.getElementById("loginError");
+    const roleLabels = {
+      juri_judul: "Juri Judul Inovasi",
+      juri_sid: "Juri Penilaian SID"
+    };
+    
+    let roleButtons = user.roles.map(role => 
+      `<button onclick="selectRole('${role}')" class="role-select-btn">${roleLabels[role]}</button>`
+    ).join('');
+    
+    errEl.style.background = "linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%)";
+    errEl.style.border = "2px solid #93c5fd";
+    errEl.style.color = "#1e40af";
+    errEl.innerHTML = `<div style="margin-bottom:12px;font-weight:700;">Pilih Role Anda:</div>${roleButtons}`;
+    errEl.classList.add("show");
+  }
+
+  function selectRole(role) {
+    if (!pendingUser) return;
+    
+    const btn = document.getElementById("loginBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Memverifikasi…';
+    
+    setTimeout(() => {
+      const result = loginWithRole(pendingUser, role);
+      if (!result.ok) {
+        showError(result.msg);
+        btn.disabled = false;
+        btn.innerHTML = "Masuk";
+        return;
+      }
+      
+      btn.innerHTML = "✅ Berhasil!";
+      btn.style.background = "linear-gradient(135deg,#10b981,#059669)";
+      setTimeout(() => { window.location.href = result.redirect; }, 700);
+    }, 400);
+  }
+  
+  // Expose selectRole ke global scope
+  window.selectRole = selectRole;
 
   function showError(msg) {
     const el = document.getElementById("loginError");

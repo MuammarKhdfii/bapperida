@@ -14,10 +14,9 @@
 <div id="printArea" class="print-area">
   <div class="print-header">
     <div class="print-logo-area">
-      <div class="print-logo-placeholder">🏛️</div>
+      <img src="logo-metro.png" alt="Logo Kota Metro" class="print-logo-img">
       <div class="print-org">
         <div class="print-org-name">BAPPERIDA KOTA METRO</div>
-        <div class="print-org-sub">Badan Perencanaan, Penelitian dan Pengembangan Daerah</div>
       </div>
     </div>
     <div class="print-title-block">
@@ -32,21 +31,27 @@
     <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="pTanggal">—</span></div>
     <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="pTotalSkor">—</span></div>
   </div>
-  <div class="print-section-heading">A. PENILAIAN JUDUL INOVASI</div>
+  <div class="print-section-heading">PENILAIAN JUDUL INOVASI</div>
   <table class="print-table">
     <thead><tr><th class="pt-no">No</th><th class="pt-nama">Kriteria</th><th class="pt-bobot">Bobot</th><th class="pt-param">Nilai</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Pilihan</th></tr></thead>
     <tbody id="pTableJudul"></tbody>
     <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label">TOTAL SKOR JUDUL</td><td class="print-total-value" id="pTotalJudul">0.00</td><td class="print-total-max">Maks: 63</td></tr></tfoot>
   </table>
-  <div class="print-section-heading" style="margin-top:16pt">B. PENILAIAN INDIKATOR SID</div>
-  <table class="print-table">
-    <thead><tr><th class="pt-no">No</th><th class="pt-nama">Nama Indikator</th><th class="pt-bobot">Bobot</th><th class="pt-param">Param</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Parameter</th></tr></thead>
-    <tbody id="pTableIndikator"></tbody>
-    <tfoot>
-      <tr class="print-total-row"><td colspan="4" class="print-total-label">TOTAL SKOR INDIKATOR</td><td class="print-total-value" id="pTotalIndikator">0.00</td><td id="pMaxIndikator"></td></tr>
-      <tr class="print-total-row" style="background:#0b4acb"><td colspan="4" class="print-total-label">TOTAL GABUNGAN</td><td class="print-total-value" id="pTotalGabungan">0.00</td><td class="print-total-max" id="pMaxGabungan"></td></tr>
-    </tfoot>
-  </table>
+  
+  <!-- Catatan dan Rekomendasi -->
+  <div class="print-notes-section">
+    <div class="print-notes-row">
+      <div class="print-notes-col">
+        <div class="print-notes-header">📌 CATATAN PENILAIAN</div>
+        <div class="print-notes-content" id="pCatatan">—</div>
+      </div>
+      <div class="print-notes-col">
+        <div class="print-notes-header">💡 REKOMENDASI PERBAIKAN</div>
+        <div class="print-notes-content" id="pRekomendasi">—</div>
+      </div>
+    </div>
+  </div>
+  
   <div class="print-signature">
     <div class="print-sign-block">
       <div class="print-sign-label">Diperiksa,</div>
@@ -121,6 +126,18 @@
         <div class="inovasi-card-body">
           <div class="inovasi-card-label">📋 Ringkasan</div>
           <p id="icRingkasan">—</p>
+        </div>
+      </div>
+
+      <!-- Google Drive Files Card -->
+      <div id="googleDriveCard" class="gdrive-card" style="margin:16px 0; display:none;">
+        <div class="gdrive-header">
+          <div class="gdrive-icon">📁</div>
+          <div class="gdrive-title">File Dokumen Inovasi</div>
+        </div>
+        <div class="gdrive-body">
+          <p class="gdrive-desc">Klik untuk melihat dokumen pendukung inovasi di Google Drive:</p>
+          <div id="gdriveLinksContainer" class="gdrive-links"></div>
         </div>
       </div>
 
@@ -221,6 +238,42 @@
         </div>
       </section>
 
+      <!-- Catatan dan Rekomendasi -->
+      <section class="notes-section" style="margin-top:28px">
+        <h2>📝 Catatan dan Rekomendasi</h2>
+        <p class="notes-desc">Tambahkan catatan atau rekomendasi untuk perbaikan inovasi ini (opsional)</p>
+        
+        <div class="notes-card">
+          <div class="notes-field">
+            <label for="notesCatatan" class="notes-label">
+              <span class="notes-icon">📌</span>
+              <span>Catatan Penilaian</span>
+            </label>
+            <textarea 
+              id="notesCatatan" 
+              class="notes-textarea" 
+              rows="4" 
+              placeholder="Tuliskan catatan mengenai penilaian Anda, hal-hal yang perlu diperhatikan, atau observasi penting..."
+            ></textarea>
+            <div class="notes-hint">Contoh: Dokumentasi kurang lengkap, perlu ditambahkan data pendukung</div>
+          </div>
+
+          <div class="notes-field">
+            <label for="notesRekomendasi" class="notes-label">
+              <span class="notes-icon">💡</span>
+              <span>Rekomendasi Perbaikan</span>
+            </label>
+            <textarea 
+              id="notesRekomendasi" 
+              class="notes-textarea" 
+              rows="4" 
+              placeholder="Berikan rekomendasi atau saran untuk meningkatkan kualitas inovasi ini..."
+            ></textarea>
+            <div class="notes-hint">Contoh: Disarankan untuk menambahkan data statistik dampak inovasi</div>
+          </div>
+        </div>
+      </section>
+
       <div style="margin:20px 0 60px;display:flex;justify-content:flex-end">
         <a href="index.html" class="btn btn-step-back">🏠 Beranda</a>
       </div>
@@ -231,10 +284,31 @@
 </div>
 
 <!-- FAB Simpan -->
-<button id="fabSave" class="fab-save" title="Simpan Penilaian">
+<button id="fabSave" class="fab-save" title="Simpan Penilaian" onclick="handleSaveClick()">
   <span class="fab-icon" id="fabIcon">💾</span>
   <span class="fab-label">Simpan</span>
 </button>
+
+<script>
+// Simple, direct save handler
+function handleSaveClick() {
+  console.log('=== SAVE BUTTON CLICKED ===');
+  
+  try {
+    // Check if validation function exists
+    if (typeof window.doSaveWithValidation === 'function') {
+      console.log('Calling doSaveWithValidation');
+      window.doSaveWithValidation();
+    } else {
+      console.error('doSaveWithValidation not found!');
+      alert('Error: Fungsi simpan tidak ditemukan. Silakan refresh halaman (Ctrl+Shift+R)');
+    }
+  } catch (error) {
+    console.error('Error in handleSaveClick:', error);
+    alert('Error saat menyimpan: ' + error.message);
+  }
+}
+</script>
 <button id="scrollTopBtn" class="scroll-top-btn">↑</button>
 
 <script src="data.js"></script>

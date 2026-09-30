@@ -380,13 +380,165 @@
 }
 .landing-enter-card:hover .lec-arrow { transform: translateX(6px); }
 
+/* Assessment Progress Compact - Above Mulai Penilaian */
+.assessment-progress-compact {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 12px;
+  animation: fadeSlideUp .4s ease .05s both;
+}
+
+.apc-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  flex: 1;
+  min-width: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
+
+.apc-assessed {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 1.5px solid #6ee7b7;
+}
+
+.apc-remaining {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1.5px solid #fcd34d;
+}
+
+.apc-total {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 1.5px solid #93c5fd;
+}
+
+.apc-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.apc-number {
+  font-size: 16px;
+  font-weight: 900;
+  color: #1f2937;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.apc-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Assessment Progress Stats - old style (keep for compatibility) */
+.assessment-progress {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,.08);
+}
+
+/* Assessment Progress Section - Standalone */
+.assessment-progress-section {
+  background: white;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin: 16px 0 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  border: 1.5px solid #e5e7eb;
+  animation: fadeSlideUp .5s ease .15s both;
+}
+
+.ap-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ap-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  flex: 1;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition: transform .2s, box-shadow .2s;
+}
+.ap-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+}
+.ap-stat-assessed {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 1.5px solid #6ee7b7;
+}
+.ap-stat-remaining {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1.5px solid #fcd34d;
+}
+.ap-assessed {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 1.5px solid #6ee7b7;
+}
+.ap-remaining {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1.5px solid #fcd34d;
+}
+.ap-total {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 1.5px solid #93c5fd;
+}
+.ap-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+.ap-number {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+  color: #1f2937;
+  line-height: 1.1;
+}
+.ap-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+[data-theme="dark"] .assessment-progress-section { 
+  background: var(--card-bg); 
+  border-color: var(--border);
+}
+
 [data-theme="dark"] .landing-enter-card { background: var(--card-bg); }
 [data-theme="dark"] .lec-title { color: var(--text); }
+[data-theme="dark"] .assessment-progress-section { 
+  background: var(--card-bg); 
+  border-color: var(--border);
+}
 
 @media(max-width:760px) {
   .landing-enter-card { flex-direction: column; align-items: flex-start; }
   .lec-icon { font-size: 40px; }
   .lec-arrow { display: none; }
+  .ap-stats { flex-direction: column; }
+  .ap-stat { min-width: 100%; }
+  .assessment-progress-section { padding: 16px; }
+  .assessment-progress-compact { flex-direction: column; }
+  .apc-stat { width: 100%; }
 }
 
 

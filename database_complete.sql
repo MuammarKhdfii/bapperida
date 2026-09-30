@@ -395,7 +395,7 @@ INSERT INTO kriteria_judul (nomor_kriteria, nama_kriteria, bobot, deskripsi, uru
 (1, 'Kebaruan & Orisinalitas', 5, 'Sejauh mana inovasi menghadirkan ide/pendekatan baru yang belum pernah diterapkan sebelumnya di lingkungan pemerintah daerah.', 1),
 (2, 'Relevansi & Dampak terhadap Pelayanan Publik', 5, 'Seberapa signifikan inovasi ini berkontribusi pada peningkatan kualitas layanan publik atau penyelesaian masalah nyata di masyarakat.', 2),
 (3, 'Kelayakan & Kemudahan Implementasi', 4, 'Tingkat kemudahan pelaksanaan inovasi ditinjau dari ketersediaan sumber daya, regulasi, dan kapasitas OPD pelaksana.', 3),
-(4, 'Keberlanjutan & Skalabilitas', 3, 'Potensi inovasi untuk dipertahankan jangka panjang dan direplikasi oleh OPD atau daerah lain.', 4),
+(4, 'Keberlanjutan &', 3, 'Potensi inovasi untuk dipertahankan jangka panjang dan direplikasi oleh OPD atau daerah lain.', 4),
 (5, 'Kolaborasi & Keterlibatan Pemangku Kepentingan', 2, 'Tingkat keterlibatan berbagai pihak (lintas OPD, akademisi, swasta, komunitas, masyarakat) dalam pengembangan dan pelaksanaan inovasi.', 5),
 (6, 'Dokumentasi & Kemampuan Presentasi', 2, 'Kualitas dokumentasi inovasi (proposal, laporan, bukti pendukung) dan kemampuan OPD dalam mempresentasikan inovasi secara sistematis.', 6);
 

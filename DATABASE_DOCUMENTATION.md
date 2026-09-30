@@ -186,7 +186,7 @@ CREATE TABLE kriteria_judul (
 | 1 | Kebaruan & Orisinalitas | 5 | 15 |
 | 2 | Relevansi & Dampak | 5 | 15 |
 | 3 | Kelayakan & Kemudahan | 4 | 12 |
-| 4 | Keberlanjutan & Skalabilitas | 3 | 9 |
+| 4 | Keberlanjutan | 3 | 9 |
 | 5 | Kolaborasi & Keterlibatan | 2 | 6 |
 | 6 | Dokumentasi & Presentasi | 2 | 6 |
 | **TOTAL** | | **21** | **63** |

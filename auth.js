@@ -12,7 +12,7 @@ const USERS = [
     username: "admin",
     password: "admin2027",
     nama    : "Administrator",
-    role    : "admin",
+    roles   : ["admin"],
     label   : "Super Admin"
   },
   // Juri Judul Inovasi
@@ -20,21 +20,21 @@ const USERS = [
     username: "eva.rolia",
     password: "juri2027",
     nama    : "Dr. Ir. Eva Rolia, M.T., M.K.M.",
-    role    : "juri_judul",
-    label   : "Juri Judul Inovasi"
+    roles   : ["juri_judul", "juri_sid"],  // Multiple roles
+    label   : "Juri Judul & SID"
   },
   {
     username: "arif.joko",
     password: "juri2027",
     nama    : "Ir. Arif Joko Arwoko",
-    role    : "juri_judul",
+    roles   : ["juri_judul"],
     label   : "Juri Judul Inovasi"
   },
   {
     username: "mustafa",
     password: "juri2027",
     nama    : "Mustafa Akhyar, S.E.",
-    role    : "juri_judul",
+    roles   : ["juri_judul"],
     label   : "Juri Judul Inovasi"
   },
   // Juri Penilaian SID
@@ -42,14 +42,14 @@ const USERS = [
     username: "sowiyah",
     password: "juri2027",
     nama    : "Prof. Dr. Dra. Sowiyah M.Pd.",
-    role    : "juri_sid",
+    roles   : ["juri_sid"],
     label   : "Juri Penilaian SID"
   },
   {
     username: "etik.puji",
     password: "juri2027",
     nama    : "Prof. Dr. Ir. Etik Puji Handayani, M.Si.",
-    role    : "juri_sid",
+    roles   : ["juri_sid"],
     label   : "Juri Penilaian SID"
   }
 ];
@@ -113,13 +113,29 @@ function login(username, password) {
     u => u.username === username.trim().toLowerCase() && u.password === password
   );
   if (!user) return { ok: false, msg: "Username atau password salah." };
-  const session = setSession(user);
-  return { ok: true, session, redirect: ROLE_CONFIG[user.role].redirect };
+  
+  // Jika user hanya punya 1 role, langsung set session
+  if (user.roles.length === 1) {
+    const session = setSession({...user, role: user.roles[0]});
+    return { ok: true, session, redirect: ROLE_CONFIG[user.roles[0]].redirect };
+  }
+  
+  // Jika user punya multiple roles, simpan sementara dan minta pilih role
+  return { ok: true, needRoleSelection: true, user: user };
+}
+
+// ── Login dengan role yang dipilih ────────
+function loginWithRole(user, selectedRole) {
+  if (!user.roles.includes(selectedRole)) {
+    return { ok: false, msg: "Role tidak valid." };
+  }
+  const session = setSession({...user, role: selectedRole, label: ROLE_CONFIG[selectedRole].label});
+  return { ok: true, session, redirect: ROLE_CONFIG[selectedRole].redirect };
 }
 
 // ── Logout ───────────────────────────────
 function logout() {
-  if (!confirm("Anda yakin ingin keluar?\n\nSemua data yang belum disimpan akan hilang.")) {
+  if (!confirm("Anda yakin ingin keluar?")) {
     return false;
   }
   clearSession();
@@ -168,5 +184,27 @@ function renderSessionNav(containerId = "sessionNav") {
         <div class="snav-role" style="background:rgba(255,255,255,0.25);color:white;font-weight:800;">${cfg.label}</div>
       </div>
     </div>
-    <button class="snav-logout" onclick="logout()">↩ Keluar</button>`;
+    <button class="snav-logout" type="button">↩ Keluar</button>`;
+  
+  // Attach event listener to logout button immediately
+  const btn = el.querySelector('.snav-logout');
+  console.log('Logout button found:', btn); // Debug
+  if (btn) {
+    btn.onclick = function(e) {
+      console.log('Logout clicked!'); // Debug
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm("Anda yakin ingin keluar?")) {
+        clearSession();
+        window.location.href = "login.html";
+      }
+      return false;
+    };
+    console.log('Event handler attached'); // Debug
+  }
 }
+
+// ── Handle logout dengan proper event ────
+window.handleLogout = function() {
+  logout();
+};

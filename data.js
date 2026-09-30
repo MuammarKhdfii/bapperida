@@ -520,7 +520,7 @@ const kriteriaJudul = [
   },
   {
     no: 4,
-    nama: "Keberlanjutan & Skalabilitas",
+    nama: "Keberlanjutan",
     bobot: 3,
     deskripsi: "Potensi inovasi untuk dipertahankan jangka panjang dan direplikasi oleh OPD atau daerah lain.",
     parameter: [
