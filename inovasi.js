@@ -418,11 +418,11 @@ const daftarInovasiJudulLengkap = [
     ringkasan: "Gerakan gotong royong dan kolaborasi lintas stakeholder untuk pemenuhan asupan protein bagi keluarga yang memiliki anak berisiko stunting dan ibu hamil."
   },
   {
-    judul: "Pa K Ce (Pasar Kuliner Ngece)",
+    judul: "SIANCIL (Sistem Informasi dan Layanan Cepat Pembayaran PBB)",
     perangkatDaerah: "Kecamatan Metro Pusat",
     bentuk: "Tata Kelola Pemerintahan Daerah dan Pelayanan Publik",
     waktu: "2026",
-    ringkasan: "Wadah UMKM masyarakat untuk mengembangkan usaha kuliner dan meningkatkan perekonomian warga di Kelurahan Yosomulyo."
+    ringkasan: "Wadah untuk memberikan pelayanan yang lebih mudah, cepat, praktis dan mendekatkan layanan pembayaran PBB kepada masyarakat tanpa harus datang ke kantor pelayanan."
   },
   {
     judul: "EDUMY (Edukasi Mingguan RSUD Jenderal Ahmad Yani)",
