@@ -43,6 +43,17 @@
       <div id="inovasiStatusBar" class="inovasi-status-bar" style="display:none"></div>
     </section>
 
+    <!-- Daftar Inovasi yang Sudah Dinilai -->
+    <section id="assessedInovasiSection" class="assessed-inovasi-section" style="display:none; margin-top: 40px;">
+      <div class="assessed-header">
+        <span class="assessed-icon"></span>
+        <div>
+          <div class="assessed-title">Inovasi yang Sudah Anda Nilai</div>
+          <div class="assessed-sub">Klik tombol "Edit Penilaian" untuk mengubah penilaian yang telah disimpan</div>
+        </div>
+      </div>
+      <div id="assessedInovasiList" class="assessed-list"></div>
+    </section>
     <!-- Warning Box - Muncul jika belum pilih inovasi -->
     <div id="warningNoInovasi" class="warn-box" style="display:none; margin-bottom: 20px;">
       <div style="display: flex; align-items: center; gap: 12px;">
@@ -76,7 +87,7 @@
       <div class="ranking-section-header">
         <div>
           <h2 class="ranking-section-title">🏅 Dashboard Perangkingan Inovasi</h2>
-          <p class="ranking-section-sub">Total skor = rata-rata <b>Penilaian Judul</b> + rata-rata <b>Penilaian Indikator</b> dari semua juri</p>
+          <p class="ranking-section-sub">Total skor =  rata-rata <b>Penilaian Indikator</b> dari semua juri</p>
         </div>
         <div class="ranking-section-actions">
           <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
@@ -115,6 +126,11 @@
     // juri_judul & juri_sid tetap di index.html untuk pilih inovasi
   })();
 
+  // ── Load innovation data based on role ──
+  const SESSION = getSession();
+  daftarInovasi = getDaftarInovasiByRole(SESSION.role);
+  console.log(`Loaded ${daftarInovasi.length} innovations for role: ${SESSION.role}`);
+
   initScrollTop("scrollTopBtn");
   renderSessionNav("sessionNav");
 
@@ -127,27 +143,85 @@
     
     sel.innerHTML = '<option value="">— Pilih Inovasi —</option>';
     
+    const assessedList = [];
+    
     daftarInovasi.forEach(inovasi => {
       const option = document.createElement('option');
       option.value = inovasi.judul;
       
-      // Check if current user already assessed this innovation
       const draft = allDraf[inovasi.judul];
       const userAlreadyAssessed = draft && 
         ((draft.skorPerJuri && draft.skorPerJuri[currentUser] > 0) ||
          (draft.skorJudulPerJuri && draft.skorJudulPerJuri[currentUser] > 0));
       
       if (userAlreadyAssessed) {
-        option.textContent = `✏️ ${inovasi.judul} (Edit Penilaian)`;
-        option.style.color = '#0ea5e9';
-        option.style.fontWeight = '700';
+        // Tambahkan ke list yang sudah dinilai
+        assessedList.push(inovasi);
+        
+        // Tampilkan dengan tanda centang dan disable
+        option.textContent = `✓ ${inovasi.judul} (Sudah Dinilai)`;
+        option.disabled = true;
+        option.style.color = '#22c55e';
+        option.style.fontWeight = '600';
+        option.style.fontStyle = 'italic';
+        option.style.background = '#f0fdf4';
       } else {
         option.textContent = inovasi.judul;
       }
       
       sel.appendChild(option);
     });
+    
+    // Populate assessed list untuk tombol edit
+    populateAssessedList(assessedList, allDraf, currentUser);
   }
+  
+  // Populate list of assessed innovations with edit buttons
+  function populateAssessedList(assessedList, allDraf, currentUser) {
+    const assessedSection = document.getElementById('assessedInovasiSection');
+    const assessedListEl = document.getElementById('assessedInovasiList');
+    
+    if (assessedList.length === 0) {
+      assessedSection.style.display = 'none';
+      return;
+    }
+    
+    assessedSection.style.display = 'block';
+    assessedListEl.innerHTML = '';
+    
+    assessedList.forEach((inovasi, idx) => {
+      const draft = allDraf[inovasi.judul];
+      const skorJudul = draft?.skorJudulPerJuri?.[currentUser] || 0;
+      const skorSID = draft?.skorPerJuri?.[currentUser] || 0;
+      const totalSkor = skorJudul + skorSID;
+      
+      const card = document.createElement('div');
+      card.className = 'assessed-card';
+      card.style.animationDelay = (idx * 0.05) + 's';
+      
+      card.innerHTML = `
+        <div class="assessed-card-icon">📋</div>
+        <div class="assessed-card-content">
+          <div class="assessed-card-title">${inovasi.judul}</div>
+          <div class="assessed-card-meta">
+            <span class="assessed-badge">🏛️ ${inovasi.perangkatDaerah || '—'}</span>
+            <span class="assessed-badge">📊 Skor: ${totalSkor.toFixed(2)}</span>
+          </div>
+        </div>
+        <button class="btn-edit-assessed" onclick="editAssessedInovasi('${inovasi.judul.replace(/'/g, "\\'")}')">
+          <span>✏️</span> Edit Penilaian
+        </button>
+      `;
+      
+      assessedListEl.appendChild(card);
+    });
+  }
+  
+  // Function to edit assessed innovation
+  window.editAssessedInovasi = function(judulInovasi) {
+    localStorage.setItem("iid2026_selected", judulInovasi);
+    window.location.href = "penilaian.html";
+  };
   
   // Populate dropdown saat load
   populateInovasiDropdown();

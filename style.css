@@ -491,9 +491,20 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);c
   }
   .print-sign-block { text-align: center; }
   .print-sign-label { font-size: 8pt; font-weight: 700; margin-bottom: 4px; }
-  .print-sign-space { height: 35px; }
+  .print-sign-space { height: 35px; display: flex; align-items: center; justify-content: center; }
   .print-sign-name  { font-size: 8pt; font-weight: 700; border-top: 1.5px solid #333; padding-top: 4px; display: inline-block; min-width: 140px; }
   .print-sign-role  { font-size: 7pt; color: #555; margin-top: 2px; }
+  
+  /* Signature image in print */
+  .print-signature-img {
+    display: block;
+    max-width: 180px;
+    max-height: 35px;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+  }
 
   /* ── Footer ── */
   .print-footer {
@@ -1032,7 +1043,8 @@ body { transition: var(--transition); background: var(--bg); color: var(--text);
    FAB — float animation
 ════════════════════════════════ */
 .fab-save {
-  animation: float 3s ease-in-out infinite;
+  /* Animasi dinonaktifkan agar tombol tidak bergetar */
+  /* animation: float 3s ease-in-out infinite; */
 }
 .fab-save:hover {
   animation: none;

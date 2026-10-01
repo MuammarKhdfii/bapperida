@@ -6,6 +6,7 @@
   <title>Dashboard Admin — BAPPERIDA 2027</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="penilaian.css">
   <style>
     /* ── Dashboard Admin ── */
     .hero-admin {
@@ -303,6 +304,150 @@
         padding: 12px 10px;
       }
     }
+
+    /* ══════════════════════════════════════════
+       MODAL DETAIL PENILAIAN JURI
+    ══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-detail {
+      background: white;
+      border-radius: 20px;
+      max-width: 1000px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      color: white;
+      padding: 24px 28px;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .modal-header-content {
+      flex: 1;
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    
+    .modal-subtitle {
+      font-size: 13px;
+      opacity: 0.9;
+      font-weight: 600;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .modal-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .modal-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+    
+    .modal-body {
+      padding: 28px;
+    }
+
+    @media(max-width: 768px) {
+      .modal-detail {
+        margin: 10px;
+        max-height: 95vh;
+      }
+      
+      .modal-header {
+        padding: 20px;
+      }
+      
+      .modal-body {
+        padding: 20px;
+      }
+    }
+    
+    @media print {
+      .modal-overlay { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -350,6 +495,84 @@
     </div>
 
   </main>
+</div>
+
+<!-- Modal Detail Penilaian Juri -->
+<div id="modalDetailJuri" class="modal-overlay">
+  <div class="modal-detail">
+    <div class="modal-header">
+      <div class="modal-header-content">
+        <div class="modal-title" id="modalJuriTitle">Detail Penilaian</div>
+        <div class="modal-subtitle" id="modalJuriSubtitle">—</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="printJuriDetail()">🖨️ Cetak</button>
+        <button class="modal-close" onclick="closeModalJuri()">×</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalJuriBody">
+      <!-- Content will be injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- Print Area (hidden, sama seperti di penilaian.html) -->
+<div id="printJuriArea" class="print-area" style="display: none;">
+  <div class="print-header">
+    <div class="print-logo-area">
+      <img src="logo-metro.png" alt="Logo Kota Metro" class="print-logo-img">
+      <div class="print-org">
+        <div class="print-org-name">BAPPERIDA KOTA METRO</div>
+      </div>
+    </div>
+    <div class="print-title-block">
+      <h1 class="print-title">FORMULIR PENILAIAN INOVASI DAERAH</h1>
+      <h2 class="print-subtitle">Indeks Inovasi Daerah Kota Metro 2027</h2>
+    </div>
+  </div>
+  <div class="print-divider"></div>
+  <div class="print-meta-grid">
+    <div class="print-meta-item"><span class="print-meta-label">Nama Inovasi</span><span class="print-meta-value" id="printNamaInovasi">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Nama Juri</span><span class="print-meta-value" id="printNamaJuri">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="printTanggal">—</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="printTotalSkor">—</span></div>
+  </div>
+  <div class="print-section-heading" id="printSectionHeading">PENILAIAN</div>
+  <table class="print-table">
+    <thead><tr><th class="pt-no">No</th><th class="pt-nama" id="printTableHeaderNama">Kriteria</th><th class="pt-bobot">Bobot</th><th class="pt-param">Nilai</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Pilihan</th></tr></thead>
+    <tbody id="printTableBody"></tbody>
+    <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label" id="printTotalLabel">TOTAL SKOR</td><td class="print-total-value" id="printTotalValue">0.00</td><td class="print-total-max" id="printTotalMax">Maks: —</td></tr></tfoot>
+  </table>
+  
+  <!-- Catatan dan Rekomendasi -->
+  <div class="print-notes-section">
+    <div class="print-notes-row">
+      <div class="print-notes-col">
+        <div class="print-notes-header">📌 CATATAN PENILAIAN</div>
+        <div class="print-notes-content" id="printCatatan">—</div>
+      </div>
+      <div class="print-notes-col">
+        <div class="print-notes-header">💡 REKOMENDASI PERBAIKAN</div>
+        <div class="print-notes-content" id="printRekomendasi">—</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="print-signature">
+    <div class="print-sign-block">
+      <div class="print-sign-label">Diperiksa,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name">( _________________________ )</div>
+      <div class="print-sign-role">Koordinator</div>
+    </div>
+    <div class="print-sign-block">
+      <div class="print-sign-label">Dinilai oleh,</div>
+      <div class="print-sign-space" id="printSignatureImage"></div>
+      <div class="print-sign-name" id="printSignJuri">( _________________________ )</div>
+      <div class="print-sign-role">Juri Penilai</div>
+    </div>
+  </div>
+  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2027 — BAPPERIDA Kota Metro</div>
 </div>
 
 <script src="data.js"></script>
@@ -492,7 +715,7 @@
       });
       const roleLabel = isJudul && isSID ? "🏆📊 Juri Judul & SID" : isJudul ? "🏆 Juri Judul Inovasi" : "📊 Juri Penilaian SID";
       juriHtml += `
-        <div class="juri-rekap-card">
+        <div class="juri-rekap-card" style="cursor: pointer;" onclick="showJuriDetail('${juri.replace(/'/g, "\\'")}', ${isJudul}, ${isSID})">
           <div class="juri-rekap-nama">${esc(juri)}</div>
           <div class="juri-rekap-role">${roleLabel}</div>
           <div class="juri-rekap-skor">
@@ -505,10 +728,294 @@
               <b>${count>0?(totalSkor/count).toFixed(2):"—"}</b>
             </span>
           </div>
+          <div style="margin-top: 12px; text-align: center; font-size: 11px; color: #7c3aed; font-weight: 700;">
+            👁️ Klik untuk lihat detail lengkap
+          </div>
         </div>`;
     });
     document.getElementById("rekapJuri").innerHTML = juriHtml;
   }
+
+  function esc(v) {
+    return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  // ══════════════════════════════════════════
+  //  MODAL DETAIL JURI & PRINT
+  // ══════════════════════════════════════════
+  
+  let currentJuriData = null;
+  
+  function showJuriDetail(namaJuri, isJudul, isSID) {
+    const all = loadAllDraf();
+    const inovasiList = Object.entries(all);
+    
+    // Filter inovasi yang dinilai juri ini
+    const inovasiDinilai = [];
+    
+    inovasiList.forEach(([judulKey, data]) => {
+      let added = false;
+      
+      if (isJudul && data.judulState?.[namaJuri]) {
+        const hasData = Object.values(data.judulState[namaJuri]).some(v => v);
+        if (hasData && !added) {
+          inovasiDinilai.push({
+            judul: judulKey,
+            data: data,
+            tipe: 'judul',
+            judulState: data.judulState[namaJuri],
+            notes: data.notesState?.[namaJuri] || {},
+            signature: data.signatureState?.[namaJuri] || ""
+          });
+          added = true;
+        }
+      }
+      
+      if (isSID && data.juriState?.[namaJuri]) {
+        const hasData = Object.values(data.juriState[namaJuri]?.radio || {}).some(v => v);
+        if (hasData && !added) {
+          inovasiDinilai.push({
+            judul: judulKey,
+            data: data,
+            tipe: 'sid',
+            juriState: data.juriState[namaJuri],
+            notes: data.notesState?.[namaJuri] || {},
+            signature: data.signatureState?.[namaJuri] || ""
+          });
+        }
+      }
+    });
+    
+    if (inovasiDinilai.length === 0) {
+      alert("Tidak ada data penilaian untuk juri ini.");
+      return;
+    }
+    
+    // Simpan untuk print
+    currentJuriData = { namaJuri, inovasiDinilai };
+    
+    // Update modal
+    document.getElementById("modalJuriTitle").textContent = namaJuri;
+    const roleLabel = isJudul && isSID ? "Juri Judul & SID" : isJudul ? "Juri Judul Inovasi" : "Juri Penilaian SID";
+    document.getElementById("modalJuriSubtitle").textContent = `${roleLabel} — ${inovasiDinilai.length} Inovasi Dinilai`;
+    
+    // Build content
+    let bodyHtml = '<div style="display: flex; flex-direction: column; gap: 32px;">';
+    
+    inovasiDinilai.forEach((item, idx) => {
+      bodyHtml += `
+        <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 16px; padding: 24px;">
+          <h3 style="margin: 0 0 16px; font-size: 18px; color: #1f2937; display: flex; align-items: center; gap: 10px;">
+            <span style="background: #7c3aed; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900;">${idx + 1}</span>
+            <span>${esc(item.judul)}</span>
+            <button onclick="printSingleInovasi(${idx})" style="margin-left: auto; background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">🖨️ Cetak</button>
+          </h3>`;
+      
+      if (item.tipe === 'judul') {
+        bodyHtml += '<div style="margin: 16px 0; font-size: 14px; font-weight: 700; color: #16a34a;">🏆 Penilaian Judul Inovasi</div>';
+        bodyHtml += '<table style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">';
+        bodyHtml += '<thead style="background: #f3f4f6;"><tr><th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">No</th><th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Kriteria</th><th style="padding: 10px; text-align: center; border-bottom: 2px solid #e5e7eb;">Bobot</th><th style="padding: 10px; text-align: center; border-bottom: 2px solid #e5e7eb;">Nilai</th><th style="padding: 10px; text-align: center; border-bottom: 2px solid #e5e7eb;">Skor</th></tr></thead>';
+        bodyHtml += '<tbody>';
+        
+        let totalJudul = 0;
+        kriteriaJudul.forEach(k => {
+          const nilai = item.judulState[k.no] || "";
+          const skor = nilai ? Number(nilai) * k.bobot : 0;
+          totalJudul += skor;
+          
+          bodyHtml += `<tr style="border-bottom: 1px solid #f3f4f6;">
+            <td style="padding: 10px;">${k.no}</td>
+            <td style="padding: 10px;"><strong>${esc(k.nama)}</strong><div style="font-size: 11px; color: #6b7280; margin-top: 4px;">${esc(k.parameter[nilai - 1] || "—")}</div></td>
+            <td style="padding: 10px; text-align: center; font-weight: 700;">${k.bobot}</td>
+            <td style="padding: 10px; text-align: center; font-weight: 700; color: #7c3aed;">${nilai || "—"}</td>
+            <td style="padding: 10px; text-align: center; font-weight: 800; color: #16a34a;">${skor.toFixed(2)}</td>
+          </tr>`;
+        });
+        
+        bodyHtml += `<tr style="background: #f9fafb; font-weight: 900;"><td colspan="4" style="padding: 12px; text-align: right; color: #16a34a;">TOTAL SKOR</td><td style="padding: 12px; text-align: center; font-size: 16px; color: #16a34a;">${totalJudul.toFixed(2)}</td></tr>`;
+        bodyHtml += '</tbody></table>';
+        
+      } else {
+        bodyHtml += '<div style="margin: 16px 0; font-size: 14px; font-weight: 700; color: #2563eb;">📊 Penilaian Indikator SID</div>';
+        bodyHtml += '<table style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">';
+        bodyHtml += '<thead style="background: #f3f4f6;"><tr><th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">No</th><th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Indikator</th><th style="padding: 10px; text-align: center; border-bottom: 2px solid #e5e7eb;">Bobot</th><th style="padding: 10px; text-align: center; border-bottom: 2px solid #e5e7eb;">Nilai</th><th style="padding: 10px; text-align: center; border-bottom: 2px solid #e5e7eb;">Skor</th></tr></thead>';
+        bodyHtml += '<tbody>';
+        
+        let totalSID = 0;
+        const activeIndicators = sidIndicators.filter(i => !i.type && i.parameter?.length > 0);
+        activeIndicators.forEach(ind => {
+          const nilai = item.juriState.radio?.[ind.originalNo] || "";
+          const skor = nilai ? Number(nilai) * ind.bobot : 0;
+          totalSID += skor;
+          
+          bodyHtml += `<tr style="border-bottom: 1px solid #f3f4f6;">
+            <td style="padding: 10px;">${ind.displayNo}</td>
+            <td style="padding: 10px;"><strong>${esc(ind.nama)}</strong><div style="font-size: 11px; color: #6b7280; margin-top: 4px;">${esc(ind.parameter[nilai - 1] || "—")}</div></td>
+            <td style="padding: 10px; text-align: center; font-weight: 700;">${ind.bobot}</td>
+            <td style="padding: 10px; text-align: center; font-weight: 700; color: #7c3aed;">${nilai || "—"}</td>
+            <td style="padding: 10px; text-align: center; font-weight: 800; color: #2563eb;">${skor.toFixed(2)}</td>
+          </tr>`;
+        });
+        
+        bodyHtml += `<tr style="background: #f9fafb; font-weight: 900;"><td colspan="4" style="padding: 12px; text-align: right; color: #2563eb;">TOTAL SKOR</td><td style="padding: 12px; text-align: center; font-size: 16px; color: #2563eb;">${totalSID.toFixed(2)}</td></tr>`;
+        bodyHtml += '</tbody></table>';
+      }
+      
+      // Catatan dan Rekomendasi
+      if (item.notes.catatan || item.notes.rekomendasi) {
+        bodyHtml += '<div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">';
+        
+        if (item.notes.catatan) {
+          bodyHtml += `
+            <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #fbbf24; border-radius: 12px; padding: 16px;">
+              <div style="font-size: 13px; font-weight: 800; color: #78350f; margin-bottom: 8px;">📌 Catatan</div>
+              <div style="font-size: 12px; color: #92400e; line-height: 1.6;">${esc(item.notes.catatan)}</div>
+            </div>`;
+        }
+        
+        if (item.notes.rekomendasi) {
+          bodyHtml += `
+            <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 2px solid #fbbf24; border-radius: 12px; padding: 16px;">
+              <div style="font-size: 13px; font-weight: 800; color: #78350f; margin-bottom: 8px;">💡 Rekomendasi</div>
+              <div style="font-size: 12px; color: #92400e; line-height: 1.6;">${esc(item.notes.rekomendasi)}</div>
+            </div>`;
+        }
+        
+        bodyHtml += '</div>';
+      }
+      
+      // Tanda Tangan
+      bodyHtml += `
+        <div style="margin-top: 20px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center;">
+          <div style="font-size: 13px; font-weight: 800; color: #1e40af; margin-bottom: 12px;">✍️ Tanda Tangan</div>`;
+      
+      if (item.signature) {
+        bodyHtml += `<img src="${item.signature}" alt="Tanda Tangan" style="max-width: 300px; max-height: 100px; border: 2px dashed #93c5fd; border-radius: 8px; padding: 10px; background: white;" />`;
+      } else {
+        bodyHtml += `<div style="color: #9ca3af; font-size: 12px; font-style: italic;">Tidak ada tanda tangan</div>`;
+      }
+      
+      bodyHtml += `</div></div>`;
+    });
+    
+    bodyHtml += '</div>';
+    
+    document.getElementById("modalJuriBody").innerHTML = bodyHtml;
+    
+    // Show modal
+    document.getElementById("modalDetailJuri").classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+  
+  function closeModalJuri() {
+    document.getElementById("modalDetailJuri").classList.remove("active");
+    document.body.style.overflow = "";
+  }
+  
+  function printJuriDetail() {
+    if (!currentJuriData || currentJuriData.inovasiDinilai.length === 0) return;
+    printSingleInovasi(0);
+  }
+  
+  function printSingleInovasi(idx) {
+    if (!currentJuriData) return;
+    
+    const item = currentJuriData.inovasiDinilai[idx];
+    if (!item) return;
+    
+    // Populate print area
+    document.getElementById("printNamaInovasi").textContent = item.judul;
+    document.getElementById("printNamaJuri").textContent = currentJuriData.namaJuri;
+    document.getElementById("printSignJuri").textContent = `( ${currentJuriData.namaJuri} )`;
+    document.getElementById("printTanggal").textContent = new Date().toLocaleDateString("id-ID", {day:"numeric", month:"long", year:"numeric"});
+    
+    const isJudul = item.tipe === 'judul';
+    
+    // Set heading
+    document.getElementById("printSectionHeading").textContent = isJudul ? "PENILAIAN JUDUL INOVASI" : "PENILAIAN INDIKATOR SID";
+    document.getElementById("printTableHeaderNama").textContent = isJudul ? "Kriteria" : "Indikator";
+    document.getElementById("printTotalLabel").textContent = isJudul ? "TOTAL SKOR JUDUL" : "TOTAL SKOR INDIKATOR SID";
+    
+    // Build table
+    let tbody = '';
+    let total = 0;
+    let maxTotal = 0;
+    
+    if (isJudul) {
+      kriteriaJudul.forEach((k, i) => {
+        const nilai = item.judulState[k.no] || "";
+        const skor = nilai ? Number(nilai) * k.bobot : 0;
+        total += skor;
+        maxTotal += 3 * k.bobot;
+        
+        tbody += `<tr>
+          <td class="pt-no">${k.no}</td>
+          <td class="pt-nama"><strong>${esc(k.nama)}</strong></td>
+          <td class="pt-bobot">${k.bobot}</td>
+          <td class="pt-param">${nilai || "—"}</td>
+          <td class="pt-nilai">${skor.toFixed(2)}</td>
+          <td class="pt-ket">${esc(k.parameter[nilai - 1] || "—")}</td>
+        </tr>`;
+      });
+    } else {
+      const activeIndicators = sidIndicators.filter(i => !i.type && i.parameter?.length > 0);
+      activeIndicators.forEach(ind => {
+        const nilai = item.juriState.radio?.[ind.originalNo] || "";
+        const skor = nilai ? Number(nilai) * ind.bobot : 0;
+        total += skor;
+        maxTotal += 3 * ind.bobot;
+        
+        tbody += `<tr>
+          <td class="pt-no">${ind.displayNo}</td>
+          <td class="pt-nama"><strong>${esc(ind.nama)}</strong></td>
+          <td class="pt-bobot">${ind.bobot}</td>
+          <td class="pt-param">${nilai || "—"}</td>
+          <td class="pt-nilai">${skor.toFixed(2)}</td>
+          <td class="pt-ket">${esc(ind.parameter[nilai - 1] || "—")}</td>
+        </tr>`;
+      });
+    }
+    
+    document.getElementById("printTableBody").innerHTML = tbody;
+    document.getElementById("printTotalValue").textContent = total.toFixed(2);
+    document.getElementById("printTotalSkor").textContent = total.toFixed(2);
+    document.getElementById("printTotalMax").textContent = `Maks: ${maxTotal}`;
+    
+    // Catatan dan Rekomendasi
+    document.getElementById("printCatatan").textContent = item.notes.catatan || "—";
+    document.getElementById("printRekomendasi").textContent = item.notes.rekomendasi || "—";
+    
+    // Tanda Tangan
+    const signatureImage = document.getElementById("printSignatureImage");
+    if (item.signature) {
+      signatureImage.innerHTML = `<img src="${item.signature}" style="max-width: 200px; max-height: 80px;" alt="Tanda Tangan" />`;
+    } else {
+      signatureImage.innerHTML = '';
+    }
+    
+    // Print
+    const printArea = document.getElementById("printJuriArea");
+    const originalDisplay = printArea.style.display;
+    printArea.style.display = "block";
+    
+    window.print();
+    
+    printArea.style.display = originalDisplay;
+  }
+  
+  // Close modal on overlay click
+  document.addEventListener('click', function(e) {
+    if (e.target.id === 'modalDetailJuri') {
+      closeModalJuri();
+    }
+  });
+  
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModalJuri();
+    }
+  });
 
   function esc(v) {
     return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));

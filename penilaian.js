@@ -7,6 +7,10 @@
 const SESSION = requireAuth(["juri_judul", "juri_sid"]);
 if (!SESSION) throw new Error("Unauthorized"); // stop execution if redirect happened
 
+// ── Load innovation data based on role ──
+daftarInovasi = getDaftarInovasiByRole(SESSION.role);
+console.log(`[penilaian.js] Loaded ${daftarInovasi.length} innovations for role: ${SESSION.role}`);
+
 // ── Tentukan form berdasarkan role ──
 const ROLE        = SESSION.role;            // "juri_judul" | "juri_sid"
 const SHOW_JUDUL  = ROLE === "juri_judul";
@@ -19,8 +23,8 @@ renderSessionNav("sessionNav");
 const heroBadge = document.getElementById("heroBadgeRole");
 if (heroBadge) {
   heroBadge.textContent = ROLE === "juri_judul"
-    ? "🏆 PENILAIAN JUDUL INOVASI"
-    : "📊 PENILAIAN INDIKATOR SID";
+    ? "PENILAIAN JUDUL INOVASI"
+    : "PENILAIAN INDIKATOR SID";
 }
 
 // Sembunyikan section yang tidak relevan segera (sebelum render)
@@ -36,6 +40,7 @@ if (!SHOW_SID) {
 const judulState = { [SESSION.nama]: {} };
 const juriState  = { [SESSION.nama]: { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} } };
 const notesState = { [SESSION.nama]: { catatan: "", rekomendasi: "" } };
+const signatureState = { [SESSION.nama]: "" };
 
 let namaInovasi = "";
 
@@ -87,6 +92,12 @@ if (namaInovasi) {
   } else {
     gdriveCard.style.display = "none";
   }
+  
+  // Tampilkan flash card Bukti Dukung hanya untuk Juri SID
+  const buktiDukungCard = document.getElementById("buktiDukungCard");
+  if (ROLE === "juri_sid" && buktiDukungCard) {
+    buktiDukungCard.style.display = "block";
+  }
 } else {
   document.getElementById("heroJudulInovasi").textContent = "Form Penilaian";
   document.getElementById("heroPDInovasi").textContent    = "Kembali ke beranda untuk memilih inovasi";
@@ -99,19 +110,7 @@ if (namaInovasi && allDraf[namaInovasi]) {
   if (d.judulState?.[SESSION.nama]) judulState[SESSION.nama] = d.judulState[SESSION.nama];
   if (d.juriState?.[SESSION.nama])  juriState[SESSION.nama]  = d.juriState[SESSION.nama];
   if (d.notesState?.[SESSION.nama]) notesState[SESSION.nama] = d.notesState[SESSION.nama];
-  
-  // Check if this is edit mode
-  const isEditMode = (d.skorPerJuri && d.skorPerJuri[SESSION.nama] > 0) || 
-                     (d.skorJudulPerJuri && d.skorJudulPerJuri[SESSION.nama] > 0);
-  
-  if (isEditMode) {
-    // Show edit mode badge
-    const heroBadge = document.getElementById("heroBadgeRole");
-    if (heroBadge) {
-      heroBadge.innerHTML = `✏️ MODE EDIT PENILAIAN`;
-      heroBadge.style.background = "linear-gradient(135deg, #0ea5e9, #0284c7)";
-    }
-  }
+  if (d.signatureState?.[SESSION.nama]) signatureState[SESSION.nama] = d.signatureState[SESSION.nama];
 }
 
 // Sembunyikan session login grid, tampilkan form langsung
@@ -129,6 +128,7 @@ if (barRole) barRole.textContent = SESSION.label;
 render();
 calculate();
 loadNotesState();
+initSignatureCanvas();
 
 // ── Load Notes State ──
 function loadNotesState() {
@@ -485,6 +485,7 @@ function saveAll(showAnim = false) {
       judulState: {},
       juriState: {},
       notesState: {},
+      signatureState: {},
       skorJudulPerJuri: {},
       skorPerJuri: {}
     };
@@ -494,6 +495,8 @@ function saveAll(showAnim = false) {
   all[namaInovasi].judulState[SESSION.nama] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
   all[namaInovasi].juriState[SESSION.nama] = JSON.parse(JSON.stringify(juriState[SESSION.nama]));
   all[namaInovasi].notesState[SESSION.nama] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
+  all[namaInovasi].signatureState = all[namaInovasi].signatureState || {};
+  all[namaInovasi].signatureState[SESSION.nama] = signatureState[SESSION.nama] || "";
   all[namaInovasi].skorJudulPerJuri[SESSION.nama] = parseFloat(skorJudul.toFixed(2));
   all[namaInovasi].skorPerJuri[SESSION.nama] = parseFloat(skorInd.toFixed(2));
   all[namaInovasi].savedAt = new Date().toISOString();
@@ -560,24 +563,13 @@ function doSaveWithValidation() {
   console.log('=== Validation passed, saving... ===');
   document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
   
-  // Check if this is an edit (user already assessed before)
-  const allDraf = loadAllDraf();
-  const existingDraf = allDraf[namaInovasi];
-  const isEdit = existingDraf && 
-    ((existingDraf.skorPerJuri && existingDraf.skorPerJuri[SESSION.nama] > 0) ||
-     (existingDraf.skorJudulPerJuri && existingDraf.skorJudulPerJuri[SESSION.nama] > 0));
-  
   // Save
   saveAll(true);
   
   console.log('=== Save complete ===');
   
   // Show success message
-  if (isEdit) {
-    alert('✅ Penilaian berhasil diperbarui!\n\nKlik OK untuk kembali ke halaman utama.');
-  } else {
-    alert('✅ Penilaian berhasil disimpan!\n\nKlik OK untuk kembali ke halaman utama.');
-  }
+  alert('✅ Penilaian berhasil disimpan!\n\nKlik OK untuk kembali ke halaman utama.');
   
   // Redirect ke index.html dengan kategori yang sesuai
   const meta = daftarInovasi.find(i => i.judul === namaInovasi) || {};
@@ -649,40 +641,140 @@ window.addEventListener("beforeunload", () => saveAll(false));
 const printBtnEl = document.getElementById("printBtn");
 if (printBtnEl) {
   printBtnEl.addEventListener("click", () => {
+    console.log('=== PRINT BUTTON CLICKED ===');
+    
+    // Save current state first
     saveJudulStateLocal(); 
     saveIndikatorStateLocal();
     saveNotesState();
+    
+    // Load saved data from localStorage to ensure we have the latest
+    const allDraf = loadAllDraf();
+    const savedData = allDraf[namaInovasi];
+    
+    console.log('Current innovation:', namaInovasi);
+    console.log('Saved data exists:', !!savedData);
+    console.log('judulState for current user:', judulState[SESSION.nama]);
+    
+    // If saved data exists, use it (for edit mode)
+    if (savedData && savedData.judulState && savedData.judulState[SESSION.nama]) {
+      console.log('Loading saved judulState from localStorage');
+      Object.assign(judulState[SESSION.nama], savedData.judulState[SESSION.nama]);
+    }
     
     document.getElementById("pNamaInovasi").textContent = namaInovasi || "—";
     document.getElementById("pNamaJuri").textContent    = SESSION.nama;
     document.getElementById("pSignJuri").textContent    = `( ${SESSION.nama} )`;
     document.getElementById("pTanggal").textContent     = new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
 
-    // Tabel judul (6 kriteria)
-    let totJudul = 0;
+    // Tentukan apakah juri judul atau juri SID
+    const isJuriSID = ROLE === "juri_sid";
+    
+    console.log('Juri type:', isJuriSID ? 'SID' : 'JUDUL');
+
+    // Update heading dan label sesuai tipe juri
+    const sectionHeading = document.getElementById("pSectionHeading");
+    const tableHeaderNama = document.getElementById("pTableHeaderNama");
+    const totalLabel = document.getElementById("pTotalLabel");
+    const totalMax = document.getElementById("pTotalMax");
+    
+    if (isJuriSID) {
+      if (sectionHeading) sectionHeading.textContent = "PENILAIAN INDIKATOR SID";
+      if (tableHeaderNama) tableHeaderNama.textContent = "Indikator";
+      if (totalLabel) totalLabel.textContent = "TOTAL SKOR INDIKATOR SID";
+    } else {
+      if (sectionHeading) sectionHeading.textContent = "PENILAIAN JUDUL INOVASI";
+      if (tableHeaderNama) tableHeaderNama.textContent = "Kriteria";
+      if (totalLabel) totalLabel.textContent = "TOTAL SKOR JUDUL";
+    }
+
+    // Tabel print
+    let totalSkor = 0;
     const tbJ = document.getElementById("pTableJudul"); 
     tbJ.innerHTML = "";
-    kriteriaJudul.forEach(k => {
-      const v = judulState[SESSION.nama]?.[k.no] || "";
-      const s = v ? Number(v) * k.bobot : 0; 
-      totJudul += s;
-      const tr = document.createElement("tr"); 
-      tr.className = s > 0 ? "pt-filled" : "pt-empty";
-      tr.innerHTML = `
-        <td class="pt-no">${k.no}</td>
-        <td class="pt-nama">${esc(k.nama)}</td>
-        <td class="pt-bobot">${k.bobot}</td>
-        <td class="pt-param">${v||"—"}</td>
-        <td class="pt-nilai">${s>0?s.toFixed(2):"—"}</td>
-        <td class="pt-ket">${v?esc(k.parameter[Number(v)-1]):"—"}</td>`;
-      tbJ.appendChild(tr);
-    });
-    document.getElementById("pTotalJudul").textContent = totJudul.toFixed(2);
+    
+    if (isJuriSID) {
+      // JURI SID: Tampilkan 20 indikator
+      console.log('Building print table for SID indicators');
+      
+      // Load saved data
+      if (savedData && savedData.juriState && savedData.juriState[SESSION.nama]) {
+        console.log('Loading saved juriState from localStorage');
+        Object.assign(juriState[SESSION.nama], savedData.juriState[SESSION.nama]);
+      }
+      
+      // Filter hanya indikator yang punya parameter (bukan monev/video)
+      const regularIndicators = sidIndicators.filter(i => !i.type && i.parameter && i.parameter.length > 0);
+      console.log('Regular indicators count:', regularIndicators.length);
+      
+      // Hitung max score
+      const maxSID = regularIndicators.reduce((sum, i) => sum + (3 * i.bobot), 0);
+      if (totalMax) totalMax.textContent = `Maks: ${maxSID.toFixed(0)}`;
+      
+      regularIndicators.forEach(ind => {
+        const v = juriState[SESSION.nama]?.radio?.[ind.originalNo] || "";
+        const s = v ? Number(v) * ind.bobot : 0;
+        totalSkor += s;
+        
+        console.log(`Indikator ${ind.displayNo}: value=${v}, score=${s.toFixed(2)}`);
+        
+        const tr = document.createElement("tr");
+        tr.className = s > 0 ? "pt-filled" : "pt-empty";
+        tr.innerHTML = `
+          <td class="pt-no">${ind.displayNo}</td>
+          <td class="pt-nama">${esc(ind.nama)}</td>
+          <td class="pt-bobot">${ind.bobot}</td>
+          <td class="pt-param">${v||"—"}</td>
+          <td class="pt-nilai">${s>0?s.toFixed(2):"—"}</td>
+          <td class="pt-ket">${v?esc(ind.parameter[Number(v)-1]):"—"}</td>`;
+        tbJ.appendChild(tr);
+      });
+      
+    } else {
+      // JURI JUDUL: Tampilkan 6 kriteria
+      console.log('Building print table with', kriteriaJudul.length, 'criteria');
+      
+      // Load saved data
+      if (savedData && savedData.judulState && savedData.judulState[SESSION.nama]) {
+        console.log('Loading saved judulState from localStorage');
+        Object.assign(judulState[SESSION.nama], savedData.judulState[SESSION.nama]);
+      }
+      
+      if (totalMax) totalMax.textContent = "Maks: 63";
+      
+      kriteriaJudul.forEach(k => {
+        const v = judulState[SESSION.nama]?.[k.no] || "";
+        const s = v ? Number(v) * k.bobot : 0; 
+        totalSkor += s;
+        
+        console.log(`Kriteria ${k.no}: value=${v}, score=${s.toFixed(2)}`);
+        
+        const tr = document.createElement("tr"); 
+        tr.className = s > 0 ? "pt-filled" : "pt-empty";
+        tr.innerHTML = `
+          <td class="pt-no">${k.no}</td>
+          <td class="pt-nama">${esc(k.nama)}</td>
+          <td class="pt-bobot">${k.bobot}</td>
+          <td class="pt-param">${v||"—"}</td>
+          <td class="pt-nilai">${s>0?s.toFixed(2):"—"}</td>
+          <td class="pt-ket">${v?esc(k.parameter[Number(v)-1]):"—"}</td>`;
+        tbJ.appendChild(tr);
+      });
+    }
+    
+    console.log('Total score:', totalSkor.toFixed(2));
+    
+    document.getElementById("pTotalJudul").textContent = totalSkor.toFixed(2);
     
     // Update total skor di meta
     const pTotalSkor = document.getElementById("pTotalSkor");
     if (pTotalSkor) {
-      pTotalSkor.textContent = `${totJudul.toFixed(2)} / 63`;
+      if (isJuriSID) {
+        const maxSID = sidIndicators.filter(i => !i.type && i.parameter && i.parameter.length > 0).reduce((sum, i) => sum + (3 * i.bobot), 0);
+        pTotalSkor.textContent = `${totalSkor.toFixed(2)} / ${maxSID.toFixed(0)}`;
+      } else {
+        pTotalSkor.textContent = `${totalSkor.toFixed(2)} / 63`;
+      }
     }
 
     // Catatan dan Rekomendasi
@@ -691,6 +783,23 @@ if (printBtnEl) {
     document.getElementById("pCatatan").textContent = catatan;
     document.getElementById("pRekomendasi").textContent = rekomendasi;
 
+    // Tambahkan tanda tangan digital ke print area
+    console.log('=== PRINT: Checking signature ===');
+    console.log('Current user:', SESSION.nama);
+    console.log('Signature state:', signatureState[SESSION.nama] ? 'EXISTS' : 'NOT FOUND');
+    console.log('Signature length:', signatureState[SESSION.nama]?.length || 0);
+    
+    const signatureImageContainer = document.getElementById("pSignatureImage");
+    if (signatureImageContainer && signatureState[SESSION.nama]) {
+      console.log('Injecting signature to print area');
+      signatureImageContainer.innerHTML = `<img src="${signatureState[SESSION.nama]}" alt="Tanda tangan ${SESSION.nama}" class="print-signature-img">`;
+    } else if (signatureImageContainer) {
+      console.log('No signature found, clearing container');
+      signatureImageContainer.innerHTML = "";
+    } else {
+      console.error('pSignatureImage container not found!');
+    }
+
     // Print
     window.print();
   });
@@ -698,3 +807,178 @@ if (printBtnEl) {
 
 // ── Init ──
 renderSessionGrid();
+
+// ══════════════════════════════════════════
+//  SIGNATURE CANVAS
+// ══════════════════════════════════════════
+
+function initSignatureCanvas() {
+  const canvas = document.getElementById('signatureCanvas');
+  const clearBtn = document.getElementById('clearSignatureBtn');
+  const placeholder = document.getElementById('signaturePlaceholder');
+  const canvasWrapper = document.querySelector('.signature-canvas-wrapper');
+  const statusEl = document.getElementById('signatureStatus');
+  
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  
+  // Set canvas size to match display size
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    
+    // Restore signature if exists
+    if (signatureState[SESSION.nama]) {
+      const img = new Image();
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        updateSignatureStatus(true);
+      };
+      img.src = signatureState[SESSION.nama];
+    }
+  }
+  
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
+  // Drawing configuration
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  // Get coordinates relative to canvas
+  function getCoordinates(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    let clientX, clientY;
+    
+    if (e.touches && e.touches.length > 0) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+  
+  // Start drawing
+  function startDrawing(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const coords = getCoordinates(e);
+    lastX = coords.x;
+    lastY = coords.y;
+    
+    // Hide placeholder on first draw
+    if (placeholder) {
+      placeholder.classList.add('hidden');
+    }
+  }
+  
+  // Draw
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    
+    const coords = getCoordinates(e);
+    
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(coords.x, coords.y);
+    ctx.stroke();
+    
+    lastX = coords.x;
+    lastY = coords.y;
+  }
+  
+  // Stop drawing
+  function stopDrawing(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    isDrawing = false;
+    
+    // Save signature as base64
+    saveSignature();
+  }
+  
+  // Save signature
+  function saveSignature() {
+    const dataURL = canvas.toDataURL('image/png');
+    signatureState[SESSION.nama] = dataURL;
+    updateSignatureStatus(true);
+    
+    // Auto-save to localStorage
+    saveAll(false);
+  }
+  
+  // Clear signature
+  function clearSignature() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    signatureState[SESSION.nama] = "";
+    updateSignatureStatus(false);
+    
+    if (placeholder) {
+      placeholder.classList.remove('hidden');
+    }
+    
+    // Auto-save to localStorage
+    saveAll(false);
+  }
+  
+  // Update status indicator
+  function updateSignatureStatus(hasSig) {
+    if (!statusEl || !canvasWrapper) return;
+    
+    if (hasSig) {
+      statusEl.textContent = "Tanda tangan tersimpan";
+      statusEl.className = "signature-status signature-status-signed";
+      canvasWrapper.classList.add('has-signature');
+    } else {
+      statusEl.textContent = "Belum ada tanda tangan";
+      statusEl.className = "signature-status signature-status-empty";
+      canvasWrapper.classList.remove('has-signature');
+    }
+  }
+  
+  // Mouse events
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseout', stopDrawing);
+  
+  // Touch events for mobile/tablet
+  canvas.addEventListener('touchstart', startDrawing);
+  canvas.addEventListener('touchmove', draw);
+  canvas.addEventListener('touchend', stopDrawing);
+  canvas.addEventListener('touchcancel', stopDrawing);
+  
+  // Clear button
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Hapus tanda tangan? Aksi ini tidak dapat dibatalkan.')) {
+        clearSignature();
+      }
+    });
+  }
+  
+  // Initial status check
+  if (signatureState[SESSION.nama]) {
+    updateSignatureStatus(true);
+    if (placeholder) {
+      placeholder.classList.add('hidden');
+    }
+  }
+}

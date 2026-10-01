@@ -31,11 +31,11 @@
     <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="pTanggal">—</span></div>
     <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="pTotalSkor">—</span></div>
   </div>
-  <div class="print-section-heading">PENILAIAN JUDUL INOVASI</div>
+  <div class="print-section-heading" id="pSectionHeading">PENILAIAN JUDUL INOVASI</div>
   <table class="print-table">
-    <thead><tr><th class="pt-no">No</th><th class="pt-nama">Kriteria</th><th class="pt-bobot">Bobot</th><th class="pt-param">Nilai</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Pilihan</th></tr></thead>
+    <thead><tr><th class="pt-no">No</th><th class="pt-nama" id="pTableHeaderNama">Kriteria</th><th class="pt-bobot">Bobot</th><th class="pt-param">Nilai</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Pilihan</th></tr></thead>
     <tbody id="pTableJudul"></tbody>
-    <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label">TOTAL SKOR JUDUL</td><td class="print-total-value" id="pTotalJudul">0.00</td><td class="print-total-max">Maks: 63</td></tr></tfoot>
+    <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label" id="pTotalLabel">TOTAL SKOR JUDUL</td><td class="print-total-value" id="pTotalJudul">0.00</td><td class="print-total-max" id="pTotalMax">Maks: 63</td></tr></tfoot>
   </table>
   
   <!-- Catatan dan Rekomendasi -->
@@ -61,7 +61,7 @@
     </div>
     <div class="print-sign-block">
       <div class="print-sign-label">Dinilai oleh,</div>
-      <div class="print-sign-space"></div>
+      <div class="print-sign-space" id="pSignatureImage"></div>
       <div class="print-sign-name" id="pSignJuri">( _________________________ )</div>
       <div class="print-sign-role">Juri Penilai</div>
     </div>
@@ -139,6 +139,20 @@
           <p class="gdrive-desc">Klik untuk melihat dokumen pendukung inovasi di Google Drive:</p>
           <div id="gdriveLinksContainer" class="gdrive-links"></div>
         </div>
+      </div>
+
+      <!-- Flash Card Kelengkapan Bukti Dukung (Khusus Juri SID) -->
+      <div id="buktiDukungCard" class="bukti-dukung-card" style="margin:16px 0; display:none;">
+        <a href="https://drive.google.com/drive/u/0/folders/1wdIF8TQFcD8KJPbKFiMoBKj5lqAoPPY3" target="_blank" rel="noopener noreferrer" class="bukti-dukung-link">
+          <div class="bukti-dukung-flash">
+            <div class="bukti-dukung-icon">📂</div>
+            <div class="bukti-dukung-content">
+              <div class="bukti-dukung-title">📋 Kelengkapan Bukti Dukung</div>
+              <div class="bukti-dukung-desc">Klik untuk melihat folder kelengkapan bukti pendukung di Google Drive</div>
+            </div>
+            <div class="bukti-dukung-arrow">→</div>
+          </div>
+        </a>
       </div>
 
       <!-- Score Board gabungan -->
@@ -270,6 +284,30 @@
               placeholder="Berikan rekomendasi atau saran untuk meningkatkan kualitas inovasi ini..."
             ></textarea>
             <div class="notes-hint">Contoh: Disarankan untuk menambahkan data statistik dampak inovasi</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tanda Tangan Digital -->
+      <section class="signature-section" style="margin-top:28px">
+        <h2>Tanda Tangan Penilai</h2>
+        <p class="signature-desc">Bubuhkan tanda tangan Anda di area di bawah ini</p>
+        
+        <div class="signature-card">
+          <div class="signature-canvas-wrapper">
+            <canvas id="signatureCanvas" width="800" height="200"></canvas>
+            <div id="signaturePlaceholder" class="signature-placeholder">
+              <div class="signature-placeholder-icon">✍️</div>
+              <div class="signature-placeholder-text">Klik dan gambar tanda tangan Anda di sini</div>
+            </div>
+          </div>
+          <div class="signature-actions">
+            <button type="button" id="clearSignatureBtn" class="btn-signature-clear">
+              <span>🗑️</span> Hapus Tanda Tangan
+            </button>
+            <div class="signature-info">
+              <span id="signatureStatus" class="signature-status signature-status-empty">Belum ada tanda tangan</span>
+            </div>
           </div>
         </div>
       </section>

@@ -344,6 +344,140 @@
 }
 
 /* ══════════════════════════════════════════
+   FLASH CARD KELENGKAPAN BUKTI DUKUNG
+══════════════════════════════════════════ */
+.bukti-dukung-card {
+  /* Tidak ada animasi */
+}
+
+.bukti-dukung-link {
+  display: block;
+  text-decoration: none;
+  /* Tidak ada animasi saat hover */
+}
+
+.bukti-dukung-flash {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+  border: 3px solid #f59e0b;
+  border-radius: 18px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.bukti-dukung-link:hover .bukti-dukung-flash {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 50%, #fbbf24 100%);
+  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.4);
+  border-color: #d97706;
+}
+
+.bukti-dukung-icon {
+  font-size: 56px;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  /* Tidak ada animasi bounce */
+}
+
+.bukti-dukung-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.bukti-dukung-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #78350f;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bukti-dukung-desc {
+  font-size: 14px;
+  color: #92400e;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.bukti-dukung-arrow {
+  font-size: 32px;
+  font-weight: 900;
+  color: #d97706;
+  flex-shrink: 0;
+  /* Tidak ada animasi */
+}
+
+.bukti-dukung-link:hover .bukti-dukung-arrow {
+  /* Arrow tetap di tempat saat hover */
+  color: #b45309;
+}
+
+/* Dark theme */
+[data-theme="dark"] .bukti-dukung-flash {
+  background: linear-gradient(135deg, #451a03, #78350f, #92400e);
+  border-color: #ea580c;
+}
+
+[data-theme="dark"] .bukti-dukung-title {
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .bukti-dukung-desc {
+  color: #fde68a;
+}
+
+[data-theme="dark"] .bukti-dukung-arrow {
+  color: #fb923c;
+}
+
+[data-theme="dark"] .bukti-dukung-link:hover .bukti-dukung-flash {
+  background: linear-gradient(135deg, #78350f, #92400e, #b45309);
+  border-color: #f97316;
+}
+
+[data-theme="dark"] .bukti-dukung-link:hover .bukti-dukung-arrow {
+  color: #fdba74;
+}
+
+/* Responsive */
+@media(max-width: 760px) {
+  .bukti-dukung-flash {
+    padding: 18px 20px;
+    gap: 14px;
+  }
+  
+  .bukti-dukung-icon {
+    font-size: 40px;
+  }
+  
+  .bukti-dukung-title {
+    font-size: 16px;
+  }
+  
+  .bukti-dukung-desc {
+    font-size: 12px;
+  }
+  
+  .bukti-dukung-arrow {
+    font-size: 24px;
+  }
+}
+
+/* Print - hide */
+@media print {
+  .bukti-dukung-card {
+    display: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════
    NOTES AND RECOMMENDATIONS SECTION
 ══════════════════════════════════════════ */
 .notes-section {
@@ -460,5 +594,283 @@
   .notes-textarea {
     padding: 12px 14px;
     font-size: 13px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   SIGNATURE SECTION
+══════════════════════════════════════════ */
+.signature-section {
+  background: white;
+  border: 2px solid #3b82f6;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  animation: fadeSlideUp .7s ease both;
+}
+
+.signature-section h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1e40af;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signature-desc {
+  font-size: 13px;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+.signature-card {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 2px solid #3b82f6;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.signature-canvas-wrapper {
+  position: relative;
+  background: white;
+  border: 2px dashed #93c5fd;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: crosshair;
+  margin-bottom: 16px;
+  transition: border-color 0.2s, border-style 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.signature-canvas-wrapper:hover {
+  border-color: #3b82f6;
+}
+
+.signature-canvas-wrapper.has-signature {
+  border-style: solid;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+#signatureCanvas {
+  display: block;
+  width: 100%;
+  height: 200px;
+  touch-action: none;
+}
+
+.signature-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.3), rgba(219, 234, 254, 0.3));
+}
+
+.signature-placeholder.hidden {
+  opacity: 0;
+}
+
+.signature-placeholder-icon {
+  font-size: 48px;
+  opacity: 0.6;
+}
+
+.signature-placeholder-text {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.signature-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-signature-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1.5px solid #ef4444;
+  color: #dc2626;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-signature-clear:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-signature-clear:active {
+  transform: scale(0.97);
+}
+
+.btn-signature-clear span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.signature-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signature-status {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.signature-status::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.3s;
+}
+
+.signature-status-empty {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+  border: 1.5px solid rgba(148, 163, 184, 0.3);
+}
+
+.signature-status-empty::before {
+  background: #94a3b8;
+}
+
+.signature-status-signed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  border: 1.5px solid rgba(34, 197, 94, 0.3);
+}
+
+.signature-status-signed::before {
+  background: #22c55e;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6; 
+    transform: scale(1.2);
+  }
+}
+
+/* Dark theme support */
+[data-theme="dark"] .signature-section {
+  background: var(--card-bg);
+  border-color: #2563eb;
+}
+
+[data-theme="dark"] .signature-card {
+  background: linear-gradient(135deg, #1a2744, #1e3a5f);
+  border-color: #2563eb;
+}
+
+[data-theme="dark"] .signature-canvas-wrapper {
+  background: #1a1a1a;
+  border-color: #3b82f6;
+}
+
+[data-theme="dark"] .signature-placeholder {
+  background: linear-gradient(135deg, rgba(26, 39, 68, 0.3), rgba(30, 58, 95, 0.3));
+}
+
+[data-theme="dark"] .signature-section h2 {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .signature-desc {
+  color: #93c5fd;
+}
+
+/* Responsive */
+@media (max-width: 760px) {
+  .signature-section {
+    padding: 18px;
+  }
+  
+  .signature-section h2 {
+    font-size: 18px;
+  }
+  
+  .signature-card {
+    padding: 16px;
+  }
+  
+  #signatureCanvas {
+    height: 150px;
+  }
+  
+  .signature-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn-signature-clear {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .signature-info {
+    justify-content: center;
+  }
+  
+  .signature-placeholder-icon {
+    font-size: 36px;
+  }
+  
+  .signature-placeholder-text {
+    font-size: 12px;
+  }
+}
+
+/* Print signature */
+@media print {
+  .signature-section {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  
+  .signature-canvas-wrapper {
+    border: 1px solid #666;
+  }
+  
+  .signature-actions {
+    display: none !important;
   }
 }
