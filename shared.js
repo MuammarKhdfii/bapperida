@@ -22,29 +22,53 @@ const KEY_THEME = "iid2026_theme";
 
 // ── Storage helpers dengan Firebase support ──
 async function loadAllDraf() {
+  console.log('[loadAllDraf] START');
+  
   // Jika Firebase enabled dan tersedia, gunakan cloudStorage
   if (typeof cloudStorage !== 'undefined') {
-    return await cloudStorage.loadAllDraf();
+    try {
+      const data = await cloudStorage.loadAllDraf();
+      console.log('[loadAllDraf] Loaded from Firebase/cloudStorage:', Object.keys(data).length, 'items');
+      return data;
+    } catch(e) {
+      console.error('[loadAllDraf] Error loading from cloudStorage:', e);
+    }
   }
   
   // Fallback ke localStorage
   try { 
-    return JSON.parse(localStorage.getItem(KEY_ALL) || "{}"); 
+    const data = JSON.parse(localStorage.getItem(KEY_ALL) || "{}");
+    console.log('[loadAllDraf] Loaded from localStorage:', Object.keys(data).length, 'items');
+    return data;
   } catch(e) { 
+    console.error('[loadAllDraf] Error loading from localStorage:', e);
     return {}; 
   }
 }
 
 async function saveAllDraf(all) {
+  console.log('[saveAllDraf] START - saving', Object.keys(all).length, 'items');
+  
   // Simpan ke localStorage sebagai backup
   localStorage.setItem(KEY_ALL, JSON.stringify(all));
+  console.log('[saveAllDraf] Saved to localStorage');
   
   // Jika Firebase enabled, sync ke cloud juga
   if (typeof cloudStorage !== 'undefined') {
-    // Simpan setiap inovasi secara terpisah untuk granular sync
-    for (const [namaInovasi, data] of Object.entries(all)) {
-      await cloudStorage.saveDraf(namaInovasi, data);
+    try {
+      // Simpan setiap inovasi secara terpisah untuk granular sync
+      const savePromises = [];
+      for (const [namaInovasi, data] of Object.entries(all)) {
+        savePromises.push(cloudStorage.saveDraf(namaInovasi, data));
+      }
+      
+      await Promise.all(savePromises);
+      console.log('[saveAllDraf] Synced to Firebase:', savePromises.length, 'items');
+    } catch(e) {
+      console.error('[saveAllDraf] Error syncing to Firebase:', e);
     }
+  } else {
+    console.log('[saveAllDraf] cloudStorage not available, localStorage only');
   }
 }
 function getLastInovasi() {

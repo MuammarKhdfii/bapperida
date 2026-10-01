@@ -90,6 +90,7 @@
           <p class="ranking-section-sub">Total skor =  rata-rata <b>Penilaian Indikator</b> dari semua juri</p>
         </div>
         <div class="ranking-section-actions">
+          <button onclick="forceSyncFromFirebase()" class="rk-action-btn rk-btn-sync" title="Paksa sinkronisasi dari Firebase">☁️ Force Sync</button>
           <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
           <button onclick="clearAllData()" class="rk-action-btn rk-btn-clear">🗑️ Hapus Data</button>
         </div>
@@ -490,6 +491,64 @@
     await renderLandingRanking();
     await updateStatusCards("");
     sel.value = "";
+  };
+
+  // Force sync dari Firebase - paksa reload data dari cloud
+  window.forceSyncFromFirebase = async function() {
+    console.log('🔄 Force sync from Firebase...');
+    
+    // Cek apakah Firebase tersedia
+    if (typeof cloudStorage === 'undefined' || typeof ENABLE_FIREBASE === 'undefined' || !ENABLE_FIREBASE) {
+      alert('⚠️ Firebase tidak aktif!\n\nData hanya tersimpan di localStorage browser ini.\nUntuk multi-device sync, aktifkan Firebase di firebase-config.js');
+      return;
+    }
+    
+    // Cek koneksi Firebase
+    try {
+      const status = await cloudStorage.checkConnection();
+      if (!status.connected) {
+        alert('❌ Firebase tidak tersambung!\n\nPeriksa koneksi internet Anda atau Firebase Database Rules.');
+        return;
+      }
+    } catch(e) {
+      alert('❌ Error mengecek Firebase: ' + e.message);
+      return;
+    }
+    
+    // Tampilkan loading
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '🔄 Syncing...';
+    btn.disabled = true;
+    
+    try {
+      // Clear localStorage terlebih dahulu untuk force reload dari Firebase
+      console.log('🗑️ Clearing localStorage...');
+      localStorage.removeItem(KEY_ALL);
+      
+      // Load dari Firebase
+      console.log('📥 Loading from Firebase...');
+      const firebaseData = await cloudStorage.loadAllDraf();
+      
+      console.log('✅ Loaded from Firebase:', Object.keys(firebaseData).length, 'items');
+      
+      // Update UI
+      await renderLandingRanking();
+      await populateInovasiDropdown();
+      await updateStatusCards(sel.value);
+      
+      // Success notification
+      const count = Object.keys(firebaseData).length;
+      alert(`✅ Sync berhasil!\n\n${count} inovasi berhasil di-load dari Firebase.\n\nData teman Anda sekarang sudah muncul!`);
+      
+    } catch(error) {
+      console.error('❌ Force sync error:', error);
+      alert('❌ Gagal sync dari Firebase!\n\nError: ' + error.message);
+    } finally {
+      // Restore button
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
   };
 
   window.switchTab = async function(btn, tab) {

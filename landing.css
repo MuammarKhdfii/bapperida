@@ -299,6 +299,27 @@
 .rk-action-btn:hover  { transform: translateY(-2px); }
 .rk-action-btn:active { transform: scale(.96); }
 
+.rk-btn-sync {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+  color: #059669;
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+  transition: all 0.2s ease;
+  font-weight: 800;
+}
+.rk-btn-sync:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.25));
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px) scale(1.02);
+}
+.rk-btn-sync:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
 .rk-btn-refresh {
   background: rgba(59, 130, 246, 0.15);
   color: #2563eb;
