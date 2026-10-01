@@ -24,7 +24,7 @@ const firebaseConfig = {
 
 // Flag untuk enable/disable Firebase
 // Set ke true untuk mengaktifkan sinkronisasi antar perangkat
-const ENABLE_FIREBASE = false;  // ← DISABLE dulu untuk testing
+const ENABLE_FIREBASE = true;  // ✅ ENABLED - Sync antar perangkat aktif
 
 // Initialize Firebase (akan di-load dari CDN di HTML)
 let database = null;

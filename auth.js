@@ -184,6 +184,10 @@ function renderSessionNav(containerId = "sessionNav") {
         <div class="snav-role" style="background:rgba(255,255,255,0.25);color:white;font-weight:800;">${cfg.label}</div>
       </div>
     </div>
+    <div id="firebaseStatus" class="firebase-status" style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,255,255,0.15);border-radius:8px;font-size:13px;color:white;">
+      <span id="firebaseStatusIcon" style="font-size:16px;">🔄</span>
+      <span id="firebaseStatusText">Checking...</span>
+    </div>
     <button class="snav-logout" type="button">↩ Keluar</button>`;
   
   // Attach event listener to logout button immediately
@@ -202,6 +206,54 @@ function renderSessionNav(containerId = "sessionNav") {
     };
     console.log('Event handler attached'); // Debug
   }
+  
+  // Check Firebase connection status
+  checkFirebaseStatus();
+}
+
+// ── Check Firebase Status ────────────────
+function checkFirebaseStatus() {
+  const statusIcon = document.getElementById('firebaseStatusIcon');
+  const statusText = document.getElementById('firebaseStatusText');
+  
+  if (!statusIcon || !statusText) return;
+  
+  // Check if Firebase is enabled
+  if (typeof ENABLE_FIREBASE === 'undefined' || !ENABLE_FIREBASE) {
+    statusIcon.textContent = '💾';
+    statusText.textContent = 'Local Only';
+    statusText.title = 'Data tersimpan di browser ini saja (tidak sync antar perangkat)';
+    return;
+  }
+  
+  // Check if cloudStorage is available
+  if (typeof cloudStorage === 'undefined' || !cloudStorage.checkConnection) {
+    statusIcon.textContent = '⚠️';
+    statusText.textContent = 'Firebase Loading...';
+    // Retry after 2 seconds
+    setTimeout(checkFirebaseStatus, 2000);
+    return;
+  }
+  
+  // Check connection
+  cloudStorage.checkConnection().then(result => {
+    if (result.connected) {
+      statusIcon.textContent = '☁️';
+      statusText.textContent = 'Multi-Device Sync';
+      statusText.title = 'Tersambung ke Firebase - Data sync antar perangkat aktif';
+      statusText.style.color = '#4ade80';
+    } else {
+      statusIcon.textContent = '💾';
+      statusText.textContent = 'Local Only';
+      statusText.title = 'Firebase tidak tersambung - Data tersimpan di browser ini saja';
+      statusText.style.color = '#fbbf24';
+    }
+  }).catch(error => {
+    statusIcon.textContent = '❌';
+    statusText.textContent = 'Connection Error';
+    statusText.title = 'Error: ' + error.message;
+    statusText.style.color = '#ef4444';
+  });
 }
 
 // ── Handle logout dengan proper event ────

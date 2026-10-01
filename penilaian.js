@@ -478,18 +478,31 @@ async function saveAll(showAnim = false) {
   console.log('Skor Judul:', skorJudul);
   console.log('Skor Indikator:', skorInd);
 
-  const all = await loadAllDraf();  // ← Make it await
+  const all = await loadAllDraf();
   
-  // Update atau create entry
+  // Dapatkan metadata inovasi
+  const metaInovasi = daftarInovasi.find(i => i.judul === namaInovasi) || {};
+  
+  // Tentukan kategori inovasi
+  const kategori = getKategoriInovasi(metaInovasi.perangkatDaerah);
+  
+  // Update atau create entry dengan struktur lengkap
   if (!all[namaInovasi]) {
     all[namaInovasi] = {
       namaInovasi,
+      perangkatDaerah: metaInovasi.perangkatDaerah || "",
+      bentukInovasi: metaInovasi.bentuk || "",
+      tahun: metaInovasi.waktu || "",
+      ringkasan: metaInovasi.ringkasan || "",
+      kategori: kategori,
       judulState: {},
       juriState: {},
       notesState: {},
       signatureState: {},
       skorJudulPerJuri: {},
-      skorPerJuri: {}
+      skorPerJuri: {},
+      userMetadata: {},
+      createdAt: new Date().toISOString()
     };
   }
 
@@ -503,10 +516,35 @@ async function saveAll(showAnim = false) {
   all[namaInovasi].skorPerJuri[SESSION.nama] = parseFloat(skorInd.toFixed(2));
   all[namaInovasi].savedAt = new Date().toISOString();
   all[namaInovasi].activeJuri = SESSION.nama;
+  
+  // Update metadata inovasi (jika belum ada)
+  all[namaInovasi].perangkatDaerah = metaInovasi.perangkatDaerah || all[namaInovasi].perangkatDaerah || "";
+  all[namaInovasi].bentukInovasi = metaInovasi.bentuk || all[namaInovasi].bentukInovasi || "";
+  all[namaInovasi].tahun = metaInovasi.waktu || all[namaInovasi].tahun || "";
+  all[namaInovasi].ringkasan = metaInovasi.ringkasan || all[namaInovasi].ringkasan || "";
+  all[namaInovasi].kategori = kategori;
+  
+  // Simpan metadata user untuk audit trail
+  if (!all[namaInovasi].userMetadata[SESSION.nama]) {
+    all[namaInovasi].userMetadata[SESSION.nama] = {};
+  }
+  all[namaInovasi].userMetadata[SESSION.nama] = {
+    nama: SESSION.nama,
+    email: SESSION.email || "",
+    role: SESSION.role,
+    label: SESSION.label,
+    lastUpdated: new Date().toISOString(),
+    skorJudul: parseFloat(skorJudul.toFixed(2)),
+    skorIndikator: parseFloat(skorInd.toFixed(2)),
+    totalSkor: parseFloat((skorJudul + skorInd).toFixed(2)),
+    hasCatatan: !!(notesState[SESSION.nama]?.catatan),
+    hasRekomendasi: !!(notesState[SESSION.nama]?.rekomendasi),
+    hasSignature: !!(signatureState[SESSION.nama])
+  };
 
   console.log('Saving data:', all[namaInovasi]);
   
-  await saveAllDraf(all);  // ← Make it await
+  await saveAllDraf(all);
   setLastInovasi(namaInovasi);
 
   console.log('=== saveAll COMPLETE ===');

@@ -2166,3 +2166,38 @@ details[open] .rk-rest-toggle { border-radius: 10px 10px 0 0; }
   .snav-user { padding: 6px 10px; }
 }
 @media print { .session-nav-header { display: none !important; } }
+
+
+/* Firebase Status Indicator */
+.firebase-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  font-size: 13px;
+  color: white;
+  transition: all 0.3s ease;
+  cursor: help;
+}
+
+.firebase-status:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+#firebaseStatusIcon {
+  font-size: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+#firebaseStatusText {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
