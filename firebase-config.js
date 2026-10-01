@@ -23,40 +23,38 @@ const firebaseConfig = {
 };
 
 // ══════════════════════════════════════════
-//  ENVIRONMENT DETECTION
+//  FIREBASE ENABLE/DISABLE
 // ══════════════════════════════════════════
 
-// Detect apakah running di production (GitHub Pages) atau development (localhost)
-function isProductionEnvironment() {
-  const hostname = window.location.hostname;
-  
-  // Production URLs (tambahkan domain production Anda di sini)
-  const productionHosts = [
-    'muammarkhdfii.github.io',  // GitHub Pages
-    // Tambahkan domain lain jika ada, misal:
-    // 'bapperida.kotametro.go.id',
-    // 'penilaian.bapperida.com',
-  ];
-  
-  return productionHosts.includes(hostname);
-}
+// 🔴 PENTING: Set ke TRUE untuk production (GitHub Pages)
+// 🔴 PENTING: Set ke FALSE untuk development (localhost)
 
-// Flag untuk enable/disable Firebase
-// TRUE: Firebase enabled (sync antar perangkat)
-// FALSE: Hanya gunakan localStorage (tidak sync)
-const ENABLE_FIREBASE = isProductionEnvironment();
+const ENABLE_FIREBASE = true;  // ✅ TRUE = Firebase ON (Real-time sync)
 
-// Log environment info
+// ══════════════════════════════════════════
+//  ENVIRONMENT INFO (Auto-detect)
+// ══════════════════════════════════════════
+
+const currentHostname = window.location.hostname;
+const currentURL = window.location.href;
+const isLocalhost = ['localhost', '127.0.0.1', ''].includes(currentHostname);
+
 console.log('═══════════════════════════════════════');
-console.log('🌍 ENVIRONMENT DETECTION');
+console.log('🌍 FIREBASE CONFIGURATION');
 console.log('═══════════════════════════════════════');
-console.log('Hostname:', window.location.hostname);
-console.log('Protocol:', window.location.protocol);
-console.log('Full URL:', window.location.href);
-console.log('Environment:', ENABLE_FIREBASE ? '🌐 PRODUCTION (Firebase ON)' : '💻 DEVELOPMENT (Firebase OFF)');
-console.log('Firebase Sync:', ENABLE_FIREBASE ? '✅ ENABLED' : '❌ DISABLED');
+console.log('Hostname:', currentHostname);
+console.log('Full URL:', currentURL);
+console.log('Is Localhost:', isLocalhost ? 'YES' : 'NO');
+console.log('Firebase Enabled:', ENABLE_FIREBASE ? '✅ YES' : '❌ NO');
 console.log('Data Storage:', ENABLE_FIREBASE ? '☁️ Firebase Cloud' : '💾 localStorage Only');
+console.log('Real-time Sync:', ENABLE_FIREBASE ? '✅ ACTIVE' : '❌ DISABLED');
 console.log('═══════════════════════════════════════');
+
+if (isLocalhost && ENABLE_FIREBASE) {
+  console.warn('⚠️ WARNING: Firebase enabled on localhost!');
+  console.warn('💡 This will sync localhost data to production.');
+  console.warn('💡 Set ENABLE_FIREBASE = false for local development.');
+}
 
 // Initialize Firebase (akan di-load dari CDN di HTML)
 let database = null;
@@ -64,7 +62,7 @@ let firebaseInitialized = false;
 
 function initFirebase() {
   if (!ENABLE_FIREBASE) {
-    console.log('🔴 Firebase disabled (Development Mode)');
+    console.log('🔴 Firebase disabled');
     console.log('💾 Using localStorage only - Data will NOT sync across devices');
     return false;
   }
@@ -72,7 +70,7 @@ function initFirebase() {
   try {
     // Check if Firebase SDK is loaded
     if (typeof firebase === 'undefined') {
-      console.error('Firebase SDK not loaded! Add Firebase CDN to HTML.');
+      console.error('❌ Firebase SDK not loaded! Add Firebase CDN to HTML.');
       return false;
     }
 
@@ -83,8 +81,8 @@ function initFirebase() {
     
     database = firebase.database();
     firebaseInitialized = true;
-    console.log('✅ Firebase initialized successfully (Production Mode)');
-    console.log('☁️ Data will sync in real-time across all devices');
+    console.log('✅ Firebase initialized successfully');
+    console.log('☁️ Real-time sync is ACTIVE - Data will sync across all devices');
     return true;
   } catch (error) {
     console.error('❌ Firebase initialization error:', error);
