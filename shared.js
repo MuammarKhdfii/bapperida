@@ -16,17 +16,36 @@ const JURI_LIST_JUDUL = [
 ];
 
 // ── Storage keys ──
-const KEY_ALL   = "draf_iid2026_all";  // konsisten dengan semua halaman
+const KEY_ALL   = "draf2026";  // Update key untuk konsistensi dengan firebase-config.js
 const KEY_LAST  = "draf_iid2026_last";
 const KEY_THEME = "iid2026_theme";
 
-// ── Storage helpers ──
-function loadAllDraf() {
-  try { return JSON.parse(localStorage.getItem(KEY_ALL) || "{}"); }
-  catch(e) { return {}; }
+// ── Storage helpers dengan Firebase support ──
+async function loadAllDraf() {
+  // Jika Firebase enabled dan tersedia, gunakan cloudStorage
+  if (typeof cloudStorage !== 'undefined') {
+    return await cloudStorage.loadAllDraf();
+  }
+  
+  // Fallback ke localStorage
+  try { 
+    return JSON.parse(localStorage.getItem(KEY_ALL) || "{}"); 
+  } catch(e) { 
+    return {}; 
+  }
 }
-function saveAllDraf(all) {
+
+async function saveAllDraf(all) {
+  // Simpan ke localStorage sebagai backup
   localStorage.setItem(KEY_ALL, JSON.stringify(all));
+  
+  // Jika Firebase enabled, sync ke cloud juga
+  if (typeof cloudStorage !== 'undefined') {
+    // Simpan setiap inovasi secara terpisah untuk granular sync
+    for (const [namaInovasi, data] of Object.entries(all)) {
+      await cloudStorage.saveDraf(namaInovasi, data);
+    }
+  }
 }
 function getLastInovasi() {
   return localStorage.getItem(KEY_LAST) || "";

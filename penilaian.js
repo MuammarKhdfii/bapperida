@@ -449,7 +449,7 @@ function calculate() {
 }
 
 // ── Simpan ──
-function saveAll(showAnim = false) {
+async function saveAll(showAnim = false) {
   console.log('=== saveAll START ===');
   
   saveJudulStateLocal();
@@ -476,7 +476,7 @@ function saveAll(showAnim = false) {
   console.log('Skor Judul:', skorJudul);
   console.log('Skor Indikator:', skorInd);
 
-  const all = loadAllDraf();
+  const all = await loadAllDraf();  // ← Make it await
   
   // Update atau create entry
   if (!all[namaInovasi]) {
@@ -504,7 +504,7 @@ function saveAll(showAnim = false) {
 
   console.log('Saving data:', all[namaInovasi]);
   
-  saveAllDraf(all);
+  await saveAllDraf(all);  // ← Make it await
   setLastInovasi(namaInovasi);
 
   console.log('=== saveAll COMPLETE ===');
@@ -524,7 +524,7 @@ function saveAll(showAnim = false) {
   }
 }
 
-function doSaveWithValidation() {
+async function doSaveWithValidation() {
   console.log('=== doSaveWithValidation START ===');
   console.log('namaInovasi:', namaInovasi);
   console.log('SESSION:', SESSION);
@@ -564,7 +564,7 @@ function doSaveWithValidation() {
   document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
   
   // Save
-  saveAll(true);
+  await saveAll(true);  // ← Make it await
   
   console.log('=== Save complete ===');
   
