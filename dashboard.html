@@ -604,9 +604,14 @@
     "Dr. Ir. Eva Rolia, M.T., M.K.M."
   ];
 
-  function loadDashboard() {
-    const all = loadAllDraf();
+  async function loadDashboard() {
+    console.log('🔄 Loading dashboard...');
+    
+    const all = await loadAllDraf();
+    console.log('📊 Data loaded:', Object.keys(all).length, 'inovasi');
+    
     const inovasiList = Object.entries(all);
+    console.log('📋 Processing', inovasiList.length, 'entries');
 
     // ── Stat cards ──
     const totalInovasi   = inovasiList.length;
@@ -1218,7 +1223,16 @@
     alert("✅ Data berhasil di-export ke Excel!\n\nFile dapat dibuka langsung dengan Microsoft Excel.\n\nFormat: 2 tabel (Matrik Judul & Matrik Indikator SID)");
   }
 
-  loadDashboard();
+  // Load dashboard dengan async support
+  (async function() {
+    try {
+      await loadDashboard();
+      console.log('✅ Dashboard loaded successfully');
+    } catch (error) {
+      console.error('❌ Dashboard load error:', error);
+      alert('Error loading dashboard. Please refresh the page.');
+    }
+  })();
 </script>
 </body>
 </html>

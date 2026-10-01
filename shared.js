@@ -16,7 +16,7 @@ const JURI_LIST_JUDUL = [
 ];
 
 // ── Storage keys ──
-const KEY_ALL   = "draf2026";  // Update key untuk konsistensi dengan firebase-config.js
+const KEY_ALL   = "draf_iid2026_all";  // Kembalikan ke key original
 const KEY_LAST  = "draf_iid2026_last";
 const KEY_THEME = "iid2026_theme";
 
@@ -55,9 +55,9 @@ function setLastInovasi(judul) {
 }
 
 // ── Simpan state penilaian judul untuk 1 inovasi ──
-function saveJudulToStorage(namaInovasi, judulState, activeJuriJudul) {
+async function saveJudulToStorage(namaInovasi, judulState, activeJuriJudul) {
   if (!namaInovasi) return;
-  const all  = loadAllDraf();
+  const all  = await loadAllDraf();
   const prev = all[namaInovasi] || {};
 
   // Hitung skor per juri judul
@@ -81,14 +81,14 @@ function saveJudulToStorage(namaInovasi, judulState, activeJuriJudul) {
     skorJudulPerJuri,
     activeJuriJudul: activeJuriJudul || ""
   };
-  saveAllDraf(all);
+  await saveAllDraf(all);
   setLastInovasi(namaInovasi);
 }
 
 // ── Simpan state penilaian indikator untuk 1 inovasi ──
-function saveIndikatorToStorage(namaInovasi, juriState, activeJuri) {
+async function saveIndikatorToStorage(namaInovasi, juriState, activeJuri) {
   if (!namaInovasi) return;
-  const all  = loadAllDraf();
+  const all  = await loadAllDraf();
   const prev = all[namaInovasi] || {};
 
   // Hitung skor per juri
@@ -113,14 +113,14 @@ function saveIndikatorToStorage(namaInovasi, juriState, activeJuri) {
     skorPerJuri,
     activeJuri: activeJuri || ""
   };
-  saveAllDraf(all);
+  await saveAllDraf(all);
   setLastInovasi(namaInovasi);
 }
 
 // ── Baca state judul dari storage ──
-function loadJudulFromStorage(namaInovasi) {
+async function loadJudulFromStorage(namaInovasi) {
   if (!namaInovasi) return { judulState: {}, activeJuriJudul: "" };
-  const all  = loadAllDraf();
+  const all  = await loadAllDraf();
   const draf = all[namaInovasi] || {};
   return {
     judulState    : draf.judulState     || {},
@@ -129,9 +129,9 @@ function loadJudulFromStorage(namaInovasi) {
 }
 
 // ── Baca state indikator dari storage ──
-function loadIndikatorFromStorage(namaInovasi) {
+async function loadIndikatorFromStorage(namaInovasi) {
   if (!namaInovasi) return { juriState: {}, activeJuri: "" };
-  const all  = loadAllDraf();
+  const all  = await loadAllDraf();
   const draf = all[namaInovasi] || {};
   return {
     juriState : draf.juriState  || {},
@@ -140,8 +140,8 @@ function loadIndikatorFromStorage(namaInovasi) {
 }
 
 // ── Ringkasan status per inovasi (untuk landing) ──
-function getInovasiStatus(namaInovasi) {
-  const all  = loadAllDraf();
+async function getInovasiStatus(namaInovasi) {
+  const all  = await loadAllDraf();
   const draf = all[namaInovasi];
   if (!draf) return { hasJudul: false, hasIndikator: false, judulJuri: 0, indikatorJuri: 0 };
 
@@ -210,8 +210,8 @@ function initScrollTop(btnId) {
 // Catatan: juri judul dan juri indikator BERBEDA daftarnya,
 // sehingga total gabungan dihitung sebagai:
 //   rata-rata skor judul (dari JURI_LIST_JUDUL) + rata-rata skor indikator (dari JURI_LIST)
-function getTotalGabungan(namaInovasi) {
-  const all  = loadAllDraf();
+async function getTotalGabungan(namaInovasi) {
+  const all  = await loadAllDraf();
   const draf = all[namaInovasi];
   if (!draf) return { skorJudul: 0, skorIndikator: 0, total: 0 };
 

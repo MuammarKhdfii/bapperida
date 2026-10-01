@@ -24,7 +24,7 @@ const firebaseConfig = {
 
 // Flag untuk enable/disable Firebase
 // Set ke true untuk mengaktifkan sinkronisasi antar perangkat
-const ENABLE_FIREBASE = true;  // ← SUDAH DIAKTIFKAN!
+const ENABLE_FIREBASE = false;  // ← DISABLE dulu untuk testing
 
 // Initialize Firebase (akan di-load dari CDN di HTML)
 let database = null;
@@ -69,9 +69,9 @@ const cloudStorage = {
     console.log('💾 Saving data for:', namaInovasi);
     
     // Selalu simpan ke localStorage sebagai backup
-    const allLocal = JSON.parse(localStorage.getItem("draf2026") || "{}");
+    const allLocal = JSON.parse(localStorage.getItem("draf_iid2026_all") || "{}");
     allLocal[namaInovasi] = data;
-    localStorage.setItem("draf2026", JSON.stringify(allLocal));
+    localStorage.setItem("draf_iid2026_all", JSON.stringify(allLocal));
     
     // Jika Firebase enabled, simpan juga ke cloud
     if (firebaseInitialized && database) {
@@ -94,7 +94,7 @@ const cloudStorage = {
     console.log('📥 Loading all drafts...');
     
     // Load dari localStorage dulu
-    const localData = JSON.parse(localStorage.getItem("draf2026") || "{}");
+    const localData = JSON.parse(localStorage.getItem("draf_iid2026_all") || "{}");
     
     // Jika Firebase tidak enabled, return localStorage
     if (!firebaseInitialized || !database) {
@@ -116,7 +116,7 @@ const cloudStorage = {
       });
       
       // Update localStorage dengan data terbaru dari Firebase
-      localStorage.setItem("draf2026", JSON.stringify(merged));
+      localStorage.setItem("draf_iid2026_all", JSON.stringify(merged));
       
       console.log('☁️ Loaded from Firebase:', Object.keys(firebaseData).length, 'items');
       console.log('📊 Total merged:', Object.keys(merged).length, 'items');

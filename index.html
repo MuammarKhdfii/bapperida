@@ -144,8 +144,8 @@
   const sel = document.getElementById("globalInovasi");
 
   // Populate dropdown dengan status lock
-  function populateInovasiDropdown() {
-    const allDraf = loadAllDraf();
+  async function populateInovasiDropdown() {
+    const allDraf = await loadAllDraf();
     const currentUser = getSession()?.nama;
     
     sel.innerHTML = '<option value="">— Pilih Inovasi —</option>';
@@ -231,19 +231,22 @@
   };
   
   // Populate dropdown saat load
-  populateInovasiDropdown();
+  populateInovasiDropdown().catch(err => console.error('[populateInovasiDropdown] Error:', err));
 
   // Restore inovasi terakhir
   const last = getLastInovasi();
-  if (last) { sel.value = last; onGlobalInovasiChange(); }
+  if (last) { 
+    sel.value = last; 
+    onGlobalInovasiChange().catch(err => console.error('[onGlobalInovasiChange] Error:', err)); 
+  }
   
   // Update assessment progress on load
-  updateAssessmentProgress();
+  updateAssessmentProgress().catch(err => console.error('[updateAssessmentProgress] Error:', err));
 
-  function onGlobalInovasiChange() {
+  async function onGlobalInovasiChange() {
     const judul = sel.value;
     localStorage.setItem("iid2026_selected", judul);
-    updateStatusCards(judul);
+    await updateStatusCards(judul);
     
     // Sembunyikan warning box jika inovasi dipilih
     const warningBox = document.getElementById("warningNoInovasi");
@@ -252,13 +255,13 @@
     }
   }
 
-  function updateStatusCards(judul) {
+  async function updateStatusCards(judul) {
     const bar = document.getElementById("inovasiStatusBar");
     if (!judul) {
       bar.style.display = "none";
       return;
     }
-    const st    = getInovasiStatus(judul);
+    const st    = await getInovasiStatus(judul);
     const total = st.judulJuri + st.indikatorJuri;
 
     bar.style.display = "flex";
@@ -272,11 +275,11 @@
       <span class="isb-tahun">📅 ${meta.waktu || "—"}</span>`;
     
     // Update assessment progress
-    updateAssessmentProgress();
+    await updateAssessmentProgress();
   }
 
-  function updateAssessmentProgress() {
-    const allDraf = loadAllDraf();
+  async function updateAssessmentProgress() {
+    const allDraf = await loadAllDraf();
     const currentUser = getSession()?.nama;
     const totalInovasi = daftarInovasi.length;
     let assessed = 0;
@@ -371,9 +374,12 @@
     return "opd";
   }
 
-  function loadRankingData() {
-    const all = loadAllDraf();
-    return Object.entries(all).map(([judulKey, draf]) => {
+  async function loadRankingData() {
+    const all = await loadAllDraf();
+    console.log('[loadRankingData] localStorage data:', all);
+    console.log('[loadRankingData] Object.keys:', Object.keys(all));
+    
+    const result = Object.entries(all).map(([judulKey, draf]) => {
       // Rata-rata skor indikator
       const sp      = draf.skorPerJuri    || {};
       const sjp     = draf.skorJudulPerJuri || {};
@@ -395,6 +401,9 @@
         savedAt: draf.savedAt || ""
       };
     }).sort((a,b) => b.total - a.total);
+    
+    console.log('[loadRankingData] Processed result:', result);
+    return result;
   }
 
   function renderRankingCard(item, rank) {
@@ -442,9 +451,12 @@
   }
 
   // Pastikan fungsi dapat diakses secara global
-  window.renderLandingRanking = function() {
-    const all  = loadRankingData();
+  window.renderLandingRanking = async function() {
+    console.log('[renderLandingRanking] START');
+    const all  = await loadRankingData();
+    console.log('[renderLandingRanking] Got all data:', all.length, 'items');
     const data = currentTab === "semua" ? all : all.filter(i => i.kategori === currentTab);
+    console.log('[renderLandingRanking] Filtered data for tab', currentTab, ':', data.length, 'items');
     const cont = document.getElementById("landingRankingContainer");
 
     if (data.length === 0) {
@@ -467,23 +479,24 @@
       </details>`;
     }
     cont.innerHTML = html;
+    console.log('[renderLandingRanking] Rendered', data.length, 'items');
   };
 
-  window.clearAllData = function() {
+  window.clearAllData = async function() {
     if (!confirm("Hapus semua data penilaian yang tersimpan?\nTindakan ini tidak dapat dibatalkan.")) return;
     localStorage.removeItem(KEY_ALL);
     localStorage.removeItem(KEY_LAST);
     localStorage.removeItem("iid2026_selected");
-    renderLandingRanking();
-    updateStatusCards("");
+    await renderLandingRanking();
+    await updateStatusCards("");
     sel.value = "";
   };
 
-  window.switchTab = function(btn, tab) {
+  window.switchTab = async function(btn, tab) {
     document.querySelectorAll("#landingRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentTab = tab;
-    renderLandingRanking();
+    await renderLandingRanking();
   };
 
   // Render ranking saat halaman dimuat

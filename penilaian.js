@@ -103,32 +103,34 @@ if (namaInovasi) {
   document.getElementById("heroPDInovasi").textContent    = "Kembali ke beranda untuk memilih inovasi";
 }
 
-// Restore state hanya untuk user yang login
-const allDraf = loadAllDraf();
-if (namaInovasi && allDraf[namaInovasi]) {
-  const d = allDraf[namaInovasi];
-  if (d.judulState?.[SESSION.nama]) judulState[SESSION.nama] = d.judulState[SESSION.nama];
-  if (d.juriState?.[SESSION.nama])  juriState[SESSION.nama]  = d.juriState[SESSION.nama];
-  if (d.notesState?.[SESSION.nama]) notesState[SESSION.nama] = d.notesState[SESSION.nama];
-  if (d.signatureState?.[SESSION.nama]) signatureState[SESSION.nama] = d.signatureState[SESSION.nama];
-}
+// Restore state hanya untuk user yang login - wrapped in async IIFE
+(async function restoreState() {
+  const allDraf = await loadAllDraf();
+  if (namaInovasi && allDraf[namaInovasi]) {
+    const d = allDraf[namaInovasi];
+    if (d.judulState?.[SESSION.nama]) judulState[SESSION.nama] = d.judulState[SESSION.nama];
+    if (d.juriState?.[SESSION.nama])  juriState[SESSION.nama]  = d.juriState[SESSION.nama];
+    if (d.notesState?.[SESSION.nama]) notesState[SESSION.nama] = d.notesState[SESSION.nama];
+    if (d.signatureState?.[SESSION.nama]) signatureState[SESSION.nama] = d.signatureState[SESSION.nama];
+  }
 
-// Sembunyikan session login grid, tampilkan form langsung
-const loginSection = document.getElementById("sessionLogin");
-if (loginSection) loginSection.style.display = "none";
-const sessionActive = document.getElementById("sessionActive");
-if (sessionActive) sessionActive.style.display = "block";
+  // Sembunyikan session login grid, tampilkan form langsung
+  const loginSection = document.getElementById("sessionLogin");
+  if (loginSection) loginSection.style.display = "none";
+  const sessionActive = document.getElementById("sessionActive");
+  if (sessionActive) sessionActive.style.display = "block";
 
-// Update session bar dengan data dari auth session
-const barNama = document.getElementById("sessionNamaJuri");
-const barRole = document.getElementById("sessionRoleJuri");
-if (barNama) barNama.textContent = SESSION.nama;
-if (barRole) barRole.textContent = SESSION.label;
+  // Update session bar dengan data dari auth session
+  const barNama = document.getElementById("sessionNamaJuri");
+  const barRole = document.getElementById("sessionRoleJuri");
+  if (barNama) barNama.textContent = SESSION.nama;
+  if (barRole) barRole.textContent = SESSION.label;
 
-render();
-calculate();
-loadNotesState();
-initSignatureCanvas();
+  render();
+  calculate();
+  loadNotesState();
+  initSignatureCanvas();
+})().catch(err => console.error('[restoreState] Error:', err));
 
 // ── Load Notes State ──
 function loadNotesState() {
@@ -640,7 +642,7 @@ window.addEventListener("beforeunload", () => saveAll(false));
 // ── Print ──
 const printBtnEl = document.getElementById("printBtn");
 if (printBtnEl) {
-  printBtnEl.addEventListener("click", () => {
+  printBtnEl.addEventListener("click", async () => {
     console.log('=== PRINT BUTTON CLICKED ===');
     
     // Save current state first
@@ -649,7 +651,7 @@ if (printBtnEl) {
     saveNotesState();
     
     // Load saved data from localStorage to ensure we have the latest
-    const allDraf = loadAllDraf();
+    const allDraf = await loadAllDraf();
     const savedData = allDraf[namaInovasi];
     
     console.log('Current innovation:', namaInovasi);

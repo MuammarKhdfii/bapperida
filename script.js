@@ -953,14 +953,24 @@ function getKategori(pd) {
 function loadRankingData() {
   try {
     const raw = JSON.parse(localStorage.getItem("draf_iid2026_all") || "{}");
-    return Object.entries(raw).map(([judulKey, draf]) => {
+    console.log('📊 Raw data from localStorage:', raw);
+    console.log('📊 Keys found:', Object.keys(raw));
+    
+    const results = Object.entries(raw).map(([judulKey, draf]) => {
+      console.log('Processing:', judulKey, draf);
       const sp = draf.skorPerJuri || {};
       const jm = Object.entries(sp).filter(([,s]) => s > 0).map(([j]) => j);
       const rt = jm.length > 0 ? Object.values(sp).reduce((a,b)=>a+b,0) / jm.length : 0;
       const meta = daftarInovasi.find(i => i.judul === judulKey) || {};
       return { judul:judulKey, perangkatDaerah:meta.perangkatDaerah||"—", kategori:getKategori(meta.perangkatDaerah), skorPerJuri:sp, juriYgMenilai:jm, rataRata:parseFloat(rt.toFixed(2)), savedAt:draf.savedAt||"" };
     }).sort((a,b) => b.rataRata - a.rataRata);
-  } catch(e) { return []; }
+    
+    console.log('📊 Processed results:', results);
+    return results;
+  } catch(e) { 
+    console.error('❌ Error loading ranking data:', e);
+    return []; 
+  }
 }
 function renderRankingCard(item, rank) {
   const medal = rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":`#${rank}`;
@@ -1027,3 +1037,7 @@ function renderAllRanking() {
 // ══════════════════════════════════════════
 renderJudul();
 calculateJudul();
+
+// Render dashboard ranking saat page load
+renderAllRanking();
+console.log('✅ Dashboard ranking initialized');
