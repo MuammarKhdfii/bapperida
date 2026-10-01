@@ -242,30 +242,64 @@
     const juriList = forRole === 'juri_judul' ? JURI_LIST_JUDUL : JURI_LIST;
     const completedJuri = [];
     
+    console.log('[getAssessmentProgressForInovasi] Checking for role:', forRole);
+    console.log('[getAssessmentProgressForInovasi] Juri list:', juriList);
+    
     juriList.forEach(juriName => {
       const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
+      
+      console.log(`  Checking juri: "${juriName}" (sanitized: "${sanitizedName}")`);
       
       if (forRole === 'juri_judul') {
         // Check judul state
         const judulData = draft.judulState?.[juriName] || draft.judulState?.[sanitizedName];
+        console.log(`    judulData found:`, !!judulData);
+        
         if (judulData && typeof judulData === 'object') {
           const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
+          console.log(`    Filled count: ${filledCount}/6`);
+          
           if (filledCount >= 6) {
             completedJuri.push(juriName);
+            console.log(`    ✅ COMPLETE`);
+          } else {
+            console.log(`    ❌ Incomplete (${filledCount}/6)`);
           }
         }
       } else if (forRole === 'juri_sid') {
         // Check indikator state
         const juriData = draft.juriState?.[juriName] || draft.juriState?.[sanitizedName];
+        console.log(`    juriData found:`, !!juriData);
+        
         if (juriData && juriData.radio && typeof juriData.radio === 'object') {
-          const requiredIndicators = sidIndicators.filter(i => !i.type).length;
-          const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
-          if (filledCount >= requiredIndicators) {
-            completedJuri.push(juriName);
+          // Check if sidIndicators is defined
+          if (typeof sidIndicators === 'undefined') {
+            console.warn('    ⚠️ sidIndicators not defined! Using default count.');
+            const filledCount = Object.keys(juriData.radio).length;
+            // Assume 19 required indicators (default for SID)
+            if (filledCount >= 19) {
+              completedJuri.push(juriName);
+              console.log(`    ✅ COMPLETE (${filledCount} indicators)`);
+            } else {
+              console.log(`    ❌ Incomplete (${filledCount}/19)`);
+            }
+          } else {
+            const requiredIndicators = sidIndicators.filter(i => !i.type).length;
+            const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
+            console.log(`    Filled count: ${filledCount}/${requiredIndicators}`);
+            
+            if (filledCount >= requiredIndicators) {
+              completedJuri.push(juriName);
+              console.log(`    ✅ COMPLETE`);
+            } else {
+              console.log(`    ❌ Incomplete`);
+            }
           }
         }
       }
     });
+    
+    console.log(`[getAssessmentProgressForInovasi] Result: ${completedJuri.length}/${juriList.length} juri completed`);
     
     return {
       completed: completedJuri.length,
@@ -594,6 +628,21 @@
     console.log('[loadRankingData] Object.keys:', Object.keys(all));
     
     const result = Object.entries(all).map(([judulKey, draf]) => {
+      console.log(`\n[loadRankingData] Processing: "${judulKey}"`);
+      console.log('  Draft structure:', {
+        hasJudulState: !!draf.judulState,
+        hasJuriState: !!draf.juriState,
+        hasSkorPerJuri: !!draf.skorPerJuri,
+        hasSkorJudulPerJuri: !!draf.skorJudulPerJuri
+      });
+      
+      if (draf.judulState) {
+        console.log('  judulState keys:', Object.keys(draf.judulState));
+      }
+      if (draf.juriState) {
+        console.log('  juriState keys:', Object.keys(draf.juriState));
+      }
+      
       // Rata-rata skor indikator
       const sp      = draf.skorPerJuri    || {};
       const sjp     = draf.skorJudulPerJuri || {};
@@ -603,6 +652,69 @@
       const avgJud  = judArr.length  > 0 ? judArr.reduce((a,b)=>a+b,0)  / judArr.length  : 0;
       const total   = parseFloat((avgInd + avgJud).toFixed(2));
       const meta    = daftarInovasi.find(i => i.judul === judulKey) || {};
+      
+      console.log('  Score arrays:', {
+        indArr: indArr.length,
+        judArr: judArr.length,
+        avgInd,
+        avgJud,
+        total
+      });
+      
+      // Count completed assessments properly (check filled fields, not just scores)
+      // For juri_judul: count juries with 6 filled kriteria
+      let judulJuriCompleted = 0;
+      console.log('  Checking JURI_LIST_JUDUL:', JURI_LIST_JUDUL);
+      JURI_LIST_JUDUL.forEach(juriName => {
+        const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
+        console.log(`    Checking judul for: "${juriName}" (sanitized: "${sanitizedName}")`);
+        const judulData = draf.judulState?.[juriName] || draf.judulState?.[sanitizedName];
+        console.log(`      judulData found:`, !!judulData, judulData);
+        if (judulData && typeof judulData === 'object') {
+          const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
+          console.log(`      Filled count: ${filledCount}/6`);
+          if (filledCount >= 6) {
+            judulJuriCompleted++;
+            console.log(`      ✅ COMPLETE`);
+          }
+        }
+      });
+      console.log('  judulJuriCompleted:', judulJuriCompleted);
+      
+      // For juri_sid: count juries with all required indicators filled
+      let indJuriCompleted = 0;
+      console.log('  Checking JURI_LIST:', JURI_LIST);
+      JURI_LIST.forEach(juriName => {
+        const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
+        console.log(`    Checking SID for: "${juriName}" (sanitized: "${sanitizedName}")`);
+        const juriData = draf.juriState?.[juriName] || draf.juriState?.[sanitizedName];
+        console.log(`      juriData found:`, !!juriData);
+        if (juriData) {
+          console.log(`      juriData.radio:`, juriData.radio);
+        }
+        if (juriData && juriData.radio && typeof juriData.radio === 'object') {
+          // Check if sidIndicators is defined
+          if (typeof sidIndicators !== 'undefined') {
+            const requiredIndicators = sidIndicators.filter(i => !i.type).length;
+            const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
+            console.log(`      Filled count: ${filledCount}/${requiredIndicators}`);
+            if (filledCount >= requiredIndicators) {
+              indJuriCompleted++;
+              console.log(`      ✅ COMPLETE`);
+            }
+          } else {
+            // Fallback: assume 19 required indicators
+            const filledCount = Object.keys(juriData.radio).length;
+            console.log(`      Filled count: ${filledCount}/19 (fallback)`);
+            if (filledCount >= 19) {
+              indJuriCompleted++;
+              console.log(`      ✅ COMPLETE`);
+            }
+          }
+        }
+      });
+      console.log('  indJuriCompleted:', indJuriCompleted);
+      
       return {
         judul: judulKey,
         perangkatDaerah: meta.perangkatDaerah || "—",
@@ -610,8 +722,8 @@
         avgInd:  parseFloat(avgInd.toFixed(2)),
         avgJud:  parseFloat(avgJud.toFixed(2)),
         total,
-        judulJuri: judArr.length,
-        indJuri:   indArr.length,
+        judulJuri: judulJuriCompleted,
+        indJuri:   indJuriCompleted,
         savedAt: draf.savedAt || ""
       };
     }).sort((a,b) => b.total - a.total);
@@ -626,6 +738,11 @@
     const date = item.savedAt
       ? new Date(item.savedAt).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})
       : "";
+    
+    // Hitung total juri yang sudah menilai (gabungan judul + indikator)
+    // Karena bisa jadi ada juri yang menilai judul saja, atau indikator saja
+    const totalJuriDinilai = Math.max(item.judulJuri, item.indJuri);
+    
     return `
       <div class="rk-card ${rkClass}">
         <div class="rk-rank">${medal}</div>
@@ -648,7 +765,7 @@
             </div>
             <div class="rk-juri-cell juri-total">
               <span class="rk-juri-name">Juri Dinilai</span>
-              <span class="rk-juri-val">${item.indJuri}/3</span>
+              <span class="rk-juri-val">${totalJuriDinilai}/3</span>
             </div>
           </div>
         </div>
@@ -697,13 +814,56 @@
   };
 
   window.clearAllData = async function() {
-    if (!confirm("Hapus semua data penilaian yang tersimpan?\nTindakan ini tidak dapat dibatalkan.")) return;
+    const confirmMsg = "⚠️ HAPUS SEMUA DATA PENILAIAN?\n\n" +
+                       "Ini akan menghapus:\n" +
+                       "✗ Semua penilaian dari SEMUA juri\n" +
+                       "✗ Semua data di localStorage\n" +
+                       "✗ Semua data di Firebase (Cloud)\n" +
+                       "✗ Seluruh ranking akan hilang\n\n" +
+                       "⚠️ TINDAKAN INI TIDAK DAPAT DIBATALKAN!\n\n" +
+                       "Ketik 'HAPUS SEMUA' untuk konfirmasi:";
+    
+    const userInput = prompt(confirmMsg);
+    
+    if (userInput !== 'HAPUS SEMUA') {
+      alert('Penghapusan dibatalkan.');
+      return;
+    }
+    
+    console.log('🗑️ Starting delete all data...');
+    
+    // 1. Hapus dari localStorage
     localStorage.removeItem(KEY_ALL);
     localStorage.removeItem(KEY_LAST);
     localStorage.removeItem("iid2026_selected");
+    console.log('✅ localStorage cleared');
+    
+    // 2. Hapus dari Firebase (jika enabled)
+    if (firebaseInitialized && database) {
+      try {
+        await database.ref('penilaian').remove();
+        console.log('✅ Firebase data cleared');
+        alert('✅ Semua data berhasil dihapus!\n\n' +
+              '• localStorage: Cleared\n' +
+              '• Firebase: Cleared\n' +
+              '• Semua juri: Data terhapus\n\n' +
+              'Halaman akan di-refresh.');
+      } catch (error) {
+        console.error('❌ Error clearing Firebase:', error);
+        alert('⚠️ Data localStorage terhapus, tapi Firebase gagal.\n\n' +
+              'Error: ' + error.message);
+      }
+    } else {
+      alert('✅ Data localStorage berhasil dihapus!\n\n' +
+            '(Firebase tidak aktif)');
+    }
+    
+    // 3. Refresh UI
     await renderLandingRanking();
     await updateStatusCards("");
     sel.value = "";
+    
+    console.log('✅ Delete all data complete');
   };
 
   // Force sync dari Firebase - paksa reload data dari cloud
