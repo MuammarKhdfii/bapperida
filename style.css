@@ -2201,3 +2201,154 @@ details[open] .rk-rest-toggle { border-radius: 10px 10px 0 0; }
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
+
+
+/* ══════════════════════════════════════════════════════
+   REAL-TIME NOTIFICATION STYLES
+   ══════════════════════════════════════════════════════ */
+
+/* Real-time notification popup */
+.realtime-notification {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 10000;
+  background: white;
+  border-left: 4px solid #ef4444;
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 320px;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 0 20px rgba(239,68,68,0.1);
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  animation: slideInRight 0.3s ease-out;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.rtn-icon {
+  font-size: 24px;
+  animation: pulse-red 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-red {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.rtn-content {
+  flex: 1;
+}
+
+.rtn-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ef4444;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rtn-text {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.rtn-text strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.rtn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.rtn-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Live indicator in header */
+#liveIndicator {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #dc2626;
+  animation: fadeIn 0.3s ease;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { 
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% { 
+    opacity: 0.7;
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+}
+
+.live-text {
+  font-weight: 600;
+}
+
+.live-text strong {
+  font-weight: 800;
+  color: #991b1b;
+}
+
+/* Multiple notifications stacking */
+.realtime-notification:nth-child(n+2) {
+  top: calc(80px + 90px * (var(--notification-index, 0)));
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
