@@ -228,7 +228,7 @@
     const inp = document.getElementById("password");
     const btn = document.getElementById("pwToggle");
     inp.type = inp.type === "password" ? "text" : "password";
-    btn.textContent = inp.type === "password" ? "👁" : "🙈";
+    btn.textContent = inp.type === "password" ? "👁" : "";
   }
 
   document.getElementById("password").addEventListener("keydown", e => {
