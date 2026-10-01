@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Connection Tester</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #1f2937;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .test-section {
+      background: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .test-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+    .status.success { background: #dcfce7; color: #166534; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+    .status.warning { background: #fef3c7; color: #92400e; }
+    .btn {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .btn:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+    .btn.secondary {
+      background: #10b981;
+    }
+    .btn.secondary:hover {
+      background: #059669;
+    }
+    .actions {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+    }
+    .log-entry {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .log-success { background: #dcfce7; color: #166534; }
+    .log-error { background: #fee2e2; color: #991b1b; }
+    .log-info { background: #dbeafe; color: #1e40af; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔍 Firebase Connection Diagnostic Tool</h1>
+  <div class="subtitle">Tool untuk mengecek status koneksi Firebase dan data sync</div>
+
+  <!-- Test 1: Firebase Config -->
+  <div class="test-section">
+    <div class="test-title">
+      <span>1️⃣ Firebase Configuration</span>
+      <span id="status1" class="status warning">Checking...</span>
+    </div>
+    <div id="result1" class="result">Menjalankan test...</div>
+  </div>
+
+  <!-- Test 2: Firebase Connection -->
+  <div class="test-section">
+    <div class="test-title">
+      <span>2️⃣ Firebase Database Connection</span>
+      <span id="status2" class="status warning">Checking...</span>
+    </div>
+    <div id="result2" class="result">Menjalankan test...</div>
+  </div>
+
+  <!-- Test 3: Data Read Test -->
+  <div class="test-section">
+    <div class="test-title">
+      <span>3️⃣ Firebase Data Read Test</span>
+      <span id="status3" class="status warning">Checking...</span>
+    </div>
+    <div id="result3" class="result">Menjalankan test...</div>
+  </div>
+
+  <!-- Test 4: LocalStorage vs Firebase -->
+  <div class="test-section">
+    <div class="test-title">
+      <span>4️⃣ LocalStorage vs Firebase Comparison</span>
+      <span id="status4" class="status warning">Checking...</span>
+    </div>
+    <div id="result4" class="result">Menjalankan test...</div>
+  </div>
+
+  <!-- Test 5: Write Test -->
+  <div class="test-section">
+    <div class="test-title">
+      <span>5️⃣ Firebase Write Test</span>
+      <span id="status5" class="status warning">Ready</span>
+    </div>
+    <div id="result5" class="result">Klik tombol di bawah untuk test write ke Firebase...</div>
+    <div class="actions">
+      <button class="btn" onclick="testWrite()">🧪 Test Write</button>
+      <button class="btn secondary" onclick="testDelete()">🗑️ Delete Test Data</button>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="test-section">
+    <div class="test-title">⚡ Quick Actions</div>
+    <button class="btn" onclick="runAllTests()">🔄 Refresh All Tests</button>
+    <button class="btn secondary" onclick="window.location.href='index.html'">🏠 Kembali ke Dashboard</button>
+  </div>
+
+  <!-- Live Logs -->
+  <div class="test-section">
+    <div class="test-title">📋 Console Logs (Real-time)</div>
+    <div id="liveLogs" class="result" style="max-height: 300px; overflow-y: auto;"></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<!-- Firebase Config -->
+<script src="firebase-config.js"></script>
+
+<script>
+// ══════════════════════════════════════════
+//  FIREBASE DIAGNOSTIC TESTS
+// ══════════════════════════════════════════
+
+const logs = [];
+
+function addLog(type, message) {
+  const time = new Date().toLocaleTimeString();
+  logs.push({ time, type, message });
+  updateLogDisplay();
+  console.log(`[${type.toUpperCase()}] ${message}`);
+}
+
+function updateLogDisplay() {
+  const container = document.getElementById('liveLogs');
+  container.innerHTML = logs.slice(-20).reverse().map(log => {
+    const className = log.type === 'error' ? 'log-error' : log.type === 'success' ? 'log-success' : 'log-info';
+    return `<div class="${className}">[${log.time}] ${log.message}</div>`;
+  }).join('');
+}
+
+// Test 1: Check Firebase Config
+function test1_Config() {
+  addLog('info', 'Running Test 1: Firebase Configuration');
+  
+  let result = '';
+  let status = 'success';
+  
+  try {
+    result += `ENABLE_FIREBASE: ${typeof ENABLE_FIREBASE !== 'undefined' ? ENABLE_FIREBASE : 'UNDEFINED'}\n`;
+    result += `firebaseInitialized: ${typeof firebaseInitialized !== 'undefined' ? firebaseInitialized : 'UNDEFINED'}\n`;
+    result += `Firebase SDK loaded: ${typeof firebase !== 'undefined' ? '✅ YES' : '❌ NO'}\n`;
+    result += `Database object: ${typeof database !== 'undefined' && database !== null ? '✅ EXISTS' : '❌ NULL'}\n\n`;
+    
+    if (typeof firebaseConfig !== 'undefined') {
+      result += `Firebase Config:\n`;
+      result += `- Project ID: ${firebaseConfig.projectId}\n`;
+      result += `- Database URL: ${firebaseConfig.databaseURL}\n`;
+      result += `- Auth Domain: ${firebaseConfig.authDomain}\n`;
+    } else {
+      result += `⚠️ firebaseConfig not found\n`;
+      status = 'warning';
+    }
+    
+    if (!ENABLE_FIREBASE) {
+      result += `\n⚠️ WARNING: Firebase is DISABLED (ENABLE_FIREBASE = false)\n`;
+      result += `To enable: Set ENABLE_FIREBASE = true in firebase-config.js`;
+      status = 'warning';
+    }
+    
+    if (!firebaseInitialized) {
+      result += `\n❌ ERROR: Firebase not initialized\n`;
+      status = 'error';
+    }
+    
+    addLog(status === 'error' ? 'error' : 'success', 'Test 1 completed');
+  } catch (error) {
+    result = `❌ ERROR: ${error.message}\n${error.stack}`;
+    status = 'error';
+    addLog('error', `Test 1 failed: ${error.message}`);
+  }
+  
+  document.getElementById('result1').textContent = result;
+  document.getElementById('status1').textContent = status === 'success' ? '✅ OK' : status === 'warning' ? '⚠️ WARNING' : '❌ FAILED';
+  document.getElementById('status1').className = `status ${status}`;
+}
+
+// Test 2: Check Firebase Connection
+async function test2_Connection() {
+  addLog('info', 'Running Test 2: Firebase Connection');
+  
+  let result = 'Testing connection to Firebase Realtime Database...\n\n';
+  let status = 'error';
+  
+  try {
+    if (!firebaseInitialized || !database) {
+      result += '❌ Firebase not initialized. Cannot test connection.\n';
+      result += 'Fix Test 1 first before running this test.';
+      document.getElementById('result2').textContent = result;
+      document.getElementById('status2').textContent = '❌ FAILED';
+      document.getElementById('status2').className = 'status error';
+      addLog('error', 'Test 2 failed: Firebase not initialized');
+      return;
+    }
+    
+    // Test .info/connected
+    const connectedRef = database.ref('.info/connected');
+    const snapshot = await connectedRef.once('value');
+    const connected = snapshot.val();
+    
+    result += `Connection Status: ${connected ? '✅ CONNECTED' : '❌ DISCONNECTED'}\n\n`;
+    
+    if (connected) {
+      result += `✅ Firebase Realtime Database is accessible\n`;
+      result += `You can read and write data to Firebase.\n`;
+      status = 'success';
+      addLog('success', 'Firebase connection successful');
+    } else {
+      result += `❌ Cannot connect to Firebase\n`;
+      result += `Check:\n`;
+      result += `- Internet connection\n`;
+      result += `- Firebase Database Rules\n`;
+      result += `- Firebase project status\n`;
+      addLog('error', 'Firebase connection failed');
+    }
+    
+  } catch (error) {
+    result += `❌ CONNECTION ERROR:\n${error.message}\n\n`;
+    result += `Error Code: ${error.code || 'Unknown'}\n`;
+    
+    if (error.code === 'PERMISSION_DENIED') {
+      result += `\n⚠️ PERMISSION DENIED - Database rules not set!\n`;
+      result += `\nFIX: Go to Firebase Console:\n`;
+      result += `1. Realtime Database → Rules\n`;
+      result += `2. Set rules to:\n`;
+      result += `{\n`;
+      result += `  "rules": {\n`;
+      result += `    "penilaian": {\n`;
+      result += `      ".read": true,\n`;
+      result += `      ".write": true\n`;
+      result += `    }\n`;
+      result += `  }\n`;
+      result += `}\n`;
+      result += `3. Click "Publish"\n`;
+    }
+    
+    addLog('error', `Test 2 error: ${error.message}`);
+  }
+  
+  document.getElementById('result2').textContent = result;
+  document.getElementById('status2').textContent = status === 'success' ? '✅ OK' : '❌ FAILED';
+  document.getElementById('status2').className = `status ${status}`;
+}
+
+// Test 3: Read Data from Firebase
+async function test3_ReadData() {
+  addLog('info', 'Running Test 3: Firebase Read');
+  
+  let result = 'Reading data from Firebase /penilaian node...\n\n';
+  let status = 'error';
+  
+  try {
+    if (!firebaseInitialized || !database) {
+      result += '❌ Firebase not initialized.';
+      document.getElementById('result3').textContent = result;
+      document.getElementById('status3').textContent = '❌ FAILED';
+      document.getElementById('status3').className = 'status error';
+      return;
+    }
+    
+    const snapshot = await database.ref('penilaian').once('value');
+    const data = snapshot.val();
+    
+    if (data) {
+      const count = Object.keys(data).length;
+      result += `✅ Successfully read data from Firebase!\n\n`;
+      result += `Total items: ${count}\n\n`;
+      result += `Inovasi found:\n`;
+      Object.keys(data).forEach((key, i) => {
+        const originalKey = desanitizeFirebaseKey(key);
+        const item = data[key];
+        const juriCount = item.judulState ? Object.keys(item.judulState).length : 0;
+        const sidCount = item.juriState ? Object.keys(item.juriState).length : 0;
+        result += `${i + 1}. ${originalKey} (${juriCount} juri judul, ${sidCount} juri SID)\n`;
+      });
+      status = 'success';
+      addLog('success', `Read ${count} items from Firebase`);
+    } else {
+      result += `⚠️ No data found in Firebase\n\n`;
+      result += `This means:\n`;
+      result += `- No one has saved assessment yet, OR\n`;
+      result += `- Firebase was not enabled when saving, OR\n`;
+      result += `- Data was saved to different Firebase project\n\n`;
+      result += `Next steps:\n`;
+      result += `1. Check ENABLE_FIREBASE = true\n`;
+      result += `2. Go to penilaian.html\n`;
+      result += `3. Fill and save an assessment\n`;
+      result += `4. Come back here and refresh\n`;
+      status = 'warning';
+      addLog('warning', 'No data in Firebase');
+    }
+    
+  } catch (error) {
+    result += `❌ READ ERROR:\n${error.message}\n\n`;
+    if (error.code === 'PERMISSION_DENIED') {
+      result += `⚠️ PERMISSION_DENIED\nSet Firebase Database Rules first!`;
+    }
+    addLog('error', `Test 3 error: ${error.message}`);
+  }
+  
+  document.getElementById('result3').textContent = result;
+  document.getElementById('status3').textContent = status === 'success' ? '✅ OK' : status === 'warning' ? '⚠️ EMPTY' : '❌ FAILED';
+  document.getElementById('status3').className = `status ${status}`;
+}
+
+// Test 4: Compare localStorage vs Firebase
+async function test4_Compare() {
+  addLog('info', 'Running Test 4: Data Comparison');
+  
+  let result = 'Comparing localStorage vs Firebase data...\n\n';
+  let status = 'success';
+  
+  try {
+    // Read localStorage
+    const localData = JSON.parse(localStorage.getItem('draf_iid2026_all') || '{}');
+    const localKeys = Object.keys(localData);
+    
+    result += `📂 LocalStorage:\n`;
+    result += `Total items: ${localKeys.length}\n`;
+    if (localKeys.length > 0) {
+      result += `Items: ${localKeys.slice(0, 5).join(', ')}${localKeys.length > 5 ? '...' : ''}\n`;
+    }
+    result += `\n`;
+    
+    // Read Firebase
+    if (firebaseInitialized && database) {
+      const snapshot = await database.ref('penilaian').once('value');
+      const firebaseData = snapshot.val() || {};
+      const firebaseKeys = Object.keys(firebaseData).map(k => desanitizeFirebaseKey(k));
+      
+      result += `☁️ Firebase:\n`;
+      result += `Total items: ${firebaseKeys.length}\n`;
+      if (firebaseKeys.length > 0) {
+        result += `Items: ${firebaseKeys.slice(0, 5).join(', ')}${firebaseKeys.length > 5 ? '...' : ''}\n`;
+      }
+      result += `\n`;
+      
+      // Compare
+      const onlyLocal = localKeys.filter(k => !firebaseKeys.includes(k));
+      const onlyFirebase = firebaseKeys.filter(k => !localKeys.includes(k));
+      
+      if (onlyLocal.length > 0) {
+        result += `⚠️ Only in localStorage (not synced to Firebase):\n`;
+        onlyLocal.forEach(k => result += `  - ${k}\n`);
+        result += `\n`;
+        status = 'warning';
+      }
+      
+      if (onlyFirebase.length > 0) {
+        result += `⚠️ Only in Firebase (not in localStorage):\n`;
+        onlyFirebase.forEach(k => result += `  - ${k}\n`);
+        result += `\nAction: Click "Force Sync" on dashboard to download these.\n`;
+        status = 'warning';
+      }
+      
+      if (onlyLocal.length === 0 && onlyFirebase.length === 0) {
+        result += `✅ Perfect sync! LocalStorage and Firebase match.\n`;
+        addLog('success', 'Data is in perfect sync');
+      } else {
+        addLog('warning', `${onlyFirebase.length} items need sync from Firebase`);
+      }
+      
+    } else {
+      result += `☁️ Firebase: Not available\n`;
+      status = 'warning';
+    }
+    
+  } catch (error) {
+    result += `❌ ERROR: ${error.message}`;
+    status = 'error';
+    addLog('error', `Test 4 error: ${error.message}`);
+  }
+  
+  document.getElementById('result4').textContent = result;
+  document.getElementById('status4').textContent = status === 'success' ? '✅ SYNCED' : '⚠️ NOT SYNCED';
+  document.getElementById('status4').className = `status ${status}`;
+}
+
+// Test Write
+async function testWrite() {
+  addLog('info', 'Running Write Test');
+  
+  const result5 = document.getElementById('result5');
+  result5.textContent = 'Testing write to Firebase...\n\n';
+  
+  try {
+    if (!firebaseInitialized || !database) {
+      result5.textContent = '❌ Firebase not initialized';
+      addLog('error', 'Write test failed: Firebase not initialized');
+      return;
+    }
+    
+    const testData = {
+      test: true,
+      timestamp: new Date().toISOString(),
+      message: 'Test write from diagnostic tool'
+    };
+    
+    await database.ref('test_connection').set(testData);
+    
+    result5.textContent = `✅ Write successful!\n\n`;
+    result5.textContent += `Test data saved to /test_connection\n`;
+    result5.textContent += `Timestamp: ${testData.timestamp}\n\n`;
+    result5.textContent += `This means Firebase write permissions are working correctly.\n`;
+    result5.textContent += `You can now save assessment data to Firebase.`;
+    
+    document.getElementById('status5').textContent = '✅ OK';
+    document.getElementById('status5').className = 'status success';
+    
+    addLog('success', 'Write test successful');
+    
+  } catch (error) {
+    result5.textContent = `❌ Write failed!\n\nError: ${error.message}\n\n`;
+    if (error.code === 'PERMISSION_DENIED') {
+      result5.textContent += `This is a PERMISSION_DENIED error.\nYou need to set Firebase Database Rules to allow write access.`;
+    }
+    
+    document.getElementById('status5').textContent = '❌ FAILED';
+    document.getElementById('status5').className = 'status error';
+    
+    addLog('error', `Write test failed: ${error.message}`);
+  }
+}
+
+// Test Delete
+async function testDelete() {
+  addLog('info', 'Deleting test data');
+  
+  try {
+    if (!firebaseInitialized || !database) return;
+    
+    await database.ref('test_connection').remove();
+    document.getElementById('result5').textContent = '🗑️ Test data deleted successfully.';
+    addLog('success', 'Test data deleted');
+    
+  } catch (error) {
+    document.getElementById('result5').textContent = `❌ Delete failed: ${error.message}`;
+    addLog('error', `Delete failed: ${error.message}`);
+  }
+}
+
+// Run all tests
+async function runAllTests() {
+  addLog('info', '======= Running All Tests =======');
+  test1_Config();
+  await new Promise(r => setTimeout(r, 500));
+  await test2_Connection();
+  await new Promise(r => setTimeout(r, 500));
+  await test3_ReadData();
+  await new Promise(r => setTimeout(r, 500));
+  await test4_Compare();
+  addLog('success', '======= All Tests Complete =======');
+}
+
+// Auto-run on load
+window.addEventListener('load', () => {
+  setTimeout(runAllTests, 1000);
+});
+</script>
+
+</body>
+</html>

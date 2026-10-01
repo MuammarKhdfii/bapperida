@@ -149,41 +149,129 @@
   // Populate dropdown dengan status lock
   async function populateInovasiDropdown() {
     const allDraf = await loadAllDraf();
-    const currentUser = getSession()?.nama;
+    const session = getSession();
+    const currentUser = session?.nama;
+    const currentRole = session?.role;
     
     sel.innerHTML = '<option value="">— Pilih Inovasi —</option>';
     
     const assessedList = [];
     
-    daftarInovasi.forEach(inovasi => {
+    for (const inovasi of daftarInovasi) {
       const option = document.createElement('option');
       option.value = inovasi.judul;
       
       const draft = allDraf[inovasi.judul];
-      const userAlreadyAssessed = draft && 
-        ((draft.skorPerJuri && draft.skorPerJuri[currentUser] > 0) ||
-         (draft.skorJudulPerJuri && draft.skorJudulPerJuri[currentUser] > 0));
       
-      if (userAlreadyAssessed) {
-        // Tambahkan ke list yang sudah dinilai
-        assessedList.push(inovasi);
+      // Hitung progress dari SEMUA juri (bukan hanya current user)
+      const assessmentProgress = getAssessmentProgressForInovasi(draft, currentRole);
+      const { completed, total, juriNames } = assessmentProgress;
+      
+      // Sanitize nama juri current user
+      const sanitizedName = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
+      
+      // Check apakah current user sudah menilai lengkap
+      let currentUserComplete = false;
+      
+      if (draft && currentUser && currentRole) {
+        // Get data dengan nama asli atau sanitized
+        const judulData = draft.judulState?.[currentUser] || draft.judulState?.[sanitizedName];
+        const juriData = draft.juriState?.[currentUser] || draft.juriState?.[sanitizedName];
         
-        // Tampilkan dengan tanda centang dan disable
-        option.textContent = `✓ ${inovasi.judul} (Sudah Dinilai)`;
-        option.disabled = true;
-        option.style.color = '#22c55e';
-        option.style.fontWeight = '600';
-        option.style.fontStyle = 'italic';
-        option.style.background = '#f0fdf4';
-      } else {
-        option.textContent = inovasi.judul;
+        if (currentRole === 'juri_judul') {
+          // Check apakah semua 6 kriteria judul sudah diisi
+          if (judulData && typeof judulData === 'object') {
+            const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
+            currentUserComplete = filledCount >= 6; // 6 kriteria judul
+          }
+        } else if (currentRole === 'juri_sid') {
+          // Check apakah semua indikator SID sudah diisi
+          if (juriData && juriData.radio && typeof juriData.radio === 'object') {
+            // Count indikator yang harus diisi (exclude monev & video)
+            const requiredIndicators = sidIndicators.filter(i => !i.type).length;
+            const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
+            currentUserComplete = filledCount >= requiredIndicators;
+          }
+        }
+      }
+      
+      // Build option text dengan progress
+      let optionText = inovasi.judul;
+      
+      if (completed > 0) {
+        const progressBadge = `${completed}/${total}`;
+        
+        if (currentUserComplete) {
+          // Current user sudah menilai
+          optionText = `✅ ${inovasi.judul} [${progressBadge} juri]`;
+          option.style.color = '#22c55e';
+          option.style.fontWeight = '600';
+        } else {
+          // Ada juri lain yang sudah menilai, tapi current user belum
+          optionText = `⏳ ${inovasi.judul} [${progressBadge} juri dinilai]`;
+          option.style.color = '#f59e0b';
+          option.style.fontWeight = '500';
+        }
+      }
+      
+      option.textContent = optionText;
+      
+      if (currentUserComplete) {
+        // Jika current user sudah menilai lengkap, tambahkan ke assessed list
+        assessedList.push({
+          ...inovasi,
+          draft: draft,
+          progress: assessmentProgress
+        });
       }
       
       sel.appendChild(option);
-    });
+    }
     
     // Populate assessed list untuk tombol edit
     populateAssessedList(assessedList, allDraf, currentUser);
+  }
+  
+  // Helper: Hitung berapa juri yang sudah menilai lengkap sebuah inovasi
+  function getAssessmentProgressForInovasi(draft, forRole) {
+    if (!draft) {
+      return { completed: 0, total: 3, juriNames: [] };
+    }
+    
+    // Tentukan daftar juri berdasarkan role
+    const juriList = forRole === 'juri_judul' ? JURI_LIST_JUDUL : JURI_LIST;
+    const completedJuri = [];
+    
+    juriList.forEach(juriName => {
+      const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
+      
+      if (forRole === 'juri_judul') {
+        // Check judul state
+        const judulData = draft.judulState?.[juriName] || draft.judulState?.[sanitizedName];
+        if (judulData && typeof judulData === 'object') {
+          const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
+          if (filledCount >= 6) {
+            completedJuri.push(juriName);
+          }
+        }
+      } else if (forRole === 'juri_sid') {
+        // Check indikator state
+        const juriData = draft.juriState?.[juriName] || draft.juriState?.[sanitizedName];
+        if (juriData && juriData.radio && typeof juriData.radio === 'object') {
+          const requiredIndicators = sidIndicators.filter(i => !i.type).length;
+          const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
+          if (filledCount >= requiredIndicators) {
+            completedJuri.push(juriName);
+          }
+        }
+      }
+    });
+    
+    return {
+      completed: completedJuri.length,
+      total: juriList.length,
+      juriNames: completedJuri
+    };
   }
   
   // Populate list of assessed innovations with edit buttons
@@ -199,23 +287,44 @@
     assessedSection.style.display = 'block';
     assessedListEl.innerHTML = '';
     
+    // Sanitize nama juri
+    const sanitizedName = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
+    
     assessedList.forEach((inovasi, idx) => {
-      const draft = allDraf[inovasi.judul];
-      const skorJudul = draft?.skorJudulPerJuri?.[currentUser] || 0;
-      const skorSID = draft?.skorPerJuri?.[currentUser] || 0;
+      const draft = inovasi.draft || allDraf[inovasi.judul];
+      const progress = inovasi.progress || { completed: 0, total: 3, juriNames: [] };
+      
+      // Get skor dengan nama asli atau sanitized
+      const skorJudul = draft?.skorJudulPerJuri?.[currentUser] || 
+                        draft?.skorJudulPerJuri?.[sanitizedName] || 0;
+      const skorSID = draft?.skorPerJuri?.[currentUser] || 
+                      draft?.skorPerJuri?.[sanitizedName] || 0;
       const totalSkor = skorJudul + skorSID;
+      
+      // Progress badge color
+      let progressColor = '#22c55e'; // green
+      let progressIcon = '✅';
+      if (progress.completed < progress.total) {
+        progressColor = '#f59e0b'; // orange
+        progressIcon = '⏳';
+      }
       
       const card = document.createElement('div');
       card.className = 'assessed-card';
       card.style.animationDelay = (idx * 0.05) + 's';
       
       card.innerHTML = `
-        <div class="assessed-card-icon">📋</div>
+        <div class="assessed-card-icon">${progressIcon}</div>
         <div class="assessed-card-content">
           <div class="assessed-card-title">${inovasi.judul}</div>
           <div class="assessed-card-meta">
             <span class="assessed-badge">🏛️ ${inovasi.perangkatDaerah || '—'}</span>
-            <span class="assessed-badge">📊 Skor: ${totalSkor.toFixed(2)}</span>
+            <span class="assessed-badge" style="background: ${progressColor}22; color: ${progressColor}; border-color: ${progressColor}44;">
+              👥 ${progress.completed}/${progress.total} juri menilai
+            </span>
+            <span class="assessed-badge assessed-badge-score">📊 Skor Anda: ${totalSkor.toFixed(2)}</span>
+            ${skorJudul > 0 ? `<span class="assessed-badge">🏆 ${skorJudul.toFixed(2)}</span>` : ''}
+            ${skorSID > 0 ? `<span class="assessed-badge">📈 ${skorSID.toFixed(2)}</span>` : ''}
           </div>
         </div>
         <button class="btn-edit-assessed" onclick="editAssessedInovasi('${inovasi.judul.replace(/'/g, "\\'")}')">
@@ -256,6 +365,101 @@
     if (judul && warningBox) {
       warningBox.style.display = "none";
     }
+    
+    // Check apakah inovasi sudah dinilai lengkap
+    await checkIfAssessmentComplete(judul);
+  }
+  
+  // Helper: Check apakah juri sudah menilai lengkap inovasi ini
+  async function checkIfAssessmentComplete(judul) {
+    if (!judul) return false;
+    
+    const session = getSession();
+    if (!session) return false;
+    
+    const allDraf = await loadAllDraf();
+    const draft = allDraf[judul];
+    
+    if (!draft) return false;
+    
+    // Sanitize nama juri (sesuai dengan penilaian.js)
+    const sanitizedName = session.nama.replace(/[\.,#$\[\]\/]/g, '_');
+    
+    // Check di judulState atau juriState dengan nama asli atau sanitized
+    const judulData = draft.judulState?.[session.nama] || draft.judulState?.[sanitizedName];
+    const juriData = draft.juriState?.[session.nama] || draft.juriState?.[sanitizedName];
+    
+    // Tentukan apakah lengkap berdasarkan role
+    let isComplete = false;
+    
+    if (session.role === 'juri_judul') {
+      // Check apakah semua 6 kriteria judul sudah diisi
+      if (judulData && typeof judulData === 'object') {
+        const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
+        isComplete = filledCount >= 6; // 6 kriteria judul
+      }
+    } else if (session.role === 'juri_sid') {
+      // Check apakah semua indikator SID sudah diisi
+      if (juriData && juriData.radio && typeof juriData.radio === 'object') {
+        // Count indikator yang harus diisi (exclude monev & video)
+        const requiredIndicators = sidIndicators.filter(i => !i.type).length;
+        const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
+        isComplete = filledCount >= requiredIndicators;
+      }
+    }
+    
+    // Get progress dari semua juri
+    const progress = getAssessmentProgressForInovasi(draft, session.role);
+    
+    // Update UI card penilaian
+    const cardPenilaian = document.getElementById('cardPenilaian');
+    const cardTitle = cardPenilaian?.querySelector('.lec-title');
+    const cardDesc = cardPenilaian?.querySelector('.lec-desc');
+    
+    if (isComplete) {
+      // Disable card karena current user sudah menilai
+      cardPenilaian.style.opacity = '0.6';
+      cardPenilaian.style.cursor = 'not-allowed';
+      cardPenilaian.style.pointerEvents = 'none';
+      
+      if (cardTitle) {
+        cardTitle.innerHTML = `✅ Penilaian Sudah Selesai (${progress.completed}/${progress.total} juri)`;
+      }
+      if (cardDesc) {
+        const otherJuriText = progress.completed > 1 
+          ? ` ${progress.completed - 1} juri lain juga sudah menilai.` 
+          : '';
+        cardDesc.innerHTML = `Anda sudah menyelesaikan penilaian lengkap untuk inovasi <strong>"${judul}"</strong>.${otherJuriText}<br>Pilih inovasi lain untuk melanjutkan penilaian.`;
+      }
+    } else {
+      // Enable card
+      cardPenilaian.style.opacity = '1';
+      cardPenilaian.style.cursor = 'pointer';
+      cardPenilaian.style.pointerEvents = 'auto';
+      
+      if (cardTitle) {
+        if (progress.completed > 0) {
+          cardTitle.innerHTML = `Mulai Penilaian Inovasi <span style="color: #f59e0b; font-size: 14px;">(${progress.completed}/${progress.total} juri sudah menilai)</span>`;
+        } else {
+          cardTitle.textContent = 'Mulai Penilaian Inovasi';
+        }
+      }
+      if (cardDesc) {
+        if (progress.completed > 0) {
+          const juriNamesList = progress.juriNames.map(name => {
+            // Shorten nama juri untuk display
+            const parts = name.split(' ');
+            return parts.length > 2 ? parts[parts.length - 1] : name;
+          }).join(', ');
+          
+          cardDesc.innerHTML = `<strong>${progress.completed} dari ${progress.total} juri</strong> sudah menilai inovasi ini (${juriNamesList}).<br>Penilaian <strong>Judul</strong> (6 kriteria) &amp; <strong>Indikator SID</strong> dalam satu form.`;
+        } else {
+          cardDesc.innerHTML = 'Penilaian <strong>Judul</strong> (6 kriteria) &amp; <strong>Indikator SID</strong> dalam satu form. Pilih sesi juri untuk mulai.';
+        }
+      }
+    }
+    
+    return isComplete;
   }
 
   async function updateStatusCards(judul) {
@@ -322,7 +526,7 @@
     }
   }
 
-  function goPenilaian() {
+  async function goPenilaian() {
     const judul = sel.value;
     const warningBox = document.getElementById("warningNoInovasi");
     
@@ -342,6 +546,13 @@
       // Focus pada dropdown
       sel.focus();
       
+      return;
+    }
+    
+    // Check apakah sudah dinilai lengkap
+    const isComplete = await checkIfAssessmentComplete(judul);
+    if (isComplete) {
+      alert(`✅ Penilaian Sudah Selesai!\n\nAnda sudah menyelesaikan penilaian lengkap untuk inovasi "${judul}".\n\nSilakan pilih inovasi lain untuk melanjutkan penilaian.`);
       return;
     }
     

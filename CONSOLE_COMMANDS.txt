@@ -1,0 +1,270 @@
+═══════════════════════════════════════════════════════════
+  🚀 QUICK CONSOLE COMMANDS - BAPPERIDA PENILAIAN
+═══════════════════════════════════════════════════════════
+
+Buka Browser Console (F12) → Copy-paste command di bawah
+
+
+─────────────────────────────────────────────────────────
+  1️⃣  CEK SEMUA DATA FIREBASE (RINGKASAN)
+─────────────────────────────────────────────────────────
+
+firebase.database().ref('penilaian').once('value').then(snap => {
+  const data = snap.val();
+  console.log('\n📊 FIREBASE DATA SUMMARY');
+  console.log('═'.repeat(50));
+  console.log('Total inovasi:', Object.keys(data || {}).length);
+  
+  Object.entries(data || {}).forEach(([key, val]) => {
+    console.log('\n🏆', key);
+    console.log('  Juri Judul:', Object.keys(val.judulState || {}).join(', ') || '(belum ada)');
+    console.log('  Juri Indikator:', Object.keys(val.juriState || {}).join(', ') || '(belum ada)');
+    console.log('  Last update:', val.savedAt || '(tidak ada)');
+  });
+  console.log('\n' + '═'.repeat(50));
+});
+
+
+─────────────────────────────────────────────────────────
+  2️⃣  CEK DATA INOVASI SPESIFIK + SKOR
+─────────────────────────────────────────────────────────
+
+// GANTI INI dengan nama inovasi (spasi → underscore):
+const inovasiKey = "Ayo_Sekolah";  // ← GANTI DI SINI
+
+firebase.database().ref('penilaian').child(inovasiKey).once('value').then(snap => {
+  const data = snap.val();
+  console.log('\n📋 DETAIL INOVASI:', inovasiKey.replace(/_/g, ' '));
+  console.log('═'.repeat(60));
+  
+  if (!data) {
+    console.log('❌ Data tidak ditemukan!');
+    return;
+  }
+  
+  console.log('\n✅ JURI JUDUL:');
+  Object.entries(data.judulState || {}).forEach(([juri, state]) => {
+    const skor = data.skorJudulPerJuri?.[juri] || 0;
+    const itemCount = Object.keys(state).length;
+    console.log(`  • ${juri}`);
+    console.log(`    Skor: ${skor} | Item dinilai: ${itemCount}`);
+  });
+  
+  console.log('\n✅ JURI INDIKATOR:');
+  Object.entries(data.juriState || {}).forEach(([juri, state]) => {
+    const skor = data.skorPerJuri?.[juri] || 0;
+    const itemCount = Object.keys(state.radio || {}).length;
+    console.log(`  • ${juri}`);
+    console.log(`    Skor: ${skor} | Item dinilai: ${itemCount}`);
+  });
+  
+  console.log('\n📅 Metadata:');
+  console.log('  Perangkat Daerah:', data.perangkatDaerah || '(tidak ada)');
+  console.log('  Kategori:', data.kategori || '(tidak ada)');
+  console.log('  Last saved:', data.savedAt || '(tidak ada)');
+  
+  console.log('\n' + '═'.repeat(60));
+});
+
+
+─────────────────────────────────────────────────────────
+  3️⃣  FORCE RELOAD DARI FIREBASE
+─────────────────────────────────────────────────────────
+
+cloudStorage.loadAllDraf().then(data => {
+  console.log('\n🔄 RELOAD FROM FIREBASE COMPLETE');
+  console.log('═'.repeat(50));
+  console.log('Total inovasi loaded:', Object.keys(data).length);
+  
+  Object.entries(data).forEach(([nama, d]) => {
+    const juriJudul = Object.keys(d.judulState || {}).length;
+    const juriInd = Object.keys(d.juriState || {}).length;
+    console.log(`\n✅ ${nama}`);
+    console.log(`  → ${juriJudul} juri judul, ${juriInd} juri indikator`);
+  });
+  
+  console.log('\n💡 Tip: Reload halaman untuk melihat data terbaru di UI');
+  console.log('═'.repeat(50));
+});
+
+
+─────────────────────────────────────────────────────────
+  4️⃣  CEK KONEKSI FIREBASE
+─────────────────────────────────────────────────────────
+
+cloudStorage.checkConnection().then(status => {
+  console.log('\n🌐 FIREBASE CONNECTION STATUS');
+  console.log('═'.repeat(50));
+  console.log('Connected:', status.connected ? '✅ YES' : '❌ NO');
+  console.log('Data source:', status.source);
+  
+  if (status.connected) {
+    console.log('\n✅ Online Mode: Data sync aktif antar perangkat');
+  } else {
+    console.log('\n⚠️  Offline Mode: Menggunakan localStorage saja');
+  }
+  console.log('═'.repeat(50));
+});
+
+
+─────────────────────────────────────────────────────────
+  5️⃣  LIHAT DAFTAR INOVASI DI FIREBASE
+─────────────────────────────────────────────────────────
+
+firebase.database().ref('penilaian').once('value').then(snap => {
+  const data = snap.val() || {};
+  console.log('\n📚 DAFTAR INOVASI DI FIREBASE');
+  console.log('═'.repeat(60));
+  console.log(`Total: ${Object.keys(data).length} inovasi\n`);
+  
+  Object.keys(data).forEach((key, idx) => {
+    console.log(`${idx + 1}. ${key.replace(/_/g, ' ')}`);
+  });
+  console.log('\n' + '═'.repeat(60));
+});
+
+
+─────────────────────────────────────────────────────────
+  6️⃣  LIHAT DATA LOCALSTORAGE
+─────────────────────────────────────────────────────────
+
+const localData = JSON.parse(localStorage.getItem('draf_iid2026_all') || '{}');
+console.log('\n💾 LOCALSTORAGE DATA');
+console.log('═'.repeat(50));
+console.log('Total inovasi:', Object.keys(localData).length);
+
+Object.keys(localData).forEach(nama => {
+  console.log(`\n✅ ${nama}`);
+  const d = localData[nama];
+  console.log('  Juri Judul:', Object.keys(d.judulState || {}).length);
+  console.log('  Juri Indikator:', Object.keys(d.juriState || {}).length);
+});
+console.log('\n' + '═'.repeat(50));
+
+
+─────────────────────────────────────────────────────────
+  7️⃣  COMPARE: FIREBASE vs LOCALSTORAGE
+─────────────────────────────────────────────────────────
+
+Promise.all([
+  firebase.database().ref('penilaian').once('value'),
+  Promise.resolve(JSON.parse(localStorage.getItem('draf_iid2026_all') || '{}'))
+]).then(([fbSnap, localData]) => {
+  const fbData = fbSnap.val() || {};
+  
+  console.log('\n🔄 FIREBASE vs LOCALSTORAGE COMPARISON');
+  console.log('═'.repeat(60));
+  console.log('Firebase items:', Object.keys(fbData).length);
+  console.log('LocalStorage items:', Object.keys(localData).length);
+  
+  // Inovasi hanya di Firebase
+  const fbOnly = Object.keys(fbData).filter(k => !localData[k]);
+  if (fbOnly.length > 0) {
+    console.log('\n☁️  Hanya di Firebase:', fbOnly.join(', '));
+  }
+  
+  // Inovasi hanya di localStorage
+  const localOnly = Object.keys(localData).filter(k => !fbData[k.replace(/\s+/g, '_')]);
+  if (localOnly.length > 0) {
+    console.log('\n💾 Hanya di localStorage:', localOnly.join(', '));
+  }
+  
+  // Check sync status
+  if (fbOnly.length === 0 && localOnly.length === 0) {
+    console.log('\n✅ SYNC STATUS: Perfect sync!');
+  } else {
+    console.log('\n⚠️  SYNC STATUS: Out of sync - run force reload (#3)');
+  }
+  
+  console.log('═'.repeat(60));
+});
+
+
+─────────────────────────────────────────────────────────
+  8️⃣  CLEAR SEMUA DATA (HATI-HATI!)
+─────────────────────────────────────────────────────────
+
+// ⚠️ WARNING: Ini akan menghapus SEMUA data!
+// Uncomment baris di bawah untuk eksekusi:
+
+/*
+if (confirm('⚠️ HAPUS SEMUA DATA?\n\nIni akan menghapus:\n- Semua data di Firebase\n- Semua data di localStorage\n\nYakin?')) {
+  // Hapus Firebase
+  firebase.database().ref('penilaian').remove().then(() => {
+    console.log('✅ Firebase cleared');
+  });
+  
+  // Hapus localStorage
+  localStorage.removeItem('draf_iid2026_all');
+  console.log('✅ localStorage cleared');
+  
+  console.log('\n🔄 Reload halaman untuk mulai fresh');
+}
+*/
+
+
+─────────────────────────────────────────────────────────
+  9️⃣  TEST SANITIZATION (Lihat Nama Juri)
+─────────────────────────────────────────────────────────
+
+const juriList = [
+  "Prof. Dr. Dra. Sowiyah M.Pd.",
+  "Prof. Dr. Ir. Etik Puji Handayani, M.Si.",
+  "Dr. Ir. Eva Rolia, M.T., M.K.M.",
+  "Ir. Arif Joko Arwoko",
+  "Mustafa Akhyar, S.E."
+];
+
+console.log('\n🔧 JURY NAME SANITIZATION TEST');
+console.log('═'.repeat(60));
+
+juriList.forEach((nama, idx) => {
+  const sanitized = nama.replace(/[\.,#$\[\]\/]/g, '_');
+  console.log(`\n${idx + 1}. Original:`);
+  console.log(`   "${nama}"`);
+  console.log(`   Sanitized:`);
+  console.log(`   "${sanitized}"`);
+});
+
+console.log('\n💡 Nama dengan titik/koma akan otomatis disanitize');
+console.log('═'.repeat(60));
+
+
+─────────────────────────────────────────────────────────
+  🔟  MONITORING REAL-TIME (Live Updates)
+─────────────────────────────────────────────────────────
+
+console.log('🔴 LIVE MONITORING STARTED...');
+console.log('Mendengarkan perubahan data di Firebase...\n');
+
+firebase.database().ref('penilaian').on('value', snap => {
+  const data = snap.val() || {};
+  const timestamp = new Date().toLocaleTimeString('id-ID');
+  
+  console.log(`\n⏰ [${timestamp}] UPDATE DETECTED`);
+  console.log('Total inovasi:', Object.keys(data).length);
+  
+  Object.entries(data).forEach(([key, val]) => {
+    const juriJudul = Object.keys(val.judulState || {}).length;
+    const juriInd = Object.keys(val.juriState || {}).length;
+    console.log(`  • ${key}: ${juriJudul}J + ${juriInd}I juri`);
+  });
+});
+
+console.log('\n💡 Monitoring aktif! Perubahan akan muncul otomatis.');
+console.log('💡 Untuk stop monitoring, reload halaman.');
+
+
+═══════════════════════════════════════════════════════════
+  📝 NOTES
+═══════════════════════════════════════════════════════════
+
+• Command #1-5: Quick diagnostic
+• Command #6-7: Troubleshooting sync issues
+• Command #8: Reset everything (use with caution)
+• Command #9: Test sanitization logic
+• Command #10: Real-time monitoring
+
+💡 Tip: Bookmark file ini untuk quick reference!
+
+═══════════════════════════════════════════════════════════

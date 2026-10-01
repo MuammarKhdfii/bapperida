@@ -704,6 +704,13 @@
   border: 1px solid #bbf7d0;
 }
 
+.assessed-badge-score {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #15803d;
+  font-weight: 700;
+  border-color: #86efac;
+}
+
 .btn-edit-assessed {
   display: inline-flex;
   align-items: center;

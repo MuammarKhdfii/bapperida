@@ -22,9 +22,41 @@ const firebaseConfig = {
   measurementId: "G-QCLGQZ6LG5"
 };
 
+// ══════════════════════════════════════════
+//  ENVIRONMENT DETECTION
+// ══════════════════════════════════════════
+
+// Detect apakah running di production (GitHub Pages) atau development (localhost)
+function isProductionEnvironment() {
+  const hostname = window.location.hostname;
+  
+  // Production URLs (tambahkan domain production Anda di sini)
+  const productionHosts = [
+    'muammarkhdfii.github.io',  // GitHub Pages
+    // Tambahkan domain lain jika ada, misal:
+    // 'bapperida.kotametro.go.id',
+    // 'penilaian.bapperida.com',
+  ];
+  
+  return productionHosts.includes(hostname);
+}
+
 // Flag untuk enable/disable Firebase
-// Set ke true untuk mengaktifkan sinkronisasi antar perangkat
-const ENABLE_FIREBASE = true;  // ✅ ENABLED - Sync antar perangkat aktif
+// TRUE: Firebase enabled (sync antar perangkat)
+// FALSE: Hanya gunakan localStorage (tidak sync)
+const ENABLE_FIREBASE = isProductionEnvironment();
+
+// Log environment info
+console.log('═══════════════════════════════════════');
+console.log('🌍 ENVIRONMENT DETECTION');
+console.log('═══════════════════════════════════════');
+console.log('Hostname:', window.location.hostname);
+console.log('Protocol:', window.location.protocol);
+console.log('Full URL:', window.location.href);
+console.log('Environment:', ENABLE_FIREBASE ? '🌐 PRODUCTION (Firebase ON)' : '💻 DEVELOPMENT (Firebase OFF)');
+console.log('Firebase Sync:', ENABLE_FIREBASE ? '✅ ENABLED' : '❌ DISABLED');
+console.log('Data Storage:', ENABLE_FIREBASE ? '☁️ Firebase Cloud' : '💾 localStorage Only');
+console.log('═══════════════════════════════════════');
 
 // Initialize Firebase (akan di-load dari CDN di HTML)
 let database = null;
@@ -32,7 +64,8 @@ let firebaseInitialized = false;
 
 function initFirebase() {
   if (!ENABLE_FIREBASE) {
-    console.log('Firebase disabled, using localStorage only');
+    console.log('🔴 Firebase disabled (Development Mode)');
+    console.log('💾 Using localStorage only - Data will NOT sync across devices');
     return false;
   }
 
@@ -50,7 +83,8 @@ function initFirebase() {
     
     database = firebase.database();
     firebaseInitialized = true;
-    console.log('✅ Firebase initialized successfully');
+    console.log('✅ Firebase initialized successfully (Production Mode)');
+    console.log('☁️ Data will sync in real-time across all devices');
     return true;
   } catch (error) {
     console.error('❌ Firebase initialization error:', error);

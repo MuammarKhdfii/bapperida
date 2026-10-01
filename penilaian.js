@@ -3,6 +3,30 @@
 //  Route guard: juri_judul | juri_sid
 // ══════════════════════════════════════════
 
+// ── Helper: Sanitize nama juri untuk Firebase key ──
+function sanitizeJuriName(name) {
+  return name.replace(/[\.,#$\[\]\/]/g, '_');
+}
+
+// ── Helper: Coba load state dengan nama asli atau sanitized ──
+function getJuriState(allDraf, namaInovasi, juriName, stateKey) {
+  const data = allDraf[namaInovasi];
+  if (!data || !data[stateKey]) return null;
+  
+  // Coba nama asli dulu
+  if (data[stateKey][juriName]) {
+    return data[stateKey][juriName];
+  }
+  
+  // Coba nama sanitized
+  const sanitized = sanitizeJuriName(juriName);
+  if (data[stateKey][sanitized]) {
+    return data[stateKey][sanitized];
+  }
+  
+  return null;
+}
+
 // ── Route Guard — harus dipanggil pertama ──
 const SESSION = requireAuth(["juri_judul", "juri_sid"]);
 if (!SESSION) throw new Error("Unauthorized"); // stop execution if redirect happened
@@ -108,10 +132,23 @@ if (namaInovasi) {
   const allDraf = await loadAllDraf();
   if (namaInovasi && allDraf[namaInovasi]) {
     const d = allDraf[namaInovasi];
-    if (d.judulState?.[SESSION.nama]) judulState[SESSION.nama] = d.judulState[SESSION.nama];
-    if (d.juriState?.[SESSION.nama])  juriState[SESSION.nama]  = d.juriState[SESSION.nama];
-    if (d.notesState?.[SESSION.nama]) notesState[SESSION.nama] = d.notesState[SESSION.nama];
-    if (d.signatureState?.[SESSION.nama]) signatureState[SESSION.nama] = d.signatureState[SESSION.nama];
+    
+    // Gunakan helper untuk load state (support nama asli & sanitized)
+    const judulData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'judulState');
+    const juriData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'juriState');
+    const notesData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'notesState');
+    const sigData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'signatureState');
+    
+    if (judulData) judulState[SESSION.nama] = judulData;
+    if (juriData) juriState[SESSION.nama] = juriData;
+    if (notesData) notesState[SESSION.nama] = notesData;
+    if (sigData) signatureState[SESSION.nama] = sigData;
+    
+    console.log('Restored state for:', SESSION.nama);
+    console.log('- judulState:', !!judulData);
+    console.log('- juriState:', !!juriData);
+    console.log('- notesState:', !!notesData);
+    console.log('- signatureState:', !!sigData);
   }
 
   // Sembunyikan session login grid, tampilkan form langsung
@@ -506,16 +543,22 @@ async function saveAll(showAnim = false) {
     };
   }
 
-  // Update state untuk juri ini
-  all[namaInovasi].judulState[SESSION.nama] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
-  all[namaInovasi].juriState[SESSION.nama] = JSON.parse(JSON.stringify(juriState[SESSION.nama]));
-  all[namaInovasi].notesState[SESSION.nama] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
+  // Sanitize nama juri untuk Firebase (hapus karakter ilegal: . , # $ [ ] /)
+  const sanitizedJuriName = SESSION.nama.replace(/[\.,#$\[\]\/]/g, '_');
+  
+  console.log('Original jury name:', SESSION.nama);
+  console.log('Sanitized jury name:', sanitizedJuriName);
+  
+  // Update state untuk juri ini dengan nama yang sudah disanitize
+  all[namaInovasi].judulState[sanitizedJuriName] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
+  all[namaInovasi].juriState[sanitizedJuriName] = JSON.parse(JSON.stringify(juriState[SESSION.nama]));
+  all[namaInovasi].notesState[sanitizedJuriName] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
   all[namaInovasi].signatureState = all[namaInovasi].signatureState || {};
-  all[namaInovasi].signatureState[SESSION.nama] = signatureState[SESSION.nama] || "";
-  all[namaInovasi].skorJudulPerJuri[SESSION.nama] = parseFloat(skorJudul.toFixed(2));
-  all[namaInovasi].skorPerJuri[SESSION.nama] = parseFloat(skorInd.toFixed(2));
+  all[namaInovasi].signatureState[sanitizedJuriName] = signatureState[SESSION.nama] || "";
+  all[namaInovasi].skorJudulPerJuri[sanitizedJuriName] = parseFloat(skorJudul.toFixed(2));
+  all[namaInovasi].skorPerJuri[sanitizedJuriName] = parseFloat(skorInd.toFixed(2));
   all[namaInovasi].savedAt = new Date().toISOString();
-  all[namaInovasi].activeJuri = SESSION.nama;
+  all[namaInovasi].activeJuri = sanitizedJuriName;
   
   // Update metadata inovasi (jika belum ada)
   all[namaInovasi].perangkatDaerah = metaInovasi.perangkatDaerah || all[namaInovasi].perangkatDaerah || "";
@@ -524,12 +567,13 @@ async function saveAll(showAnim = false) {
   all[namaInovasi].ringkasan = metaInovasi.ringkasan || all[namaInovasi].ringkasan || "";
   all[namaInovasi].kategori = kategori;
   
-  // Simpan metadata user untuk audit trail
-  if (!all[namaInovasi].userMetadata[SESSION.nama]) {
-    all[namaInovasi].userMetadata[SESSION.nama] = {};
+  // Simpan metadata user untuk audit trail (gunakan sanitized name untuk key)
+  if (!all[namaInovasi].userMetadata[sanitizedJuriName]) {
+    all[namaInovasi].userMetadata[sanitizedJuriName] = {};
   }
-  all[namaInovasi].userMetadata[SESSION.nama] = {
-    nama: SESSION.nama,
+  all[namaInovasi].userMetadata[sanitizedJuriName] = {
+    nama: SESSION.nama, // Simpan nama asli di dalam value
+    namaOriginal: SESSION.nama, // Backup nama asli
     email: SESSION.email || "",
     role: SESSION.role,
     label: SESSION.label,
