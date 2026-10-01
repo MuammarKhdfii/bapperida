@@ -163,14 +163,10 @@
       
       const draft = allDraf[inovasi.judul];
       
-      // Hitung progress dari SEMUA juri (bukan hanya current user)
-      const assessmentProgress = getAssessmentProgressForInovasi(draft, currentRole);
-      const { completed, total, juriNames } = assessmentProgress;
-      
       // Sanitize nama juri current user
       const sanitizedName = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
       
-      // Check apakah current user sudah menilai lengkap
+      // Check apakah CURRENT USER sudah menilai lengkap inovasi ini
       let currentUserComplete = false;
       
       if (draft && currentUser && currentRole) {
@@ -195,29 +191,18 @@
         }
       }
       
-      // Build option text dengan progress
+      // Build option text
       let optionText = inovasi.judul;
       
-      if (completed > 0) {
-        const progressBadge = `${completed}/${total}`;
-        
-        if (currentUserComplete) {
-          // Current user sudah menilai
-          optionText = `✅ ${inovasi.judul} [${progressBadge} juri]`;
-          option.style.color = '#22c55e';
-          option.style.fontWeight = '600';
-        } else {
-          // Ada juri lain yang sudah menilai, tapi current user belum
-          optionText = `⏳ ${inovasi.judul} [${progressBadge} juri dinilai]`;
-          option.style.color = '#f59e0b';
-          option.style.fontWeight = '500';
-        }
-      }
-      
-      option.textContent = optionText;
-      
       if (currentUserComplete) {
-        // Jika current user sudah menilai lengkap, tambahkan ke assessed list
+        // Current user SUDAH menilai - KUNCI inovasi ini untuk user ini
+        optionText = `🔒 ${inovasi.judul} [Sudah Anda nilai]`;
+        option.style.color = '#ef4444';
+        option.style.fontWeight = '600';
+        option.disabled = true; // DISABLE option - user tidak bisa pilih lagi
+        
+        // Tambahkan ke assessed list untuk tombol Edit
+        const assessmentProgress = getAssessmentProgressForInovasi(draft, currentRole);
         assessedList.push({
           ...inovasi,
           draft: draft,
@@ -225,6 +210,7 @@
         });
       }
       
+      option.textContent = optionText;
       sel.appendChild(option);
     }
     
