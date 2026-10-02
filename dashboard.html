@@ -550,6 +550,22 @@
   </div>
 </div>
 
+<!-- Modal Daftar Juri yang Sudah Menilai -->
+<div id="modalJuriNames" class="modal-overlay">
+  <div class="modal-detail" style="max-width: 600px;">
+    <div class="modal-header">
+      <div class="modal-header-content">
+        <div class="modal-title" id="juriNamesModalTitle">Daftar Juri</div>
+        <div class="modal-subtitle" id="juriNamesModalSubtitle">—</div>
+      </div>
+      <button class="modal-close" onclick="closeJuriNamesModal()">×</button>
+    </div>
+    <div class="modal-body" id="juriNamesModalBody" style="padding: 24px;">
+      <!-- Content will be injected here -->
+    </div>
+  </div>
+</div>
+
 <!-- Print Area (hidden, sama seperti di penilaian.html) -->
 <div id="printJuriArea" class="print-area" style="display: none;">
   <div class="print-header">
@@ -731,7 +747,7 @@
       if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
       else if (judulArr.length > 0 || sidArr.length > 0) status = 'partial';
 
-      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: d.savedAt||"" };
+      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: d.savedAt||"", allData: d };
     }).sort((a,b) => b.total - a.total);
 
     let html = `
@@ -754,13 +770,37 @@
       const badgeCls = r.status === 'lengkap' ? 'badge-lengkap' : r.status === 'partial' ? 'badge-partial' : 'badge-kosong';
       const badgeTxt = r.status === 'lengkap' ? '✅ Lengkap' : r.status === 'partial' ? '⏳ Sebagian' : '—';
       const escapedJudul = r.judulKey.replace(/'/g, "\\'");
+      
+      // Dapatkan nama juri yang sudah menilai
+      const juriJudulList = JURI_JUDUL_LIST.filter(j => {
+        const data = findJuriData(r.allData.judulState, j);
+        return data && Object.values(data).some(v => v);
+      });
+      const juriSIDList = JURI_SID_LIST.filter(j => {
+        const data = findJuriData(r.allData.juriState, j);
+        return data && Object.values(data.radio||{}).some(v => v);
+      });
+      
+      const judulTooltip = juriJudulList.length > 0 
+        ? juriJudulList.map(j => `✓ ${j}`).join('\\n')
+        : 'Belum ada juri yang menilai';
+      const sidTooltip = juriSIDList.length > 0 
+        ? juriSIDList.map(j => `✓ ${j}`).join('\\n')
+        : 'Belum ada juri yang menilai';
+      
       html += `
         <tr>
           <td>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td>
           <td><b>${esc(r.judulKey)}</b></td>
           <td style="font-size:11px;color:#667085">${esc(r.meta.perangkatDaerah||"—")}</td>
-          <td class="skor-cell">${r.avgJudul>0?r.avgJudul.toFixed(2):"—"} <small style="font-weight:400;color:#9ca3af">(${r.judulJuri}/3)</small></td>
-          <td class="skor-cell">${r.avgSID>0?r.avgSID.toFixed(2):"—"} <small style="font-weight:400;color:#9ca3af">(${r.sidJuri}/3)</small></td>
+          <td class="skor-cell">
+            ${r.avgJudul>0?r.avgJudul.toFixed(2):"—"} 
+            <small class="juri-progress-badge" title="${judulTooltip}" onclick="showJuriNames('${escapedJudul}', 'judul')" style="font-weight:600;color:#7c3aed;cursor:help;text-decoration:underline dotted;">(${r.judulJuri}/3)</small>
+          </td>
+          <td class="skor-cell">
+            ${r.avgSID>0?r.avgSID.toFixed(2):"—"} 
+            <small class="juri-progress-badge" title="${sidTooltip}" onclick="showJuriNames('${escapedJudul}', 'sid')" style="font-weight:600;color:#2563eb;cursor:help;text-decoration:underline dotted;">(${r.sidJuri}/3)</small>
+          </td>
           <td class="total-cell">${r.total>0?r.total.toFixed(2):"—"}</td>
           <td><span class="${badgeCls}">${badgeTxt}</span></td>
           <td style="text-align: center;">
@@ -773,14 +813,31 @@
     document.getElementById("rekapTable").innerHTML = html;
 
     // ── Rekap per juri ──
-    const allJuri = [...JURI_JUDUL_LIST, ...JURI_SID_LIST.filter(j => !JURI_JUDUL_LIST.includes(j))];
+    const allJuri = [
+      // Juri Judul
+      ...JURI_JUDUL_LIST.map(j => ({ nama: j, isJudul: true, isSID: false })),
+      // Juri SID (kecuali yang sudah ada di Judul)
+      ...JURI_SID_LIST
+        .filter(j => !JURI_JUDUL_LIST.includes(j))
+        .map(j => ({ nama: j, isJudul: false, isSID: true })),
+      // Eva Rolia khusus untuk SID (pisah dari Judul)
+      ...(JURI_JUDUL_LIST.includes("Dr. Ir. Eva Rolia, M.T., M.K.M.") && JURI_SID_LIST.includes("Dr. Ir. Eva Rolia, M.T., M.K.M.")
+        ? [{ nama: "Dr. Ir. Eva Rolia, M.T., M.K.M.", isJudul: false, isSID: true, label: "SID" }]
+        : [])
+    ];
+    
     let juriHtml = "";
-    allJuri.forEach(juri => {
-      const isJudul = JURI_JUDUL_LIST.includes(juri);
-      const isSID   = JURI_SID_LIST.includes(juri);
+    allJuri.forEach(juriObj => {
+      const juri = juriObj.nama;
+      const isJudul = juriObj.isJudul;
+      const isSID = juriObj.isSID;
+      const isEvaRoliaSID = juriObj.label === "SID"; // Flag khusus untuk Eva Rolia SID
+      
       let totalSkor = 0, count = 0;
-      inovasiList.forEach(([,d]) => {
-        if (isJudul) {
+      
+      // Hitung skor Judul
+      if (isJudul) {
+        inovasiList.forEach(([,d]) => {
           const data = findJuriData(d.judulState, juri);
           if (data) {
             let t=0; 
@@ -790,8 +847,12 @@
             }); 
             if(t>0){totalSkor+=t;count++;}
           }
-        }
-        if (isSID) {
+        });
+      }
+      
+      // Hitung skor SID
+      if (isSID) {
+        inovasiList.forEach(([,d]) => {
           const data = findJuriData(d.juriState, juri);
           if (data) {
             let t=0; 
@@ -801,12 +862,23 @@
             }); 
             if(t>0){totalSkor+=t;count++;}
           }
-        }
-      });
-      const roleLabel = isJudul && isSID ? "🏆📊 Juri Judul & SID" : isJudul ? "🏆 Juri Judul Inovasi" : "📊 Juri Penilaian SID";
+        });
+      }
+      
+      // Label role
+      let roleLabel = "";
+      if (isJudul && !isSID) {
+        roleLabel = "🏆 Juri Judul Inovasi";
+      } else if (!isJudul && isSID) {
+        roleLabel = "📊 Juri Penilaian SID";
+      }
+      
+      // Nama display (tambah label untuk Eva Rolia SID)
+      const displayName = isEvaRoliaSID ? `${juri} (SID)` : juri;
+      
       juriHtml += `
         <div class="juri-rekap-card" style="cursor: pointer;" onclick="showJuriDetail('${juri.replace(/'/g, "\\'")}', ${isJudul}, ${isSID})">
-          <div class="juri-rekap-nama">${esc(juri)}</div>
+          <div class="juri-rekap-nama">${esc(displayName)}</div>
           <div class="juri-rekap-role">${roleLabel}</div>
           <div class="juri-rekap-skor">
             <span>
@@ -1135,6 +1207,110 @@
     deleteType = null;
   }
   
+  // ══════════════════════════════════════════
+  //  SHOW JURI NAMES POPUP
+  // ══════════════════════════════════════════
+  
+  let currentJuriNamesData = null;
+  
+  async function showJuriNames(judulInovasi, tipe) {
+    const all = await loadAllDraf();
+    const data = all[judulInovasi];
+    
+    if (!data) {
+      alert('Data tidak ditemukan');
+      return;
+    }
+    
+    let juriList = [];
+    let title = '';
+    
+    if (tipe === 'judul') {
+      title = '🏆 Juri Judul yang Sudah Menilai';
+      juriList = JURI_JUDUL_LIST.filter(j => {
+        const juriData = findJuriData(data.judulState, j);
+        return juriData && Object.values(juriData).some(v => v);
+      });
+    } else {
+      title = '📊 Juri SID yang Sudah Menilai';
+      juriList = JURI_SID_LIST.filter(j => {
+        const juriData = findJuriData(data.juriState, j);
+        return juriData && Object.values(juriData.radio||{}).some(v => v);
+      });
+    }
+    
+    currentJuriNamesData = { judulInovasi, tipe, juriList };
+    
+    document.getElementById('juriNamesModalTitle').textContent = title;
+    document.getElementById('juriNamesModalSubtitle').textContent = judulInovasi;
+    
+    let bodyHtml = '';
+    
+    if (juriList.length === 0) {
+      bodyHtml = `
+        <div style="text-align: center; padding: 40px 20px; color: #9ca3af;">
+          <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+          <div style="font-size: 14px;">Belum ada juri yang menilai</div>
+        </div>`;
+    } else {
+      bodyHtml = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+      juriList.forEach((juri, idx) => {
+        // Hitung skor juri ini
+        let skor = 0;
+        if (tipe === 'judul') {
+          const juriData = findJuriData(data.judulState, juri);
+          if (juriData) {
+            kriteriaJudul.forEach(k => {
+              const v = juriData[k.no] || "";
+              if (v) skor += Number(v) * k.bobot;
+            });
+          }
+        } else {
+          const juriData = findJuriData(data.juriState, juri);
+          if (juriData) {
+            sidIndicators.filter(i => !i.type).forEach(i => {
+              const v = juriData.radio?.[i.originalNo] || "";
+              if (v) skor += Number(v) * i.bobot;
+            });
+          }
+        }
+        
+        const bgColor = tipe === 'judul' ? '#f0fdf4' : '#eff6ff';
+        const borderColor = tipe === 'judul' ? '#86efac' : '#93c5fd';
+        const textColor = tipe === 'judul' ? '#166534' : '#1e40af';
+        
+        bodyHtml += `
+          <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px;">
+            <div style="background: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+              ${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '✓'}
+            </div>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; color: #1f2937; font-size: 15px; margin-bottom: 4px;">${esc(juri)}</div>
+              <div style="font-size: 12px; color: ${textColor}; font-weight: 700;">Skor: ${skor.toFixed(2)}</div>
+            </div>
+            <div style="background: white; padding: 8px 16px; border-radius: 8px; font-weight: 900; color: ${textColor}; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+              ${skor.toFixed(2)}
+            </div>
+          </div>`;
+      });
+      bodyHtml += '</div>';
+    }
+    
+    document.getElementById('juriNamesModalBody').innerHTML = bodyHtml;
+    document.getElementById('modalJuriNames').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeJuriNamesModal() {
+    document.getElementById('modalJuriNames').classList.remove('active');
+    document.body.style.overflow = '';
+    currentJuriNamesData = null;
+  }
+  
+  // Expose to global
+  window.showJuriNames = showJuriNames;
+  window.closeJuriNamesModal = closeJuriNamesModal;
+  
   function printJuriDetail() {
     if (!currentJuriData || currentJuriData.inovasiDinilai.length === 0) return;
     printSingleInovasi(0);
@@ -1231,12 +1407,17 @@
     if (e.target.id === 'modalDetailJuri') {
       closeModalJuri();
     }
+    if (e.target.id === 'modalJuriNames') {
+      closeJuriNamesModal();
+    }
   });
   
   // Close modal on ESC key
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       closeModalJuri();
+      closeJuriNamesModal();
+      closeDeleteModal();
     }
   });
 
