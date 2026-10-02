@@ -121,6 +121,31 @@ const cloudStorage = {
     return { success: true, source: 'localStorage' };
   },
   
+  // Hapus data penilaian
+  async deleteDraf(namaInovasi) {
+    console.log('🗑️ Deleting data for:', namaInovasi);
+    
+    // Hapus dari localStorage
+    const allLocal = JSON.parse(localStorage.getItem("draf_iid2026_all") || "{}");
+    delete allLocal[namaInovasi];
+    localStorage.setItem("draf_iid2026_all", JSON.stringify(allLocal));
+    
+    // Jika Firebase enabled, hapus juga dari cloud
+    if (firebaseInitialized && database) {
+      try {
+        const sanitizedKey = sanitizeFirebaseKey(namaInovasi);
+        await database.ref(`penilaian/${sanitizedKey}`).remove();
+        console.log('☁️ Deleted from Firebase');
+        return { success: true, source: 'firebase' };
+      } catch (error) {
+        console.error('Firebase delete error:', error);
+        return { success: true, source: 'localStorage' };
+      }
+    }
+    
+    return { success: true, source: 'localStorage' };
+  },
+  
   // Load semua data penilaian
   async loadAllDraf() {
     console.log('📥 Loading all drafts...');

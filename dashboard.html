@@ -182,6 +182,16 @@
       display: inline-block;
       box-shadow: 0 2px 6px rgba(107, 114, 128, 0.1);
     }
+    
+    /* Delete button hover */
+    .btn-delete {
+      transition: all 0.2s ease;
+    }
+    .btn-delete:hover {
+      background: #dc2626 !important;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
 
     /* Rekap per juri */
     .juri-rekap-grid { 
@@ -478,6 +488,7 @@
       <div class="actions">
         <button onclick="exportToExcel()" class="btn btn-print" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">📊 Export Excel</button>
         <button onclick="loadDashboard()" class="btn primary">🔄 Refresh Data</button>
+        <button onclick="showDeleteAllModal()" class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">🗑️ Hapus Semua Data</button>
         <a href="index.html" class="btn secondary">🏠 Beranda</a>
       </div>
     </section>
@@ -512,6 +523,29 @@
     </div>
     <div class="modal-body" id="modalJuriBody">
       <!-- Content will be injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div id="modalDeleteConfirm" class="modal-overlay">
+  <div class="modal-detail" style="max-width: 500px;">
+    <div class="modal-header" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+      <div class="modal-header-content">
+        <div class="modal-title">⚠️ Konfirmasi Hapus</div>
+      </div>
+      <button class="modal-close" onclick="closeDeleteModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding: 30px; text-align: center;">
+      <div style="font-size: 64px; margin-bottom: 20px;">🗑️</div>
+      <h3 id="deleteModalTitle" style="margin-bottom: 15px; color: #1f2937; font-size: 18px;">Hapus Data?</h3>
+      <p id="deleteModalMessage" style="color: #6b7280; margin-bottom: 30px; line-height: 1.6;">
+        Data yang dihapus tidak dapat dikembalikan!
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="closeDeleteModal()" class="btn secondary" style="min-width: 120px;">Batal</button>
+        <button id="confirmDeleteBtn" class="btn" style="min-width: 120px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">Hapus</button>
+      </div>
     </div>
   </div>
 </div>
@@ -605,6 +639,20 @@
     "Dr. Ir. Eva Rolia, M.T., M.K.M."
   ];
 
+  // Helper: Cari juri state dengan nama asli atau sanitized
+  function findJuriData(stateObj, juriName) {
+    if (!stateObj) return null;
+    
+    // Coba nama asli
+    if (stateObj[juriName]) return stateObj[juriName];
+    
+    // Coba nama sanitized
+    const sanitized = juriName.replace(/[\.,#$\[\]\/]/g, '_');
+    if (stateObj[sanitized]) return stateObj[sanitized];
+    
+    return null;
+  }
+
   async function loadDashboard() {
     console.log('🔄 Loading dashboard...');
     
@@ -617,10 +665,16 @@
     // ── Stat cards ──
     const totalInovasi   = inovasiList.length;
     const selesaiJudul   = inovasiList.filter(([,d]) => {
-      return JURI_JUDUL_LIST.filter(j => d.judulState?.[j] && Object.values(d.judulState[j]).some(v=>v)).length === JURI_JUDUL_LIST.length;
+      return JURI_JUDUL_LIST.filter(j => {
+        const data = findJuriData(d.judulState, j);
+        return data && Object.values(data).some(v=>v);
+      }).length === JURI_JUDUL_LIST.length;
     }).length;
     const selesaiSID     = inovasiList.filter(([,d]) => {
-      return JURI_SID_LIST.filter(j => d.juriState?.[j] && Object.values(d.juriState[j].radio||{}).some(v=>v)).length >= 2;
+      return JURI_SID_LIST.filter(j => {
+        const data = findJuriData(d.juriState, j);
+        return data && Object.values(data.radio||{}).some(v=>v);
+      }).length >= 2;
     }).length;
 
     document.getElementById("dashStats").innerHTML = `
@@ -653,16 +707,18 @@
     // Hitung total gabungan per inovasi
     const rows = inovasiList.map(([judulKey, d]) => {
       const judulArr = JURI_JUDUL_LIST.map(j => {
-        if (!d.judulState?.[j]) return null;
+        const data = findJuriData(d.judulState, j);
+        if (!data) return null;
         let t = 0;
-        kriteriaJudul.forEach(k => { const v = d.judulState[j]?.[k.no]||""; if(v) t += Number(v)*k.bobot; });
+        kriteriaJudul.forEach(k => { const v = data[k.no]||""; if(v) t += Number(v)*k.bobot; });
         return t;
       }).filter(v => v !== null && v > 0);
 
       const sidArr = JURI_SID_LIST.map(j => {
-        if (!d.juriState?.[j]) return null;
+        const data = findJuriData(d.juriState, j);
+        if (!data) return null;
         let t = 0;
-        sidIndicators.filter(i=>!i.type).forEach(i => { const v=d.juriState[j]?.radio?.[i.originalNo]||""; if(v) t+=Number(v)*i.bobot; });
+        sidIndicators.filter(i=>!i.type).forEach(i => { const v=data.radio?.[i.originalNo]||""; if(v) t+=Number(v)*i.bobot; });
         return t;
       }).filter(v => v !== null && v > 0);
 
@@ -689,6 +745,7 @@
             <th>Skor SID</th>
             <th>Total</th>
             <th>Status</th>
+            <th style="width: 100px;">Aksi</th>
           </tr>
         </thead>
         <tbody>`;
@@ -696,6 +753,7 @@
     rows.forEach((r, i) => {
       const badgeCls = r.status === 'lengkap' ? 'badge-lengkap' : r.status === 'partial' ? 'badge-partial' : 'badge-kosong';
       const badgeTxt = r.status === 'lengkap' ? '✅ Lengkap' : r.status === 'partial' ? '⏳ Sebagian' : '—';
+      const escapedJudul = r.judulKey.replace(/'/g, "\\'");
       html += `
         <tr>
           <td>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td>
@@ -705,6 +763,9 @@
           <td class="skor-cell">${r.avgSID>0?r.avgSID.toFixed(2):"—"} <small style="font-weight:400;color:#9ca3af">(${r.sidJuri}/3)</small></td>
           <td class="total-cell">${r.total>0?r.total.toFixed(2):"—"}</td>
           <td><span class="${badgeCls}">${badgeTxt}</span></td>
+          <td style="text-align: center;">
+            <button onclick="deleteInovasi('${escapedJudul}')" class="btn-delete" title="Hapus data inovasi ini" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🗑️</button>
+          </td>
         </tr>`;
     });
 
@@ -719,11 +780,27 @@
       const isSID   = JURI_SID_LIST.includes(juri);
       let totalSkor = 0, count = 0;
       inovasiList.forEach(([,d]) => {
-        if (isJudul && d.judulState?.[juri]) {
-          let t=0; kriteriaJudul.forEach(k=>{const v=d.judulState[juri]?.[k.no]||"";if(v)t+=Number(v)*k.bobot;}); if(t>0){totalSkor+=t;count++;}
+        if (isJudul) {
+          const data = findJuriData(d.judulState, juri);
+          if (data) {
+            let t=0; 
+            kriteriaJudul.forEach(k=>{
+              const v=data[k.no]||"";
+              if(v)t+=Number(v)*k.bobot;
+            }); 
+            if(t>0){totalSkor+=t;count++;}
+          }
         }
-        if (isSID && d.juriState?.[juri]) {
-          let t=0; sidIndicators.filter(i=>!i.type).forEach(i=>{const v=d.juriState[juri]?.radio?.[i.originalNo]||"";if(v)t+=Number(v)*i.bobot;}); if(t>0){totalSkor+=t;count++;}
+        if (isSID) {
+          const data = findJuriData(d.juriState, juri);
+          if (data) {
+            let t=0; 
+            sidIndicators.filter(i=>!i.type).forEach(i=>{
+              const v=data.radio?.[i.originalNo]||"";
+              if(v)t+=Number(v)*i.bobot;
+            }); 
+            if(t>0){totalSkor+=t;count++;}
+          }
         }
       });
       const roleLabel = isJudul && isSID ? "🏆📊 Juri Judul & SID" : isJudul ? "🏆 Juri Judul Inovasi" : "📊 Juri Penilaian SID";
@@ -760,44 +837,50 @@
   let currentJuriData = null;
   
   function showJuriDetail(namaJuri, isJudul, isSID) {
-    const all = loadAllDraf();
-    const inovasiList = Object.entries(all);
-    
-    // Filter inovasi yang dinilai juri ini
-    const inovasiDinilai = [];
-    
-    inovasiList.forEach(([judulKey, data]) => {
-      let added = false;
+    loadAllDraf().then(all => {
+      const inovasiList = Object.entries(all);
       
-      if (isJudul && data.judulState?.[namaJuri]) {
-        const hasData = Object.values(data.judulState[namaJuri]).some(v => v);
-        if (hasData && !added) {
-          inovasiDinilai.push({
-            judul: judulKey,
-            data: data,
-            tipe: 'judul',
-            judulState: data.judulState[namaJuri],
-            notes: data.notesState?.[namaJuri] || {},
-            signature: data.signatureState?.[namaJuri] || ""
-          });
-          added = true;
-        }
-      }
+      // Filter inovasi yang dinilai juri ini
+      const inovasiDinilai = [];
       
-      if (isSID && data.juriState?.[namaJuri]) {
-        const hasData = Object.values(data.juriState[namaJuri]?.radio || {}).some(v => v);
-        if (hasData && !added) {
-          inovasiDinilai.push({
-            judul: judulKey,
-            data: data,
-            tipe: 'sid',
-            juriState: data.juriState[namaJuri],
-            notes: data.notesState?.[namaJuri] || {},
-            signature: data.signatureState?.[namaJuri] || ""
-          });
+      inovasiList.forEach(([judulKey, data]) => {
+        let added = false;
+        
+        if (isJudul) {
+          const judulData = findJuriData(data.judulState, namaJuri);
+          if (judulData) {
+            const hasData = Object.values(judulData).some(v => v);
+            if (hasData && !added) {
+              inovasiDinilai.push({
+                judul: judulKey,
+                data: data,
+                tipe: 'judul',
+                judulState: judulData,
+                notes: findJuriData(data.notesState, namaJuri) || {},
+                signature: findJuriData(data.signatureState, namaJuri) || ""
+              });
+              added = true;
+            }
+          }
         }
-      }
-    });
+        
+        if (isSID && !added) {
+          const juriData = findJuriData(data.juriState, namaJuri);
+          if (juriData) {
+            const hasData = Object.values(juriData.radio || {}).some(v => v);
+            if (hasData) {
+              inovasiDinilai.push({
+                judul: judulKey,
+                data: data,
+                tipe: 'sid',
+                juriState: juriData,
+                notes: findJuriData(data.notesState, namaJuri) || {},
+                signature: findJuriData(data.signatureState, namaJuri) || ""
+              });
+            }
+          }
+        }
+      });
     
     if (inovasiDinilai.length === 0) {
       alert("Tidak ada data penilaian untuk juri ini.");
@@ -918,11 +1001,138 @@
     // Show modal
     document.getElementById("modalDetailJuri").classList.add("active");
     document.body.style.overflow = "hidden";
+    }).catch(err => {
+      console.error('Error loading data:', err);
+      alert('Error loading data. Please try again.');
+    });
   }
   
   function closeModalJuri() {
     document.getElementById("modalDetailJuri").classList.remove("active");
     document.body.style.overflow = "";
+  }
+  
+  // ══════════════════════════════════════════
+  //  DELETE DATA FUNCTIONS
+  // ══════════════════════════════════════════
+  
+  let deleteTarget = null;
+  let deleteType = null; // 'single' or 'all'
+  
+  function showDeleteAllModal() {
+    deleteType = 'all';
+    deleteTarget = null;
+    
+    document.getElementById('deleteModalTitle').textContent = 'Hapus Semua Data?';
+    document.getElementById('deleteModalMessage').innerHTML = `
+      <strong>⚠️ PERHATIAN!</strong><br><br>
+      Anda akan menghapus <strong>SEMUA DATA PENILAIAN</strong> dari sistem.<br><br>
+      Data yang dihapus meliputi:<br>
+      • Semua penilaian judul inovasi<br>
+      • Semua penilaian indikator SID<br>
+      • Catatan dan tanda tangan juri<br><br>
+      <strong style="color: #dc2626;">Tindakan ini TIDAK DAPAT DIBATALKAN!</strong>
+    `;
+    
+    document.getElementById('confirmDeleteBtn').onclick = confirmDeleteAll;
+    document.getElementById('modalDeleteConfirm').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function deleteInovasi(judulInovasi) {
+    deleteType = 'single';
+    deleteTarget = judulInovasi;
+    
+    document.getElementById('deleteModalTitle').textContent = 'Hapus Data Inovasi?';
+    document.getElementById('deleteModalMessage').innerHTML = `
+      Anda akan menghapus data penilaian untuk:<br><br>
+      <strong style="color: #7c3aed;">${esc(judulInovasi)}</strong><br><br>
+      Data yang akan dihapus meliputi:<br>
+      • Penilaian judul dari semua juri<br>
+      • Penilaian indikator SID dari semua juri<br>
+      • Catatan dan tanda tangan<br><br>
+      <strong style="color: #dc2626;">Tindakan ini tidak dapat dibatalkan!</strong>
+    `;
+    
+    document.getElementById('confirmDeleteBtn').onclick = confirmDeleteSingle;
+    document.getElementById('modalDeleteConfirm').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  async function confirmDeleteSingle() {
+    if (!deleteTarget) return;
+    
+    try {
+      const all = await loadAllDraf();
+      
+      // Hapus dari objek
+      delete all[deleteTarget];
+      
+      // Simpan kembali
+      await saveAllDraf(all);
+      
+      // Hapus dari Firebase jika enabled
+      if (typeof cloudStorage !== 'undefined' && cloudStorage.deleteDraf) {
+        await cloudStorage.deleteDraf(deleteTarget);
+      }
+      
+      closeDeleteModal();
+      
+      // Tampilkan notifikasi
+      alert(`✅ Data penilaian "${deleteTarget}" berhasil dihapus!`);
+      
+      // Reload dashboard
+      await loadDashboard();
+      
+    } catch (error) {
+      console.error('Error deleting data:', error);
+      alert('❌ Gagal menghapus data: ' + error.message);
+    }
+  }
+  
+  async function confirmDeleteAll() {
+    try {
+      // Konfirmasi sekali lagi
+      const confirm2 = confirm('⚠️ KONFIRMASI TERAKHIR!\n\nApakah Anda YAKIN akan menghapus SEMUA DATA?\n\nKlik OK untuk melanjutkan atau Cancel untuk membatalkan.');
+      
+      if (!confirm2) {
+        closeDeleteModal();
+        return;
+      }
+      
+      // Hapus dari localStorage
+      localStorage.removeItem('draf_iid2026_all');
+      localStorage.removeItem('draf_iid2026_last');
+      
+      // Hapus dari Firebase jika enabled
+      if (typeof cloudStorage !== 'undefined' && database) {
+        try {
+          await database.ref('penilaian').remove();
+          console.log('✅ Firebase data cleared');
+        } catch (e) {
+          console.warn('Firebase delete error:', e);
+        }
+      }
+      
+      closeDeleteModal();
+      
+      // Tampilkan notifikasi
+      alert('✅ Semua data berhasil dihapus!\n\nSistem akan me-refresh halaman.');
+      
+      // Reload dashboard
+      await loadDashboard();
+      
+    } catch (error) {
+      console.error('Error deleting all data:', error);
+      alert('❌ Gagal menghapus data: ' + error.message);
+    }
+  }
+  
+  function closeDeleteModal() {
+    document.getElementById('modalDeleteConfirm').classList.remove('active');
+    document.body.style.overflow = '';
+    deleteTarget = null;
+    deleteType = null;
   }
   
   function printJuriDetail() {
@@ -1104,7 +1314,8 @@
         let juriCount = 0;
         
         JURI_JUDUL_LIST.forEach(juri => {
-          const nilai = d.judulState?.[juri]?.[k.no];
+          const judulData = findJuriData(d.judulState, juri);
+          const nilai = judulData?.[k.no];
           if (nilai) {
             paramTotal += Number(nilai) * k.bobot;
             juriCount++;
@@ -1121,7 +1332,8 @@
       
       // Penilai
       const juriYangMenilai = JURI_JUDUL_LIST.filter(juri => {
-        return d.judulState?.[juri] && Object.values(d.judulState[juri]).some(v => v);
+        const judulData = findJuriData(d.judulState, juri);
+        return judulData && Object.values(judulData).some(v => v);
       });
       html += `<td style="font-size: 9pt;">${juriYangMenilai.length > 0 ? juriYangMenilai.join("<br>") : '—'}</td>`;
       
@@ -1176,7 +1388,8 @@
         let juriCount = 0;
         
         JURI_SID_LIST.forEach(juri => {
-          const nilai = d.juriState?.[juri]?.radio?.[ind.originalNo];
+          const juriData = findJuriData(d.juriState, juri);
+          const nilai = juriData?.radio?.[ind.originalNo];
           if (nilai) {
             indTotal += Number(nilai) * ind.bobot;
             juriCount++;
