@@ -5,7 +5,7 @@
 // Data untuk JURI JUDUL (106 inovasi - data lengkap dari dokumen resmi)
 const daftarInovasiJudulLengkap = [
   {
-    judul: "Digitalisasi Laporan Ikhtisar Pengawasan APIP",
+    judul: "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
     perangkatDaerah: "Inspektorat Daerah",
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",
@@ -376,7 +376,7 @@ const daftarInovasiJudulLengkap = [
     ringkasan: "Inovasi pelayanan yang mengintegrasikan pelayanan langsung dengan pemanfaatan teknologi informasi, penyediaan informasi, pendampingan, pelayanan prioritas, dan pengelolaan pengaduan."
   },
   {
-    judul: "KALAP (Kantor Lapangan)",
+    judul: "KEPANG (Kerja Lapangan)",
     perangkatDaerah: "Kecamatan Metro Selatan",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
