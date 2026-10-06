@@ -116,18 +116,25 @@ const realtimeSync = {
       renderLandingRanking().catch(err => console.error('Ranking refresh error:', err));
     }
     
-    // Refresh dropdown if available
-    if (typeof populateInovasiDropdown === 'function') {
-      console.log('🔄 Refreshing dropdown...');
-      populateInovasiDropdown().catch(err => console.error('Dropdown refresh error:', err));
-    }
+    // PERBAIKAN: JANGAN auto-refresh dropdown untuk menghindari hilangnya inovasi yang sudah dinilai
+    // Dropdown hanya refresh saat halaman pertama kali dimuat
+    // if (typeof populateInovasiDropdown === 'function') {
+    //   console.log('🔄 Refreshing dropdown...');
+    //   populateInovasiDropdown().catch(err => console.error('Dropdown refresh error:', err));
+    // }
     
-    // Update status cards if available
+    // Update status cards if available (hanya update status bar, tidak refresh dropdown)
     if (typeof updateStatusCards === 'function') {
       const sel = document.getElementById('globalInovasi');
-      if (sel) {
+      if (sel && sel.value) {
         updateStatusCards(sel.value).catch(err => console.error('Status card refresh error:', err));
       }
+    }
+    
+    // Update assessment progress counter
+    if (typeof updateAssessmentProgress === 'function') {
+      console.log('🔄 Refreshing assessment progress...');
+      updateAssessmentProgress().catch(err => console.error('Progress refresh error:', err));
     }
   },
   
