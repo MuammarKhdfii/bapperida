@@ -517,19 +517,53 @@
   async function updateAssessmentProgress() {
     const allDraf = await loadAllDraf();
     const currentUser = getSession()?.nama;
+    const currentRole = getSession()?.role;
     const totalInovasi = daftarInovasi.length;
     let assessed = 0;
     
+    // Sanitize nama juri untuk pengecekan (sesuai dengan Firebase key format)
+    const sanitizedName = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
+    
+    console.log('[updateAssessmentProgress] Current user:', currentUser, 'Sanitized:', sanitizedName);
+    
     daftarInovasi.forEach(inovasi => {
       const draft = allDraf[inovasi.judul];
-      const userAlreadyAssessed = draft && 
-        ((draft.skorPerJuri && draft.skorPerJuri[currentUser] > 0) ||
-         (draft.skorJudulPerJuri && draft.skorJudulPerJuri[currentUser] > 0));
+      
+      if (!draft) return;
+      
+      let userAlreadyAssessed = false;
+      
+      // Check dengan nama asli atau sanitized
+      if (currentRole === 'juri_judul') {
+        // Check apakah user sudah menilai di judulState
+        const judulData = draft.judulState?.[currentUser] || draft.judulState?.[sanitizedName];
+        if (judulData && typeof judulData === 'object') {
+          const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
+          userAlreadyAssessed = filledCount >= 6; // 6 kriteria judul
+        }
+      } else if (currentRole === 'juri_sid') {
+        // Check apakah user sudah menilai di juriState (SID)
+        const juriData = draft.juriState?.[currentUser] || draft.juriState?.[sanitizedName];
+        if (juriData && juriData.radio && typeof juriData.radio === 'object') {
+          const filledCount = Object.keys(juriData.radio).length;
+          userAlreadyAssessed = filledCount >= 19; // Assume 19 required indicators
+        }
+      }
+      
+      // Fallback: check by score (nama asli atau sanitized)
+      if (!userAlreadyAssessed) {
+        const skorSID = draft.skorPerJuri?.[currentUser] || draft.skorPerJuri?.[sanitizedName] || 0;
+        const skorJudul = draft.skorJudulPerJuri?.[currentUser] || draft.skorJudulPerJuri?.[sanitizedName] || 0;
+        userAlreadyAssessed = skorSID > 0 || skorJudul > 0;
+      }
       
       if (userAlreadyAssessed) {
         assessed++;
+        console.log(`  ✅ Assessed: "${inovasi.judul}"`);
       }
     });
+    
+    console.log(`[updateAssessmentProgress] Total: ${assessed}/${totalInovasi}`);
     
     const remaining = totalInovasi - assessed;
     const progressEl = document.getElementById("assessmentProgress");
