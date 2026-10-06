@@ -492,7 +492,16 @@
     const total = st.judulJuri + st.indikatorJuri;
 
     bar.style.display = "flex";
-    const meta = daftarInovasi.find(i => i.judul === judul) || {};
+    
+    // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
+    let meta = daftarInovasiJudulLengkap.find(i => i.judul === judul);
+    if (!meta) {
+      meta = daftarInovasiSID.find(i => i.judul === judul);
+    }
+    if (!meta) {
+      meta = {};
+    }
+    
     bar.innerHTML = `
       <span class="isb-icon">🏛️</span>
       <span class="isb-pd">${meta.perangkatDaerah || "—"}</span>
@@ -664,7 +673,23 @@
       const avgInd  = indArr.length  > 0 ? indArr.reduce((a,b)=>a+b,0)  / indArr.length  : 0;
       const avgJud  = judArr.length  > 0 ? judArr.reduce((a,b)=>a+b,0)  / judArr.length  : 0;
       const total   = parseFloat((avgInd + avgJud).toFixed(2));
-      const meta    = daftarInovasi.find(i => i.judul === judulKey) || {};
+      
+      // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID) untuk mendapatkan perangkatDaerah
+      // karena ranking dashboard harus tampilkan SEMUA inovasi, bukan hanya role user saat ini
+      let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
+      if (!meta) {
+        meta = daftarInovasiSID.find(i => i.judul === judulKey);
+      }
+      if (!meta) {
+        meta = {};
+      }
+      
+      console.log('  Metadata lookup:', {
+        judulKey,
+        foundInJudul: !!daftarInovasiJudulLengkap.find(i => i.judul === judulKey),
+        foundInSID: !!daftarInovasiSID.find(i => i.judul === judulKey),
+        perangkatDaerah: meta.perangkatDaerah || "—"
+      });
       
       console.log('  Score arrays:', {
         indArr: indArr.length,
