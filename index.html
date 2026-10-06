@@ -91,14 +91,14 @@
           <p class="ranking-section-sub">Total skor =  rata-rata <b>Penilaian Indikator</b> dari semua juri</p>
         </div>
         <div class="ranking-section-actions">
-          <button onclick="pushToFirebase()" class="rk-action-btn rk-btn-sync" title="Upload data lokal ke Firebase (untuk sync ke device lain)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-            ☁️↑ Push to Cloud
+          <button onclick="pushToFirebase()" class="rk-action-btn rk-btn-sync" title="UNGGAH DATA KE CLOUD&#13;&#13;Gunakan tombol ini untuk mengirim semua penilaian dari laptop Anda ke database online (Firebase).&#13;&#13;Kapan menggunakan:&#13;• Anda baru saja menilai banyak inovasi di laptop ini&#13;• Anda ingin teman/juri lain melihat penilaian Anda&#13;• Data di laptop ini lebih lengkap dari cloud&#13;&#13;Setelah klik tombol ini, teman Anda bisa 'Tarik dari Cloud' untuk mendapatkan data terbaru." style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            ☁️↑ Unggah ke Cloud
           </button>
-          <button onclick="pullFromFirebase()" class="rk-action-btn rk-btn-sync" title="Download data terbaru dari Firebase">
-            ☁️↓ Pull from Cloud
+          <button onclick="pullFromFirebase()" class="rk-action-btn rk-btn-sync" title="TARIK DATA DARI CLOUD&#13;&#13;Gunakan tombol ini untuk mengunduh penilaian terbaru dari database online (Firebase) ke laptop Anda.&#13;&#13;Kapan menggunakan:&#13;• Teman/juri lain baru saja menilai dan Anda ingin lihat data terbaru&#13;• Data di laptop ini lebih sedikit dari yang seharusnya&#13;• Anda baru buka aplikasi di device baru&#13;&#13;Pilihan GABUNG: Data lama + data baru disatukan&#13;Pilihan GANTI: Data lama dihapus, diganti dengan data cloud">
+            ☁️↓ Tarik dari Cloud
           </button>
-          <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
-          <button onclick="clearAllData()" class="rk-action-btn rk-btn-clear">🗑️ Hapus Data</button>
+          <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh" title="Refresh tampilan ranking tanpa mengubah data">🔄 Refresh</button>
+          <button onclick="clearAllData()" class="rk-action-btn rk-btn-clear" title="HATI-HATI: Hapus semua data penilaian dari laptop ini">🗑️ Hapus Data</button>
         </div>
       </div>
 
@@ -1005,9 +1005,9 @@
       
       // Success notification
       if (errorCount === 0) {
-        alert(`✅ Upload berhasil!\n\n${successCount} inovasi berhasil di-upload ke Firebase.\n\nSekarang teman Anda bisa pull data terbaru!`);
+        alert(`✅ UNGGAH BERHASIL!\n\n${successCount} penilaian inovasi berhasil diunggah ke cloud Firebase.\n\n🎉 Sekarang teman/juri lain bisa klik tombol "Tarik dari Cloud" untuk mendapatkan data penilaian terbaru dari Anda!`);
       } else {
-        alert(`⚠️ Upload selesai dengan error!\n\n✅ Berhasil: ${successCount}\n❌ Gagal: ${errorCount}\n\nCek console untuk detail error.`);
+        alert(`⚠️ UNGGAH SELESAI (ADA ERROR)\n\n✅ Berhasil diunggah: ${successCount}\n❌ Gagal diunggah: ${errorCount}\n\nBuka Console Browser (F12) untuk melihat detail error.`);
       }
       
       // Refresh UI
@@ -1049,10 +1049,17 @@
     
     // Konfirmasi apakah ingin merge atau replace
     const merge = confirm(
-      '🔄 Pull dari Firebase\n\n' +
-      '✅ MERGE (Recommended): Gabungkan data Firebase dengan data lokal Anda\n' +
-      '❌ REPLACE: Hapus data lokal dan ganti dengan data dari Firebase\n\n' +
-      'Klik OK untuk MERGE, Cancel untuk REPLACE'
+      '🔄 TARIK DATA DARI CLOUD\n\n' +
+      'Pilih cara menggabungkan data:\n\n' +
+      '✅ GABUNG (Klik OK):\n' +
+      '   → Data lama di laptop ini TETAP ada\n' +
+      '   → Data baru dari cloud ditambahkan\n' +
+      '   → Rekomendasi: Pilih ini jika tidak yakin\n\n' +
+      '❌ GANTI (Klik Cancel):\n' +
+      '   → Data lama di laptop ini DIHAPUS\n' +
+      '   → Diganti total dengan data dari cloud\n' +
+      '   → Pilih ini jika yakin cloud lebih benar\n\n' +
+      'Klik OK untuk GABUNG, Cancel untuk GANTI'
     );
     
     // Tampilkan loading
@@ -1085,11 +1092,11 @@
         console.log(`✅ Merge complete: Local=${localCount}, Firebase=${firebaseCount}, Merged=${mergedCount}`);
         
         alert(
-          `✅ Merge berhasil!\n\n` +
-          `📦 Data lokal: ${localCount}\n` +
-          `☁️ Data Firebase: ${firebaseCount}\n` +
-          `🔀 Total setelah merge: ${mergedCount}\n\n` +
-          `Data teman Anda sekarang sudah muncul!`
+          `✅ GABUNG BERHASIL!\n\n` +
+          `📦 Data lama di laptop ini: ${localCount} penilaian\n` +
+          `☁️ Data baru dari cloud: ${firebaseCount} penilaian\n` +
+          `🔀 Total setelah digabung: ${mergedCount} penilaian\n\n` +
+          `🎉 Sekarang Anda bisa melihat penilaian dari teman/juri lain!`
         );
       } else {
         // REPLACE: Hapus local dan ganti dengan Firebase
@@ -1097,7 +1104,7 @@
         localStorage.setItem(KEY_ALL, JSON.stringify(firebaseData));
         
         const count = Object.keys(firebaseData).length;
-        alert(`✅ Replace berhasil!\n\n${count} inovasi berhasil di-load dari Firebase.\n\nData lokal Anda diganti dengan data terbaru dari Firebase.`);
+        alert(`✅ GANTI BERHASIL!\n\n${count} penilaian berhasil diunduh dari cloud.\n\n⚠️ Data lama di laptop ini sudah DIHAPUS dan diganti dengan data terbaru dari cloud Firebase.`);
       }
       
       // Update UI
