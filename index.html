@@ -610,10 +610,37 @@
 
   async function loadRankingData() {
     const all = await loadAllDraf();
-    console.log('[loadRankingData] localStorage data:', all);
-    console.log('[loadRankingData] Object.keys:', Object.keys(all));
+    console.log('[loadRankingData] RAW DATA from loadAllDraf:', all);
+    console.log('[loadRankingData] typeof all:', typeof all);
+    console.log('[loadRankingData] Array.isArray(all):', Array.isArray(all));
+    console.log('[loadRankingData] Object.keys(all):', Object.keys(all));
     
-    const result = Object.entries(all).map(([judulKey, draf]) => {
+    // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
+    // Bukan property object seperti 'activeJuri', 'bentukInovasi', dll
+    const entries = Object.entries(all).filter(([key, value]) => {
+      // Skip jika value bukan object atau tidak punya struktur inovasi
+      if (typeof value !== 'object' || value === null) return false;
+      
+      // Skip jika key adalah property object standar
+      if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
+           'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
+           'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
+           'userMetadata'].includes(key)) {
+        console.log(`  [SKIPPED] "${key}" - property object, bukan inovasi`);
+        return false;
+      }
+      
+      // Hanya ambil yang punya judulState atau juriState
+      const isValid = value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
+      if (!isValid) {
+        console.log(`  [SKIPPED] "${key}" - tidak punya judulState/juriState`);
+      }
+      return isValid;
+    });
+    
+    console.log('[loadRankingData] Filtered entries count:', entries.length);
+    
+    const result = entries.map(([judulKey, draf]) => {
       console.log(`\n[loadRankingData] Processing: "${judulKey}"`);
       console.log('  Draft structure:', {
         hasJudulState: !!draf.judulState,
