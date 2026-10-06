@@ -91,7 +91,12 @@
           <p class="ranking-section-sub">Total skor =  rata-rata <b>Penilaian Indikator</b> dari semua juri</p>
         </div>
         <div class="ranking-section-actions">
-          <button onclick="forceSyncFromFirebase()" class="rk-action-btn rk-btn-sync" title="Paksa sinkronisasi dari Firebase">☁️ Force Sync</button>
+          <button onclick="pushToFirebase()" class="rk-action-btn rk-btn-sync" title="Upload data lokal ke Firebase (untuk sync ke device lain)" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            ☁️↑ Push to Cloud
+          </button>
+          <button onclick="pullFromFirebase()" class="rk-action-btn rk-btn-sync" title="Download data terbaru dari Firebase">
+            ☁️↓ Pull from Cloud
+          </button>
           <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
           <button onclick="clearAllData()" class="rk-action-btn rk-btn-clear">🗑️ Hapus Data</button>
         </div>
@@ -938,9 +943,11 @@
     console.log('✅ Delete all data complete');
   };
 
-  // Force sync dari Firebase - paksa reload data dari cloud
-  window.forceSyncFromFirebase = async function() {
-    console.log('🔄 Force sync from Firebase...');
+  // ══════════════════════════════════════════
+  //  PUSH TO FIREBASE - Upload localStorage ke Cloud
+  // ══════════════════════════════════════════
+  window.pushToFirebase = async function() {
+    console.log('☁️↑ Push to Firebase...');
     
     // Cek apakah Firebase tersedia
     if (typeof cloudStorage === 'undefined' || typeof ENABLE_FIREBASE === 'undefined' || !ENABLE_FIREBASE) {
@@ -963,38 +970,156 @@
     // Tampilkan loading
     const btn = event.target;
     const originalText = btn.innerHTML;
-    btn.innerHTML = '🔄 Syncing...';
+    btn.innerHTML = '☁️↑ Uploading...';
     btn.disabled = true;
     
     try {
-      // Clear localStorage terlebih dahulu untuk force reload dari Firebase
-      console.log('🗑️ Clearing localStorage...');
-      localStorage.removeItem(KEY_ALL);
+      // Load semua data dari localStorage
+      console.log('📦 Loading from localStorage...');
+      const localData = JSON.parse(localStorage.getItem(KEY_ALL) || '{}');
+      const entries = Object.entries(localData);
       
-      // Load dari Firebase
-      console.log('📥 Loading from Firebase...');
-      const firebaseData = await cloudStorage.loadAllDraf();
+      console.log('📤 Found', entries.length, 'items in localStorage');
       
-      console.log('✅ Loaded from Firebase:', Object.keys(firebaseData).length, 'items');
+      if (entries.length === 0) {
+        alert('⚠️ Tidak ada data di localStorage!\n\nTidak ada yang perlu di-upload.');
+        return;
+      }
       
-      // Update UI
-      await renderLandingRanking();
-      await populateInovasiDropdown();
-      await updateStatusCards(sel.value);
+      // Upload setiap entry ke Firebase
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (const [judulInovasi, data] of entries) {
+        try {
+          console.log(`  ↑ Uploading "${judulInovasi}"...`);
+          await cloudStorage.saveDraf(judulInovasi, data);
+          successCount++;
+        } catch(e) {
+          console.error(`  ❌ Error uploading "${judulInovasi}":`, e);
+          errorCount++;
+        }
+      }
+      
+      console.log(`✅ Upload complete: ${successCount} success, ${errorCount} errors`);
       
       // Success notification
-      const count = Object.keys(firebaseData).length;
-      alert(`✅ Sync berhasil!\n\n${count} inovasi berhasil di-load dari Firebase.\n\nData teman Anda sekarang sudah muncul!`);
+      if (errorCount === 0) {
+        alert(`✅ Upload berhasil!\n\n${successCount} inovasi berhasil di-upload ke Firebase.\n\nSekarang teman Anda bisa pull data terbaru!`);
+      } else {
+        alert(`⚠️ Upload selesai dengan error!\n\n✅ Berhasil: ${successCount}\n❌ Gagal: ${errorCount}\n\nCek console untuk detail error.`);
+      }
+      
+      // Refresh UI
+      await renderLandingRanking();
       
     } catch(error) {
-      console.error('❌ Force sync error:', error);
-      alert('❌ Gagal sync dari Firebase!\n\nError: ' + error.message);
+      console.error('❌ Push to Firebase error:', error);
+      alert('❌ Gagal upload ke Firebase!\n\nError: ' + error.message);
     } finally {
       // Restore button
       btn.innerHTML = originalText;
       btn.disabled = false;
     }
   };
+
+  // ══════════════════════════════════════════
+  //  PULL FROM FIREBASE - Download dari Cloud ke localStorage
+  // ══════════════════════════════════════════
+  window.pullFromFirebase = async function() {
+    console.log('☁️↓ Pull from Firebase...');
+    
+    // Cek apakah Firebase tersedia
+    if (typeof cloudStorage === 'undefined' || typeof ENABLE_FIREBASE === 'undefined' || !ENABLE_FIREBASE) {
+      alert('⚠️ Firebase tidak aktif!\n\nData hanya tersimpan di localStorage browser ini.\nUntuk multi-device sync, aktifkan Firebase di firebase-config.js');
+      return;
+    }
+    
+    // Cek koneksi Firebase
+    try {
+      const status = await cloudStorage.checkConnection();
+      if (!status.connected) {
+        alert('❌ Firebase tidak tersambung!\n\nPeriksa koneksi internet Anda atau Firebase Database Rules.');
+        return;
+      }
+    } catch(e) {
+      alert('❌ Error mengecek Firebase: ' + e.message);
+      return;
+    }
+    
+    // Konfirmasi apakah ingin merge atau replace
+    const merge = confirm(
+      '🔄 Pull dari Firebase\n\n' +
+      '✅ MERGE (Recommended): Gabungkan data Firebase dengan data lokal Anda\n' +
+      '❌ REPLACE: Hapus data lokal dan ganti dengan data dari Firebase\n\n' +
+      'Klik OK untuk MERGE, Cancel untuk REPLACE'
+    );
+    
+    // Tampilkan loading
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '☁️↓ Downloading...';
+    btn.disabled = true;
+    
+    try {
+      // Load dari Firebase
+      console.log('📥 Loading from Firebase...');
+      const firebaseData = await cloudStorage.loadAllDraf();
+      
+      console.log('✅ Loaded from Firebase:', Object.keys(firebaseData).length, 'items');
+      
+      if (merge) {
+        // MERGE: Gabungkan dengan data lokal
+        console.log('🔀 Merging with localStorage...');
+        const localData = JSON.parse(localStorage.getItem(KEY_ALL) || '{}');
+        
+        // Merge: Firebase data menang (override local jika ada konflik)
+        const mergedData = { ...localData, ...firebaseData };
+        
+        localStorage.setItem(KEY_ALL, JSON.stringify(mergedData));
+        
+        const localCount = Object.keys(localData).length;
+        const firebaseCount = Object.keys(firebaseData).length;
+        const mergedCount = Object.keys(mergedData).length;
+        
+        console.log(`✅ Merge complete: Local=${localCount}, Firebase=${firebaseCount}, Merged=${mergedCount}`);
+        
+        alert(
+          `✅ Merge berhasil!\n\n` +
+          `📦 Data lokal: ${localCount}\n` +
+          `☁️ Data Firebase: ${firebaseCount}\n` +
+          `🔀 Total setelah merge: ${mergedCount}\n\n` +
+          `Data teman Anda sekarang sudah muncul!`
+        );
+      } else {
+        // REPLACE: Hapus local dan ganti dengan Firebase
+        console.log('🔄 Replacing localStorage with Firebase data...');
+        localStorage.setItem(KEY_ALL, JSON.stringify(firebaseData));
+        
+        const count = Object.keys(firebaseData).length;
+        alert(`✅ Replace berhasil!\n\n${count} inovasi berhasil di-load dari Firebase.\n\nData lokal Anda diganti dengan data terbaru dari Firebase.`);
+      }
+      
+      // Update UI
+      await renderLandingRanking();
+      await populateInovasiDropdown();
+      const sel = document.getElementById('globalInovasi');
+      if (sel && sel.value) {
+        await updateStatusCards(sel.value);
+      }
+      
+    } catch(error) {
+      console.error('❌ Pull from Firebase error:', error);
+      alert('❌ Gagal download dari Firebase!\n\nError: ' + error.message);
+    } finally {
+      // Restore button
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  };
+
+  // Legacy function - redirect to pull
+  window.forceSyncFromFirebase = window.pullFromFirebase;
 
   window.switchTab = async function(btn, tab) {
     document.querySelectorAll("#landingRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
