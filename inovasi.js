@@ -2,7 +2,7 @@
 //  DATA INOVASI DAERAH KOTA METRO 2027
 // ══════════════════════════════════════════
 
-// Data untuk JURI JUDUL (105 inovasi - data lengkap dari dokumen resmi)
+// Data untuk JURI JUDUL (106 inovasi - data lengkap dari dokumen resmi)
 const daftarInovasiJudulLengkap = [
   {
     judul: "Digitalisasi Laporan Ikhtisar Pengawasan APIP",
@@ -1139,6 +1139,13 @@ const daftarInovasiSID = [
     bentuk: "Pelayanan Publik",
     waktu: "2027",
     ringkasan: "Gerakan masyarakat aktif untuk kesehatan di wilayah Yosomulyo."
+  },
+  {
+    judul: "SPARK (Sistem Pemantauan Anggaran dan Realisasi Kinerja)",
+    perangkatDaerah: "Bagian Administrasi Pembangunan",
+    bentuk: "Tata Kelola Pemerintahan Daerah",
+    waktu: "2027",
+    ringkasan: "Sistem pemantauan anggaran dan realisasi kinerja berbasis digital untuk meningkatkan transparansi dan akuntabilitas pengelolaan anggaran pembangunan daerah secara real-time."
   }
 ];
 
@@ -1147,7 +1154,7 @@ function getDaftarInovasiByRole(role) {
   if (role === 'juri_sid') {
     return daftarInovasiSID; // 56 inovasi untuk juri SID
   } else {
-    return daftarInovasiJudulLengkap; // 105 inovasi untuk juri judul
+    return daftarInovasiJudulLengkap; // 106 inovasi untuk juri judul
   }
 }
 
