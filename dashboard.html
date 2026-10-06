@@ -675,8 +675,25 @@
     const all = await loadAllDraf();
     console.log('📊 Data loaded:', Object.keys(all).length, 'inovasi');
     
-    const inovasiList = Object.entries(all);
-    console.log('📋 Processing', inovasiList.length, 'entries');
+    // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
+    // Bukan property object seperti 'activeJuri', 'bentukInovasi', dll
+    const inovasiList = Object.entries(all).filter(([key, value]) => {
+      // Skip jika value bukan object atau tidak punya struktur inovasi
+      if (typeof value !== 'object' || value === null) return false;
+      
+      // Skip jika key adalah property object standar
+      if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
+           'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
+           'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
+           'userMetadata'].includes(key)) {
+        return false;
+      }
+      
+      // Hanya ambil yang punya judulState atau juriState
+      return value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
+    });
+    
+    console.log('📋 Processing', inovasiList.length, 'valid innovation entries');
 
     // ── Stat cards ──
     const totalInovasi   = inovasiList.length;
@@ -914,7 +931,17 @@
   
   function showJuriDetail(namaJuri, isJudul, isSID) {
     loadAllDraf().then(all => {
-      const inovasiList = Object.entries(all);
+      // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
+      const inovasiList = Object.entries(all).filter(([key, value]) => {
+        if (typeof value !== 'object' || value === null) return false;
+        if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
+             'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
+             'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
+             'userMetadata'].includes(key)) {
+          return false;
+        }
+        return value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
+      });
       
       // Filter inovasi yang dinilai juri ini
       const inovasiDinilai = [];
@@ -1434,7 +1461,18 @@
   // ══════════════════════════════════════════
   function exportToExcel() {
     const all = loadAllDraf();
-    const inovasiList = Object.entries(all);
+    
+    // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
+    const inovasiList = Object.entries(all).filter(([key, value]) => {
+      if (typeof value !== 'object' || value === null) return false;
+      if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
+           'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
+           'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
+           'userMetadata'].includes(key)) {
+        return false;
+      }
+      return value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
+    });
 
     if (inovasiList.length === 0) {
       alert("Tidak ada data untuk di-export!");
