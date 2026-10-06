@@ -738,10 +738,17 @@ const daftarInovasiJudulLengkap = [
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",
     ringkasan: "Program pembelajaran kreatif yang menggabungkan literasi, narasi, tari dan drama berbahasa Lampung sebagai media apresiasi seni."
+  },
+  {
+    judul: "SPARK (Sistem Pemantauan Anggaran dan Realisasi Kinerja)",
+    perangkatDaerah: "Bagian Administrasi Pembangunan",
+    bentuk: "Tata Kelola Pemerintahan Daerah",
+    waktu: "2027",
+    ringkasan: "Sistem pemantauan anggaran dan realisasi kinerja berbasis digital untuk meningkatkan transparansi dan akuntabilitas pengelolaan anggaran pembangunan daerah secara real-time."
   }
 ];
 
-// Data untuk JURI SID (56 inovasi - data dari dokumen baru)
+// Data untuk JURI SID (55 inovasi - data dari dokumen baru)
 const daftarInovasiSID = [
   // ═══════════════ KATEGORI OPD (32 Inovasi) ═══════════════
   {
@@ -1139,20 +1146,13 @@ const daftarInovasiSID = [
     bentuk: "Pelayanan Publik",
     waktu: "2027",
     ringkasan: "Gerakan masyarakat aktif untuk kesehatan di wilayah Yosomulyo."
-  },
-  {
-    judul: "SPARK (Sistem Pemantauan Anggaran dan Realisasi Kinerja)",
-    perangkatDaerah: "Bagian Administrasi Pembangunan",
-    bentuk: "Tata Kelola Pemerintahan Daerah",
-    waktu: "2027",
-    ringkasan: "Sistem pemantauan anggaran dan realisasi kinerja berbasis digital untuk meningkatkan transparansi dan akuntabilitas pengelolaan anggaran pembangunan daerah secara real-time."
   }
 ];
 
 // Fungsi untuk mendapatkan daftar inovasi berdasarkan role
 function getDaftarInovasiByRole(role) {
   if (role === 'juri_sid') {
-    return daftarInovasiSID; // 56 inovasi untuk juri SID
+    return daftarInovasiSID; // 55 inovasi untuk juri SID
   } else {
     return daftarInovasiJudulLengkap; // 106 inovasi untuk juri judul
   }
