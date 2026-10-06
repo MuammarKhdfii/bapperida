@@ -741,7 +741,11 @@
       const avgJudul = judulArr.length > 0 ? judulArr.reduce((a,b)=>a+b,0)/judulArr.length : 0;
       const avgSID   = sidArr.length   > 0 ? sidArr.reduce((a,b)=>a+b,0)/sidArr.length     : 0;
       const total    = avgJudul + avgSID;
-      const meta     = daftarInovasi.find(i=>i.judul===judulKey) || {};
+      
+      // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
+      let meta = daftarInovasiJudulLengkap.find(i=>i.judul===judulKey);
+      if (!meta) meta = daftarInovasiSID.find(i=>i.judul===judulKey);
+      if (!meta) meta = {};
 
       let status = 'kosong';
       if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
@@ -1481,7 +1485,10 @@
         <tbody>`;
 
     inovasiList.forEach(([judulKey, d], idx) => {
-      const meta = daftarInovasi.find(i => i.judul === judulKey) || {};
+      // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
+      let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
+      if (!meta) meta = daftarInovasiSID.find(i => i.judul === judulKey);
+      if (!meta) meta = {};
       
       html += `<tr>`;
       html += `<td class="number-cell">${idx + 1}</td>`;
@@ -1554,7 +1561,10 @@
         <tbody>`;
 
     inovasiList.forEach(([judulKey, d], idx) => {
-      const meta = daftarInovasi.find(i => i.judul === judulKey) || {};
+      // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
+      let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
+      if (!meta) meta = daftarInovasiSID.find(i => i.judul === judulKey);
+      if (!meta) meta = {};
       
       html += `<tr>`;
       html += `<td class="number-cell">${idx + 1}</td>`;
