@@ -152,11 +152,8 @@ File: `inovasi.js`
 ### UPTD RSUD Ahmad Yani (1)
 61. EDUMY
 
-### UPTD RSUD Sumbersari Bantul (4)
-62. AMBULAN SIAGA
-63. Bincang Sehat Sumber Sari Bantul
-64. Pelayanan Kesehatan terpadu Bahagia
-65. Ambulance Sehat (Dokter Spesialis Keliling)
+### UPTD RSUD Sumbersari Bantul (1)
+62. Sumbersari Hadir
 
 ### UPTD Puskesmas Yosomulyo (2)
 66. STIMIKOL

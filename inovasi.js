@@ -432,32 +432,11 @@ const daftarInovasiJudulLengkap = [
     ringkasan: "Program edukasi kesehatan dalam format bincang santai bersama dokter spesialis melalui kanal YouTube untuk meningkatkan literasi kesehatan masyarakat."
   },
   {
-    judul: "AMBULAN SIAGA (Jemput Sakit Pulang Sehat)",
+    judul: "Sumbersari Hadir",
     perangkatDaerah: "UPTD. RSUD Sumbersari Bantul",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
-    ringkasan: "Inovasi pelayanan transportasi kesehatan yang memberikan layanan cepat untuk penjemputan pasien darurat maupun pengantaran pasien setelah selesai perawatan."
-  },
-  {
-    judul: "Bincang Sehat Sumber Sari Bantul",
-    perangkatDaerah: "UPTD. RSUD Sumbersari Bantul",
-    bentuk: "Pelayanan Publik",
-    waktu: "2026",
-    ringkasan: "Inovasi promosi kesehatan melalui diskusi interaktif, penyuluhan, dan wawancara mengenai berbagai topik kesehatan yang dipublikasikan melalui media sosial."
-  },
-  {
-    judul: "Pelayanan Kesehatan terpadu Bahagia",
-    perangkatDaerah: "UPTD. RSUD Sumbersari Bantul",
-    bentuk: "Pelayanan Publik",
-    waktu: "2026",
-    ringkasan: "Inovasi kolaboratif antara RSUD Sumbersari Bantul dengan Puskesmas Margorejo untuk mengintegrasikan pelayanan kesehatan antara FKTP dan FKRTL."
-  },
-  {
-    judul: "Ambulance Sehat (Dokter Spesialis Keliling)",
-    perangkatDaerah: "UPTD. RSUD Sumbersari Bantul",
-    bentuk: "Pelayanan Publik",
-    waktu: "2026",
-    ringkasan: "Inovasi pelayanan luar gedung yang menghadirkan dokter spesialis secara langsung ke wilayah kecamatan melalui sistem jemput bola."
+    ringkasan: "Inovasi pelayanan kesehatan terpadu dari UPTD. RSUD Sumbersari Bantul."
   },
   {
     judul: "STIMIKOL (Stiker Minum Obat dan Kontrol)",
