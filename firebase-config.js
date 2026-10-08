@@ -246,9 +246,37 @@ function desanitizeFirebaseKey(key) {
     .replace(/_slash_/g, '/');
 }
 
+// ── Firebase Ready Promise ───────────────
+// Resolve setelah Firebase selesai init (atau langsung jika disabled)
+// Digunakan oleh halaman yang perlu menunggu Firebase sebelum load data
+let _firebaseReadyResolve;
+const firebaseReadyPromise = new Promise(resolve => {
+  _firebaseReadyResolve = resolve;
+});
+
 // Auto-init when script loads
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initFirebase);
-} else {
+function _doInitAndResolve() {
   initFirebase();
+  // Jika Firebase enabled, tunggu koneksi terverifikasi (max 3 detik)
+  if (ENABLE_FIREBASE && firebaseInitialized && database) {
+    const connRef = database.ref('.info/connected');
+    const timeout = setTimeout(() => {
+      console.warn('⏱️ Firebase connection check timeout — proceeding with available data');
+      _firebaseReadyResolve('timeout');
+    }, 3000);
+    connRef.once('value', snap => {
+      clearTimeout(timeout);
+      console.log('🔗 Firebase connection status:', snap.val() ? 'CONNECTED' : 'OFFLINE');
+      _firebaseReadyResolve(snap.val() ? 'connected' : 'offline');
+    });
+  } else {
+    // Firebase disabled atau gagal init — langsung resolve
+    _firebaseReadyResolve('localStorage');
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _doInitAndResolve);
+} else {
+  _doInitAndResolve();
 }

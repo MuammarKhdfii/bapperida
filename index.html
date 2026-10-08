@@ -448,18 +448,23 @@
   //  INITIALIZE - Populate dropdown & restore last selection
   // ══════════════════════════════════════════
   
-  // Populate dropdown saat load
-  populateInovasiDropdown().catch(err => console.error('[populateInovasiDropdown] Error:', err));
+  // Populate dropdown saat load — tunggu Firebase siap dulu
+  (async function initDropdown() {
+    if (typeof firebaseReadyPromise !== 'undefined') {
+      await firebaseReadyPromise;
+    }
+    await populateInovasiDropdown().catch(err => console.error('[populateInovasiDropdown] Error:', err));
 
-  // Restore inovasi terakhir
-  const last = getLastInovasi();
-  if (last) { 
-    sel.value = last; 
-    onGlobalInovasiChange().catch(err => console.error('[onGlobalInovasiChange] Error:', err)); 
-  }
-  
-  // Update assessment progress on load
-  updateAssessmentProgress().catch(err => console.error('[updateAssessmentProgress] Error:', err));
+    // Restore inovasi terakhir
+    const last = getLastInovasi();
+    if (last) { 
+      sel.value = last; 
+      onGlobalInovasiChange().catch(err => console.error('[onGlobalInovasiChange] Error:', err)); 
+    }
+    
+    // Update assessment progress on load
+    updateAssessmentProgress().catch(err => console.error('[updateAssessmentProgress] Error:', err));
+  })();
   
   // Clear search when dropdown changes
   window.onGlobalInovasiChange = async function() {
@@ -1217,8 +1222,22 @@
     await renderLandingRanking();
   };
 
-  // Render ranking saat halaman dimuat
-  renderLandingRanking();
+  // Render ranking saat halaman dimuat — tunggu Firebase siap dulu
+  (async function initRanking() {
+    const cont = document.getElementById("landingRankingContainer");
+    // Tampilkan loading spinner selama menunggu Firebase
+    cont.innerHTML = `
+      <div style="text-align:center;padding:32px 16px;color:var(--text-muted,#888);">
+        <div style="font-size:2rem;margin-bottom:8px;animation:spin 1s linear infinite;display:inline-block;">🔄</div>
+        <div style="font-size:14px;">Memuat data dari cloud...</div>
+      </div>`;
+    // Tunggu Firebase selesai connect (max 3 detik, lalu fallback)
+    if (typeof firebaseReadyPromise !== 'undefined') {
+      const status = await firebaseReadyPromise;
+      console.log('[initRanking] Firebase ready status:', status);
+    }
+    await renderLandingRanking();
+  })();
   
   // Handle URL hash untuk auto-switch tab
   function handleHashChange() {

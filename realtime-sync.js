@@ -28,6 +28,10 @@ const realtimeSync = {
       
       console.log('🔄 Real-time update detected:', originalKey);
       
+      // Skip jika data bukan object inovasi valid (harus punya judulState atau juriState)
+      if (!data || typeof data !== 'object') return;
+      if (!data.judulState && !data.juriState) return;
+      
       // Update localStorage
       this.updateLocalStorage(originalKey, data);
       
@@ -74,10 +78,34 @@ const realtimeSync = {
    */
   showUpdateNotification(namaInovasi, data) {
     const currentUser = getSession()?.nama;
-    const lastUpdatedBy = data.activeJuri;
+    
+    // Ambil nama juri asli dari userMetadata (nama asli tersimpan di sana)
+    // activeJuri menyimpan nama sanitized, jadi cari nama asli dari userMetadata
+    let lastUpdatedBy = data.activeJuri; // fallback ke nama sanitized
+    if (data.userMetadata) {
+      // Cari entry userMetadata yang paling baru berdasarkan lastUpdated
+      let latestEntry = null;
+      let latestTime = '';
+      Object.values(data.userMetadata).forEach(meta => {
+        if (meta && meta.nama && meta.lastUpdated > latestTime) {
+          latestTime = meta.lastUpdated;
+          latestEntry = meta;
+        }
+      });
+      if (latestEntry?.nama) {
+        lastUpdatedBy = latestEntry.nama;
+      }
+    }
+    
+    // Jika masih undefined atau kosong, jangan tampilkan notifikasi
+    if (!lastUpdatedBy) return;
+    
+    // Pastikan namaInovasi adalah string valid (bukan key property internal)
+    if (!namaInovasi || typeof namaInovasi !== 'string') return;
     
     // Don't show notification for own updates
-    if (lastUpdatedBy === currentUser) return;
+    const sanitizedCurrentUser = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
+    if (lastUpdatedBy === currentUser || data.activeJuri === sanitizedCurrentUser) return;
     
     // Create notification element
     const notification = document.createElement('div');
