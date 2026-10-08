@@ -322,66 +322,119 @@
     };
   }
   
-  // Populate list of assessed innovations with edit buttons
-  function populateAssessedList(assessedList, allDraf, currentUser) {
-    const assessedSection = document.getElementById('assessedInovasiSection');
+  // Populate list of assessed innovations with edit buttons + pagination
+  const ASSESSED_PER_PAGE = 5;
+  let assessedCurrentPage = 1;
+  let _assessedList = [];
+  let _assessedAllDraf = {};
+  let _assessedCurrentUser = '';
+
+  function renderAssessedPage(page) {
     const assessedListEl = document.getElementById('assessedInovasiList');
-    
-    if (assessedList.length === 0) {
-      assessedSection.style.display = 'none';
-      return;
-    }
-    
-    assessedSection.style.display = 'block';
     assessedListEl.innerHTML = '';
-    
-    // Sanitize nama juri
-    const sanitizedName = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
-    
-    assessedList.forEach((inovasi, idx) => {
-      const draft = inovasi.draft || allDraf[inovasi.judul];
+
+    const sanitizedName = _assessedCurrentUser ? _assessedCurrentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
+    const totalPages = Math.ceil(_assessedList.length / ASSESSED_PER_PAGE);
+    const start = (page - 1) * ASSESSED_PER_PAGE;
+    const pageItems = _assessedList.slice(start, start + ASSESSED_PER_PAGE);
+
+    pageItems.forEach((inovasi, idx) => {
+      const draft = inovasi.draft || _assessedAllDraf[inovasi.judul];
       const progress = inovasi.progress || { completed: 0, total: 3, juriNames: [] };
-      
-      // Get skor dengan nama asli atau sanitized
-      const skorJudul = draft?.skorJudulPerJuri?.[currentUser] || 
+
+      const skorJudul = draft?.skorJudulPerJuri?.[_assessedCurrentUser] ||
                         draft?.skorJudulPerJuri?.[sanitizedName] || 0;
-      const skorSID = draft?.skorPerJuri?.[currentUser] || 
-                      draft?.skorPerJuri?.[sanitizedName] || 0;
+      const skorSID   = draft?.skorPerJuri?.[_assessedCurrentUser] ||
+                        draft?.skorPerJuri?.[sanitizedName] || 0;
       const totalSkor = skorJudul + skorSID;
-      
-      // Progress badge color
-      let progressColor = '#22c55e'; // green
-      let progressIcon = '✅';
+
+      let progressColor = '#22c55e';
+      let progressIcon  = '✅';
       if (progress.completed < progress.total) {
-        progressColor = '#f59e0b'; // orange
-        progressIcon = '⏳';
+        progressColor = '#f59e0b';
+        progressIcon  = '⏳';
       }
-      
+
       const card = document.createElement('div');
       card.className = 'assessed-card';
       card.style.animationDelay = (idx * 0.05) + 's';
-      
       card.innerHTML = `
         <div class="assessed-card-icon">${progressIcon}</div>
         <div class="assessed-card-content">
           <div class="assessed-card-title">${inovasi.judul}</div>
           <div class="assessed-card-meta">
             <span class="assessed-badge">🏛️ ${inovasi.perangkatDaerah || '—'}</span>
-            <span class="assessed-badge" style="background: ${progressColor}22; color: ${progressColor}; border-color: ${progressColor}44;">
+            <span class="assessed-badge" style="background:${progressColor}22;color:${progressColor};border-color:${progressColor}44;">
               👥 ${progress.completed}/${progress.total} juri menilai
             </span>
             <span class="assessed-badge assessed-badge-score">📊 Skor Anda: ${totalSkor.toFixed(2)}</span>
             ${skorJudul > 0 ? `<span class="assessed-badge">🏆 ${skorJudul.toFixed(2)}</span>` : ''}
-            ${skorSID > 0 ? `<span class="assessed-badge">📈 ${skorSID.toFixed(2)}</span>` : ''}
+            ${skorSID   > 0 ? `<span class="assessed-badge">📈 ${skorSID.toFixed(2)}</span>`   : ''}
           </div>
         </div>
         <button class="btn-edit-assessed" onclick="editAssessedInovasi('${inovasi.judul.replace(/'/g, "\\'")}')">
           <span>✏️</span> Edit Penilaian
         </button>
       `;
-      
       assessedListEl.appendChild(card);
     });
+
+    // Render pagination hanya jika lebih dari 1 halaman
+    let paginationEl = document.getElementById('assessedPagination');
+    if (!paginationEl) {
+      paginationEl = document.createElement('div');
+      paginationEl.id = 'assessedPagination';
+      paginationEl.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap;';
+      assessedListEl.parentElement.appendChild(paginationEl);
+    }
+
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      return;
+    }
+
+    let html = '';
+    // Tombol prev
+    html += `<button onclick="goAssessedPage(${page - 1})" ${page === 1 ? 'disabled' : ''} style="padding:6px 12px;border-radius:6px;border:1px solid #d1d5db;background:${page===1?'#f3f4f6':'#fff'};cursor:${page===1?'default':'pointer'};font-size:13px;color:#374151;">‹ Prev</button>`;
+
+    // Nomor halaman
+    for (let i = 1; i <= totalPages; i++) {
+      const isActive = i === page;
+      html += `<button onclick="goAssessedPage(${i})" style="padding:6px 12px;border-radius:6px;border:1px solid ${isActive?'#16a34a':'#d1d5db'};background:${isActive?'#16a34a':'#fff'};color:${isActive?'#fff':'#374151'};font-weight:${isActive?'700':'400'};cursor:pointer;font-size:13px;">${i}</button>`;
+    }
+
+    // Tombol next
+    html += `<button onclick="goAssessedPage(${page + 1})" ${page === totalPages ? 'disabled' : ''} style="padding:6px 12px;border-radius:6px;border:1px solid #d1d5db;background:${page===totalPages?'#f3f4f6':'#fff'};cursor:${page===totalPages?'default':'pointer'};font-size:13px;color:#374151;">Next ›</button>`;
+
+    // Info halaman
+    html += `<span style="font-size:12px;color:#6b7280;margin-left:4px;">${start+1}–${Math.min(start+ASSESSED_PER_PAGE, _assessedList.length)} dari ${_assessedList.length}</span>`;
+
+    paginationEl.innerHTML = html;
+  }
+
+  window.goAssessedPage = function(page) {
+    const totalPages = Math.ceil(_assessedList.length / ASSESSED_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    assessedCurrentPage = page;
+    renderAssessedPage(page);
+  };
+
+  function populateAssessedList(assessedList, allDraf, currentUser) {
+    const assessedSection = document.getElementById('assessedInovasiSection');
+
+    if (assessedList.length === 0) {
+      assessedSection.style.display = 'none';
+      return;
+    }
+
+    // Simpan data ke variabel modul untuk dipakai pagination
+    _assessedList        = assessedList;
+    _assessedAllDraf     = allDraf;
+    _assessedCurrentUser = currentUser;
+    assessedCurrentPage  = 1;
+
+    assessedSection.style.display = 'block';
+    renderAssessedPage(1);
   }
   
   // Function to edit assessed innovation
