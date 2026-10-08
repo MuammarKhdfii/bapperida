@@ -990,6 +990,47 @@
   }
 
   let currentTab = "semua";
+  const RANKING_PER_PAGE = 5;
+  let rankingCurrentPage = 1;
+  let _rankingData = [];
+
+  function renderRankingPage(page) {
+    const cont = document.getElementById("landingRankingContainer");
+    const totalPages = Math.ceil(_rankingData.length / RANKING_PER_PAGE);
+    const start = (page - 1) * RANKING_PER_PAGE;
+    const pageItems = _rankingData.slice(start, start + RANKING_PER_PAGE);
+
+    let html = pageItems.map((item, i) => renderRankingCard(item, start + i + 1)).join("");
+
+    // Pagination controls
+    if (totalPages > 1) {
+      html += `<div id="rankingPagination" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;flex-wrap:wrap;">`;
+      // Prev
+      html += `<button onclick="goRankingPage(${page - 1})" ${page===1?'disabled':''} style="padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:${page===1?'#f3f4f6':'#fff'};cursor:${page===1?'default':'pointer'};font-size:13px;color:#374151;">‹ Prev</button>`;
+      // Nomor halaman
+      for (let i = 1; i <= totalPages; i++) {
+        const active = i === page;
+        html += `<button onclick="goRankingPage(${i})" style="padding:7px 13px;border-radius:8px;border:1px solid ${active?'#f59e0b':'#d1d5db'};background:${active?'#f59e0b':'#fff'};color:${active?'#fff':'#374151'};font-weight:${active?'700':'400'};cursor:pointer;font-size:13px;">${i}</button>`;
+      }
+      // Next
+      html += `<button onclick="goRankingPage(${page + 1})" ${page===totalPages?'disabled':''} style="padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:${page===totalPages?'#f3f4f6':'#fff'};cursor:${page===totalPages?'default':'pointer'};font-size:13px;color:#374151;">Next ›</button>`;
+      // Info
+      html += `<span style="font-size:12px;color:#6b7280;margin-left:4px;">${start+1}–${Math.min(start+RANKING_PER_PAGE, _rankingData.length)} dari ${_rankingData.length}</span>`;
+      html += `</div>`;
+    }
+
+    cont.innerHTML = html;
+  }
+
+  window.goRankingPage = function(page) {
+    const totalPages = Math.ceil(_rankingData.length / RANKING_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    rankingCurrentPage = page;
+    renderRankingPage(page);
+    // Scroll ke atas ranking section
+    const sec = document.getElementById('rankingSection');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   function switchTab(btn, tab) {
     document.querySelectorAll("#landingRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
@@ -1017,16 +1058,10 @@
       return;
     }
 
-    const top10 = data.slice(0, 10);
-    const rest  = data.slice(10);
-    let html    = top10.map((item, i) => renderRankingCard(item, i + 1)).join("");
-    if (rest.length) {
-      html += `<details class="rk-rest">
-        <summary class="rk-rest-toggle">Lihat ${rest.length} inovasi lainnya ▾</summary>
-        <div class="rk-rest-list">${rest.map((item,i) => renderRankingCard(item, 11+i)).join("")}</div>
-      </details>`;
-    }
-    cont.innerHTML = html;
+    // Simpan data & reset ke halaman 1
+    _rankingData = data;
+    rankingCurrentPage = 1;
+    renderRankingPage(1);
     console.log('[renderLandingRanking] Rendered', data.length, 'items');
   };
 
