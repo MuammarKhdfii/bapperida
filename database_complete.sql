@@ -535,7 +535,7 @@ INSERT INTO inovasi (opd_id, bentuk_id, judul_inovasi, ringkasan, tahun_implemen
 (5, 1, 'Sistem Informasi Dashboard Data ASN', 'SI-DATA ASN adalah sistem informasi berbasis web yang dirancang untuk mengelola dan menyajikan data kepegawaian Aparatur Sipil Negara (ASN) secara cepat dan real-time dalam bentuk dashboard interaktif.', 2026, 'dalam_penilaian'),
 
 -- Inovasi dari Badan Kesbangpol
-(6, 3, 'SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)', 'Inovasi daerah berbasis digital untuk meningkatkan efektivitas P4GN melalui satu platform yang mudah diakses masyarakat.', 2026, 'dalam_penilaian'),
+(6, 3, 'SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)', 'Inovasi daerah berbasis digital untuk meningkatkan efektivitas P4GN melalui satu platform yang mudah diakses masyarakat.', 2026, 'dalam_penilaian'),
 
 -- Inovasi dari Sekretariat DPRD
 (7, 1, 'SYNDTAKER (Pemanfaatan Synology Drive Guna Mewujudkan Efektivitas dan Efisiensi Tata Kelola Perencanaan di Bagian Keuangan Sekretariat DPRD)', 'Mewujudkan tata kelola bahan-bahan perencanaan yang lebih efektif, efisien, terintegrasi, serta akuntabel di sub-substansi Perencanaan Bagian Keuangan Sekretariat DPRD.', 2026, 'dalam_penilaian'),

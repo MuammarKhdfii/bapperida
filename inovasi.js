@@ -68,7 +68,7 @@ const daftarInovasiJudulLengkap = [
     ringkasan: "SI-DATA ASN adalah sistem informasi berbasis web yang dirancang untuk mengelola dan menyajikan data kepegawaian Aparatur Sipil Negara (ASN) secara cepat dan real time dalam bentuk dashboard interaktif."
   },
   {
-    judul: "SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)",
+    judul: "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
     perangkatDaerah: "Badan Kesatuan Bangsa dan Politik",
     bentuk: "Tata Kelola Pemerintahan Daerah dan Pelayanan Publik",
     waktu: "2026",

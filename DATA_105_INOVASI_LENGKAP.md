@@ -45,7 +45,7 @@ File: `inovasi.js`
 9. Sistem Informasi Dashboard Data ASN
 
 ### Badan Kesbangpol (1)
-10. SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)
+10. SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)
 
 ### Sekretariat DPRD (2)
 11. SYNDTAKER
