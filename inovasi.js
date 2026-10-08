@@ -432,7 +432,7 @@ const daftarInovasiJudulLengkap = [
     ringkasan: "Program edukasi kesehatan dalam format bincang santai bersama dokter spesialis melalui kanal YouTube untuk meningkatkan literasi kesehatan masyarakat."
   },
   {
-    judul: "Sumbersari Hadir",
+    judul: "SUMBERSARI HADIR",
     perangkatDaerah: "UPTD. RSUD Sumbersari Bantul",
     bentuk: "Pelayanan Publik",
     waktu: "2026",

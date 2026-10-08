@@ -153,7 +153,7 @@ File: `inovasi.js`
 61. EDUMY
 
 ### UPTD RSUD Sumbersari Bantul (1)
-62. Sumbersari Hadir
+62. SUMBERSARI HADIR
 
 ### UPTD Puskesmas Yosomulyo (2)
 66. STIMIKOL
