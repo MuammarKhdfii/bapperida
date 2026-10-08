@@ -512,7 +512,8 @@
     const last = getLastInovasi();
     if (last) { 
       sel.value = last; 
-      onGlobalInovasiChange().catch(err => console.error('[onGlobalInovasiChange] Error:', err)); 
+      // Jalankan onGlobalInovasiChange tapi jangan disable card
+      await updateStatusCards(last).catch(err => console.error('[updateStatusCards] Error:', err));
     }
     
     // Update assessment progress on load
@@ -524,6 +525,18 @@
     const judul = sel.value;
     localStorage.setItem("iid2026_selected", judul);
     await updateStatusCards(judul);
+    
+    // Reset card penilaian ke kondisi aktif dulu sebelum cek
+    const cardPenilaian = document.getElementById('cardPenilaian');
+    if (cardPenilaian) {
+      cardPenilaian.style.opacity = '1';
+      cardPenilaian.style.cursor = 'pointer';
+      cardPenilaian.style.pointerEvents = 'auto';
+      const cardTitle = cardPenilaian.querySelector('.lec-title');
+      const cardDesc  = cardPenilaian.querySelector('.lec-desc');
+      if (cardTitle) cardTitle.textContent = 'Mulai Penilaian Inovasi';
+      if (cardDesc)  cardDesc.innerHTML = 'Penilaian <strong>Judul</strong> (6 kriteria) &amp; <strong>Indikator SID</strong> dalam satu form. Pilih sesi juri untuk mulai.';
+    }
     
     // Sembunyikan warning box jika inovasi dipilih
     const warningBox = document.getElementById("warningNoInovasi");
