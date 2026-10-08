@@ -649,7 +649,7 @@ const daftarInovasiJudulLengkap = [
     ringkasan: "Program literasi yang dilaksanakan setiap hari Selasa untuk meningkatkan budaya membaca siswa."
   },
   {
-    judul: "SEMAR (Sistem Edukasi Model Aktivitas dan Pembiasaan Rutin)",
+    judul: "PLASTIK PANTURA",
     perangkatDaerah: "UPTD SD Negeri 4 Metro Utara",
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",

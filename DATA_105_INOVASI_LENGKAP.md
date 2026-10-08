@@ -202,7 +202,7 @@ File: `inovasi.js`
 93. SATU PERSONAL (SDN 9 Metro Timur)
 94. SMART-MU (SDN 2 Metro Utara)
 95. SELASIH (SDN 3 Metro Utara)
-96. SEMAR (SDN 4 Metro Utara)
+96. PLASTIK PANTURA (SDN 4 Metro Utara)
 97. MANTAB (SDN 5 Metro Utara)
 98. SIBUNI (SDN 7 Metro Utara)
 
