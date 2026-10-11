@@ -489,6 +489,7 @@
         <button onclick="exportToExcel()" class="btn btn-print" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">📊 Export Excel</button>
         <button onclick="loadDashboard()" class="btn primary">🔄 Refresh Data</button>
         <button onclick="showDeleteAllModal()" class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;">🗑️ Hapus Semua Data</button>
+        <a href="dashboard_sid.html" class="btn" style="background:linear-gradient(135deg,#2563eb,#1e3a8a);color:white;">📊 Dashboard SID</a>
         <a href="index.html" class="btn secondary">🏠 Beranda</a>
       </div>
     </section>
@@ -669,6 +670,31 @@
     return null;
   }
 
+  // Helper: Cari metadata inovasi dengan fallback ke partial match dan data Firebase
+  function findMetaInovasi(judulKey, firebaseData) {
+    // 1. Exact match di kedua list
+    let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
+    if (!meta) meta = daftarInovasiSID.find(i => i.judul === judulKey);
+    if (meta) return meta;
+
+    // 2. Partial match (key Firebase mengandung sebagian judul di daftar, atau sebaliknya)
+    const keyLower = judulKey.toLowerCase();
+    meta = daftarInovasiJudulLengkap.find(i =>
+      i.judul.toLowerCase().includes(keyLower) || keyLower.includes(i.judul.toLowerCase())
+    );
+    if (!meta) meta = daftarInovasiSID.find(i =>
+      i.judul.toLowerCase().includes(keyLower) || keyLower.includes(i.judul.toLowerCase())
+    );
+    if (meta) return meta;
+
+    // 3. Fallback: ambil dari data Firebase itu sendiri (perangkatDaerah disimpan saat save)
+    if (firebaseData && firebaseData.perangkatDaerah) {
+      return { judul: judulKey, perangkatDaerah: firebaseData.perangkatDaerah, bentuk: firebaseData.bentukInovasi || "—", waktu: firebaseData.tahun || "—" };
+    }
+
+    return {};
+  }
+
   async function loadDashboard() {
     console.log('🔄 Loading dashboard...');
     
@@ -760,9 +786,7 @@
       const total    = avgJudul + avgSID;
       
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
-      let meta = daftarInovasiJudulLengkap.find(i=>i.judul===judulKey);
-      if (!meta) meta = daftarInovasiSID.find(i=>i.judul===judulKey);
-      if (!meta) meta = {};
+      let meta = findMetaInovasi(judulKey, d);
 
       let status = 'kosong';
       if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
@@ -1524,9 +1548,7 @@
 
     inovasiList.forEach(([judulKey, d], idx) => {
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
-      let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
-      if (!meta) meta = daftarInovasiSID.find(i => i.judul === judulKey);
-      if (!meta) meta = {};
+      let meta = findMetaInovasi(judulKey, d);
       
       html += `<tr>`;
       html += `<td class="number-cell">${idx + 1}</td>`;
@@ -1600,9 +1622,7 @@
 
     inovasiList.forEach(([judulKey, d], idx) => {
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
-      let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
-      if (!meta) meta = daftarInovasiSID.find(i => i.judul === judulKey);
-      if (!meta) meta = {};
+      let meta = findMetaInovasi(judulKey, d);
       
       html += `<tr>`;
       html += `<td class="number-cell">${idx + 1}</td>`;

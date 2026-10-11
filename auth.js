@@ -61,7 +61,7 @@ const ROLE_CONFIG = {
     label     : "Super Admin",
     color     : "#7c3aed",
     icon      : "",
-    allowPages: ["dashboard.html", "index.html"]
+    allowPages: ["dashboard.html", "dashboard_sid.html", "index.html"]
   },
   juri_judul: {
     redirect  : "index.html",      // juri ke beranda dulu → pilih inovasi

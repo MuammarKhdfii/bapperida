@@ -346,7 +346,11 @@
                         draft?.skorJudulPerJuri?.[sanitizedName] || 0;
       const skorSID   = draft?.skorPerJuri?.[_assessedCurrentUser] ||
                         draft?.skorPerJuri?.[sanitizedName] || 0;
-      const totalSkor = skorJudul + skorSID;
+      
+      // Tampilkan skor sesuai role: juri_judul → skor judul, juri_sid → skor SID
+      const currentRole = getSession()?.role;
+      const skorTampil  = currentRole === 'juri_judul' ? skorJudul : skorSID;
+      const labelSkor   = currentRole === 'juri_judul' ? '📋 Skor Judul' : '📊 Skor SID';
 
       let progressColor = '#22c55e';
       let progressIcon  = '✅';
@@ -367,9 +371,9 @@
             <span class="assessed-badge" style="background:${progressColor}22;color:${progressColor};border-color:${progressColor}44;">
               👥 ${progress.completed}/${progress.total} juri menilai
             </span>
-            <span class="assessed-badge assessed-badge-score">📊 Skor Anda: ${totalSkor.toFixed(2)}</span>
-            ${skorJudul > 0 ? `<span class="assessed-badge">🏆 ${skorJudul.toFixed(2)}</span>` : ''}
-            ${skorSID   > 0 ? `<span class="assessed-badge">📈 ${skorSID.toFixed(2)}</span>`   : ''}
+            <span class="assessed-badge assessed-badge-score">${labelSkor}: ${skorTampil.toFixed(2)}</span>
+            ${skorJudul > 0 && currentRole === 'juri_judul' ? `<span class="assessed-badge">🏆 ${skorJudul.toFixed(2)}</span>` : ''}
+            ${skorSID   > 0 && currentRole === 'juri_sid'   ? `<span class="assessed-badge">📈 ${skorSID.toFixed(2)}</span>`   : ''}
           </div>
         </div>
         <button class="btn-edit-assessed" onclick="editAssessedInovasi('${inovasi.judul.replace(/'/g, "\\'")}')">
@@ -818,6 +822,11 @@
     
     // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
     // Bukan property object seperti 'activeJuri', 'bentukInovasi', dll
+    // Filter juga berdasarkan role: juri_sid hanya lihat inovasi SID, juri_judul hanya lihat inovasi judul
+    const currentRole = SESSION?.role;
+    const daftarRole  = currentRole === 'juri_sid' ? daftarInovasiSID : daftarInovasiJudulLengkap;
+    const judulDaftarRole = new Set(daftarRole.map(i => i.judul));
+
     const entries = Object.entries(all).filter(([key, value]) => {
       // Skip jika value bukan object atau tidak punya struktur inovasi
       if (typeof value !== 'object' || value === null) return false;
@@ -831,6 +840,12 @@
         return false;
       }
       
+      // Filter sesuai role — hanya tampilkan inovasi yang ada di list role ini
+      if (!judulDaftarRole.has(key)) {
+        console.log(`  [SKIPPED] "${key}" - tidak ada di list inovasi role ${currentRole}`);
+        return false;
+      }
+
       // Hanya ambil yang punya judulState atau juriState
       const isValid = value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
       if (!isValid) {
@@ -864,7 +879,14 @@
       const judArr  = Object.values(sjp).filter(s => s > 0);
       const avgInd  = indArr.length  > 0 ? indArr.reduce((a,b)=>a+b,0)  / indArr.length  : 0;
       const avgJud  = judArr.length  > 0 ? judArr.reduce((a,b)=>a+b,0)  / judArr.length  : 0;
-      const total   = parseFloat((avgInd + avgJud).toFixed(2));
+
+      // Tentukan total berdasarkan jenis inovasi (jangan gabung judul + SID)
+      const adaDiJudul = !!daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
+      const adaDiSID   = !!daftarInovasiSID.find(i => i.judul === judulKey);
+      let total;
+      if (adaDiJudul && !adaDiSID)      total = parseFloat(avgJud.toFixed(2));
+      else if (adaDiSID && !adaDiJudul) total = parseFloat(avgInd.toFixed(2));
+      else                              total = parseFloat((avgInd + avgJud).toFixed(2));
       
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID) untuk mendapatkan perangkatDaerah
       // karena ranking dashboard harus tampilkan SEMUA inovasi, bukan hanya role user saat ini
@@ -952,6 +974,8 @@
         avgInd:  parseFloat(avgInd.toFixed(2)),
         avgJud:  parseFloat(avgJud.toFixed(2)),
         total,
+        adaDiJudul,
+        adaDiSID,
         judulJuri: judulJuriCompleted,
         indJuri:   indJuriCompleted,
         savedAt: draf.savedAt || ""
@@ -989,9 +1013,9 @@
             ${date ? `<span class="rk-date">📅 ${date}</span>` : ""}
           </div>
           <div class="rk-juri-row">
-            <div class="rk-juri-cell ${item.avgInd>0?'has-score':'no-score'}">
-              <span class="rk-juri-name">📊 Indikator</span>
-              <span class="rk-juri-val">${item.avgInd>0 ? item.avgInd.toFixed(2) : "—"}</span>
+            <div class="rk-juri-cell ${item.avgInd>0?'has-score':item.avgJud>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">${item.adaDiSID && !item.adaDiJudul ? '📊 Skor SID' : item.adaDiJudul && !item.adaDiSID ? '📋 Skor Judul' : '📊 Skor'}</span>
+              <span class="rk-juri-val">${item.total > 0 ? item.total.toFixed(2) : "—"}</span>
             </div>
             <div class="rk-juri-cell juri-total">
               <span class="rk-juri-name">Juri Dinilai</span>
@@ -1079,56 +1103,78 @@
   };
 
   window.clearAllData = async function() {
-    const confirmMsg = "⚠️ HAPUS SEMUA DATA PENILAIAN?\n\n" +
-                       "Ini akan menghapus:\n" +
-                       "✗ Semua penilaian dari SEMUA juri\n" +
-                       "✗ Semua data di localStorage\n" +
-                       "✗ Semua data di Firebase (Cloud)\n" +
-                       "✗ Seluruh ranking akan hilang\n\n" +
-                       "⚠️ TINDAKAN INI TIDAK DAPAT DIBATALKAN!\n\n" +
-                       "Ketik 'HAPUS SEMUA' untuk konfirmasi:";
-    
+  window.clearAllData = async function() {
+    const role      = SESSION?.role;
+    const isJudul   = role === 'juri_judul';
+    const labelRole = isJudul ? 'Penilaian Judul Inovasi' : 'Penilaian Indikator SID';
+    const daftarRole = isJudul ? daftarInovasiJudulLengkap : daftarInovasiSID;
+    const judulSet   = new Set(daftarRole.map(i => i.judul));
+
+    const confirmMsg = `⚠️ HAPUS DATA ${labelRole.toUpperCase()}?\n\n` +
+                       `Ini akan menghapus:\n` +
+                       `✗ Semua penilaian ${labelRole} dari semua juri\n` +
+                       `✗ Total ${daftarRole.length} inovasi akan dihapus datanya\n\n` +
+                       `⚠️ Data penilaian kategori lain TIDAK terhapus.\n` +
+                       `⚠️ TINDAKAN INI TIDAK DAPAT DIBATALKAN!\n\n` +
+                       `Ketik 'HAPUS SEMUA' untuk konfirmasi:`;
+
     const userInput = prompt(confirmMsg);
-    
     if (userInput !== 'HAPUS SEMUA') {
       alert('Penghapusan dibatalkan.');
       return;
     }
-    
-    console.log('🗑️ Starting delete all data...');
-    
-    // 1. Hapus dari localStorage
-    localStorage.removeItem(KEY_ALL);
+
+    console.log(`🗑️ Deleting data for role: ${role}`);
+
+    // 1. Hapus dari localStorage — hanya key yang ada di daftarRole
+    const allLocal = JSON.parse(localStorage.getItem(KEY_ALL) || '{}');
+    let deletedCount = 0;
+    judulSet.forEach(judul => {
+      if (allLocal[judul]) {
+        delete allLocal[judul];
+        deletedCount++;
+      }
+    });
+    localStorage.setItem(KEY_ALL, JSON.stringify(allLocal));
     localStorage.removeItem(KEY_LAST);
     localStorage.removeItem("iid2026_selected");
-    console.log('✅ localStorage cleared');
-    
-    // 2. Hapus dari Firebase (jika enabled)
+    console.log(`✅ localStorage: ${deletedCount} inovasi dihapus`);
+
+    // 2. Hapus dari Firebase — hanya key inovasi sesuai role
     if (firebaseInitialized && database) {
       try {
-        await database.ref('penilaian').remove();
-        console.log('✅ Firebase data cleared');
-        alert('✅ Semua data berhasil dihapus!\n\n' +
-              '• localStorage: Cleared\n' +
-              '• Firebase: Cleared\n' +
-              '• Semua juri: Data terhapus\n\n' +
-              'Halaman akan di-refresh.');
+        const snapshot = await database.ref('penilaian').once('value');
+        const firebaseData = snapshot.val() || {};
+        const deletePromises = [];
+
+        Object.keys(firebaseData).forEach(sanitizedKey => {
+          const originalKey = desanitizeFirebaseKey(sanitizedKey);
+          if (judulSet.has(originalKey)) {
+            deletePromises.push(database.ref(`penilaian/${sanitizedKey}`).remove());
+          }
+        });
+
+        await Promise.all(deletePromises);
+        console.log(`✅ Firebase: ${deletePromises.length} inovasi dihapus`);
+
+        alert(`✅ Data ${labelRole} berhasil dihapus!\n\n` +
+              `• Dihapus: ${deletePromises.length} inovasi\n` +
+              `• Data kategori lain tetap aman\n\n` +
+              `Halaman akan di-refresh.`);
       } catch (error) {
         console.error('❌ Error clearing Firebase:', error);
-        alert('⚠️ Data localStorage terhapus, tapi Firebase gagal.\n\n' +
-              'Error: ' + error.message);
+        alert('⚠️ Data localStorage terhapus, tapi Firebase gagal.\n\nError: ' + error.message);
       }
     } else {
-      alert('✅ Data localStorage berhasil dihapus!\n\n' +
-            '(Firebase tidak aktif)');
+      alert(`✅ Data ${labelRole} berhasil dihapus dari localStorage!\n\n(Firebase tidak aktif)`);
     }
-    
+
     // 3. Refresh UI
     await renderLandingRanking();
     await updateStatusCards("");
     sel.value = "";
-    
-    console.log('✅ Delete all data complete');
+
+    console.log('✅ Delete complete');
   };
 
   // ══════════════════════════════════════════

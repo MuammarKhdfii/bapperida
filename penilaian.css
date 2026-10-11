@@ -874,3 +874,15 @@
     display: none !important;
   }
 }
+
+/* ══════════════════════════════════════════
+   FORM PENILAIAN PROPOSAL INOVASI
+   ══════════════════════════════════════════ */
+
+.section-rancang-wrapper {
+  margin-bottom: 8px;
+}
+
+.section-rancang {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+}

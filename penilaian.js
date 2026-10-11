@@ -57,14 +57,18 @@ if (!SHOW_JUDUL) {
 }
 if (!SHOW_SID) {
   document.querySelectorAll(".section-indikator-wrapper").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".section-rancang-wrapper").forEach(el => el.style.display = "none");
 }
 
 // ── State untuk juri yang sedang login ──
 // judulState / juriState hanya untuk user ini
-const judulState = { [SESSION.nama]: {} };
-const juriState  = { [SESSION.nama]: { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} } };
-const notesState = { [SESSION.nama]: { catatan: "", rekomendasi: "" } };
+const judulState   = { [SESSION.nama]: {} };
+const juriState    = { [SESSION.nama]: { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} } };
+const notesState   = { [SESSION.nama]: { catatan: "", rekomendasi: "" } };
 const signatureState = { [SESSION.nama]: "" };
+// State form Rancang Bangun Inovasi (khusus juri_sid)
+const rancangState = { [SESSION.nama]: {} };
+// keys: "rancangBangun" | "tujuan" | "manfaat" | "hasilInovasi"  → nilai: "3" | "7" | "10"
 
 let namaInovasi = "";
 
@@ -143,6 +147,10 @@ if (namaInovasi) {
     if (juriData) juriState[SESSION.nama] = juriData;
     if (notesData) notesState[SESSION.nama] = notesData;
     if (sigData) signatureState[SESSION.nama] = sigData;
+
+    // Load rancangState
+    const rancangData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'rancangState');
+    if (rancangData) rancangState[SESSION.nama] = rancangData;
     
     console.log('Restored state for:', SESSION.nama);
     console.log('- judulState:', !!judulData);
@@ -301,6 +309,115 @@ function loadJudulStateLocal() {
 }
 
 // ── Render Indikator SID ──
+// ── Form Penilaian Proposal Inovasi ──────────────────────────────────────
+const RANCANG_KRITERIA = [
+  {
+    key: "rancangBangun",
+    label: "Rancang Bangun Inovasi",
+    deskripsi: "Berisi ringkasan singkat inovasi yang dibangun atau dikembangkan mengenai pembaharuan yang dilakukan mengenai desain struktur, bentuk, proses, sistem dan/atau kerangka kerja yang akan dihasilkan dari inovasi yang dilakukan sehingga mempunyai dampak dan manfaat sesuai dengan tujuan yang ingin dicapai (minimal 300 kata)",
+    opsi: [
+      { label: "Kurang Sesuai", rentang: "1-5",  nilai: 3 },
+      { label: "Sesuai",        rentang: "6-8",  nilai: 7 },
+      { label: "Sangat Sesuai", rentang: "9-10", nilai: 10 }
+    ]
+  },
+  {
+    key: "tujuan",
+    label: "Tujuan Inovasi",
+    deskripsi: "Mencangkup target capaian penyelenggaraan inovasi Daerah",
+    opsi: [
+      { label: "Kurang Sesuai", rentang: "1-5",  nilai: 3 },
+      { label: "Sesuai",        rentang: "6-8",  nilai: 7 },
+      { label: "Sangat Sesuai", rentang: "9-10", nilai: 10 }
+    ]
+  },
+  {
+    key: "manfaat",
+    label: "Manfaat Inovasi",
+    deskripsi: "Adalah Dampak (Outcomes) terhadap penerapan Inovasi Daerah",
+    opsi: [
+      { label: "Kurang Baik", rentang: "1-5",  nilai: 3 },
+      { label: "Baik",        rentang: "6-8",  nilai: 7 },
+      { label: "Sangat Baik", rentang: "9-10", nilai: 10 }
+    ]
+  },
+  {
+    key: "hasilInovasi",
+    label: "Hasil Inovasi",
+    deskripsi: "Hasil inovasi yang dimaksud adalah: Produk/hasil (Output) penyelenggaraan Inovasi",
+    opsi: [
+      { label: "Kurang Baik", rentang: "1-5",  nilai: 3 },
+      { label: "Baik",        rentang: "6-8",  nilai: 7 },
+      { label: "Sangat Baik", rentang: "9-10", nilai: 10 }
+    ]
+  }
+];
+
+function renderRancang() {
+  const c = document.getElementById("rancangContainer");
+  if (!c) return;
+  c.innerHTML = "";
+  RANCANG_KRITERIA.forEach((kr, idx) => {
+    const card = document.createElement("article");
+    card.className = "indicator";
+    card.dataset.key = kr.key;
+    card.style.animationDelay = (idx * 0.03) + "s";
+    card.innerHTML = `
+      <div class="indicator-head">
+        <div class="indicator-title">
+          <span class="indicator-number">${idx + 1}.</span>${esc(kr.label)}
+        </div>
+      </div>
+      <div class="ket" style="margin-bottom:14px;">${esc(kr.deskripsi)}</div>
+      <div class="options">
+        ${kr.opsi.map((op, i) => `
+          <div class="option">
+            <input type="radio" id="rancang-${kr.key}-${i}" name="rancang-${kr.key}" value="${op.nilai}">
+            <label for="rancang-${kr.key}-${i}">
+              <div class="option-title">${esc(op.label)} (${op.rentang})</div>
+            </label>
+          </div>`).join("")}
+      </div>
+      <div class="result">Skor: <b id="rancang-res-${kr.key}">0</b></div>`;
+    c.appendChild(card);
+    card.querySelectorAll("input[type=radio]").forEach(el =>
+      el.addEventListener("change", () => { saveRancangStateLocal(); calculate(); }));
+  });
+  loadRancangStateLocal();
+}
+
+function saveRancangStateLocal() {
+  const s = rancangState[SESSION.nama];
+  RANCANG_KRITERIA.forEach(kr => {
+    const sel = document.querySelector(`input[name="rancang-${kr.key}"]:checked`);
+    s[kr.key] = sel ? sel.value : "";
+  });
+}
+
+function loadRancangStateLocal() {
+  const s = rancangState[SESSION.nama];
+  RANCANG_KRITERIA.forEach(kr => {
+    const val = s[kr.key] ?? "";
+    document.querySelectorAll(`input[name="rancang-${kr.key}"]`).forEach(x => x.checked = false);
+    if (val) {
+      const el = document.querySelector(`input[name="rancang-${kr.key}"][value="${val}"]`);
+      if (el) el.checked = true;
+    }
+    const resEl = document.getElementById(`rancang-res-${kr.key}`);
+    if (resEl) resEl.textContent = val || "0";
+  });
+}
+
+function calcSkorRancang() {
+  let skor = 0;
+  RANCANG_KRITERIA.forEach(kr => {
+    const sel = document.querySelector(`input[name="rancang-${kr.key}"]:checked`);
+    if (sel) skor += Number(sel.value);
+  });
+  return skor;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 function renderIndikator() {
   const c = document.getElementById("indicatorContainer");
   c.innerHTML = "";
@@ -400,7 +517,10 @@ function loadIndikatorStateLocal() {
 
 function render() {
   if (SHOW_JUDUL)  renderJudul();
-  if (SHOW_SID)    renderIndikator();
+  if (SHOW_SID) {
+    renderRancang();
+    renderIndikator();
+  }
 }
 
 // ── Calculate ──
@@ -433,6 +553,18 @@ function calculate() {
       const el = document.getElementById(`res-${item.originalNo}`);
       if (el) { el.textContent = score.toFixed(2); el.classList.remove("updated"); void el.offsetWidth; el.classList.add("updated"); }
     });
+
+    // Tambahkan skor Rancang Bangun ke skorInd
+    const skorRancang = calcSkorRancang();
+    skorInd += skorRancang;
+    // Update display skor per kriteria rancang
+    RANCANG_KRITERIA.forEach(kr => {
+      const sel = document.querySelector(`input[name="rancang-${kr.key}"]:checked`);
+      const resEl = document.getElementById(`rancang-res-${kr.key}`);
+      if (resEl) resEl.textContent = sel ? sel.value : "0";
+    });
+    const rancangHeader = document.getElementById("scoreRancangHeader");
+    if (rancangHeader) rancangHeader.textContent = skorRancang.toFixed(0);
   }
 
   const total    = parseFloat((skorJudul + skorInd).toFixed(2));
@@ -510,6 +642,11 @@ async function saveAll(showAnim = false) {
       const v = juriState[SESSION.nama]?.radio?.[i.originalNo] || "";
       if (v) skorInd += Number(v) * i.bobot;
     });
+    // Tambahkan skor Rancang Bangun
+    RANCANG_KRITERIA.forEach(kr => {
+      const v = rancangState[SESSION.nama]?.[kr.key] || "";
+      if (v) skorInd += Number(v);
+    });
   }
 
   console.log('Skor Judul:', skorJudul);
@@ -555,6 +692,9 @@ async function saveAll(showAnim = false) {
   all[namaInovasi].notesState[sanitizedJuriName] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
   all[namaInovasi].signatureState = all[namaInovasi].signatureState || {};
   all[namaInovasi].signatureState[sanitizedJuriName] = signatureState[SESSION.nama] || "";
+  // Simpan state Rancang Bangun
+  all[namaInovasi].rancangState = all[namaInovasi].rancangState || {};
+  all[namaInovasi].rancangState[sanitizedJuriName] = JSON.parse(JSON.stringify(rancangState[SESSION.nama]));
   all[namaInovasi].skorJudulPerJuri[sanitizedJuriName] = parseFloat(skorJudul.toFixed(2));
   all[namaInovasi].skorPerJuri[sanitizedJuriName] = parseFloat(skorInd.toFixed(2));
   all[namaInovasi].savedAt = new Date().toISOString();
@@ -620,6 +760,7 @@ async function doSaveWithValidation() {
 
   saveJudulStateLocal();
   saveIndikatorStateLocal();
+  saveRancangStateLocal();
 
   // Validasi: semua wajib diisi
   const belumJudul = SHOW_JUDUL
@@ -628,19 +769,24 @@ async function doSaveWithValidation() {
   const belumInd = SHOW_SID
     ? sidIndicators.filter(i => !i.type && i.parameter?.length > 0 && !document.querySelector(`input[name="ind-${i.originalNo}"]:checked`))
     : [];
+  const belumRancang = SHOW_SID
+    ? RANCANG_KRITERIA.filter(kr => !document.querySelector(`input[name="rancang-${kr.key}"]:checked`))
+    : [];
 
   console.log('Belum judul:', belumJudul.length);
   console.log('Belum ind:', belumInd.length);
 
-  if (belumJudul.length > 0 || belumInd.length > 0) {
+  if (belumJudul.length > 0 || belumInd.length > 0 || belumRancang.length > 0) {
     let msg = "❌ Penilaian belum lengkap!\n\nBelum diisi:\n";
-    if (belumJudul.length) msg += belumJudul.map(k => `• Judul – ${k.nama}`).join("\n") + "\n";
-    if (belumInd.length)   msg += belumInd.map(i => `• Indikator ${i.displayNo} – ${i.nama}`).join("\n");
+    if (belumJudul.length)   msg += belumJudul.map(k => `• Judul – ${k.nama}`).join("\n") + "\n";
+    if (belumRancang.length) msg += belumRancang.map(kr => `• Proposal – ${kr.label}`).join("\n") + "\n";
+    if (belumInd.length)     msg += belumInd.map(i => `• Indikator ${i.displayNo} – ${i.nama}`).join("\n");
     alert(msg);
     // Highlight
     document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
     belumJudul.forEach(k => { const el = document.querySelector(`article[data-no-judul="${k.no}"]`); if (el) el.classList.add("indicator-required-warn"); });
-    belumInd.forEach(i   => { const el = document.querySelector(`article[data-no="${i.originalNo}"]`); if (el) el.classList.add("indicator-required-warn"); });
+    belumRancang.forEach(kr => { const el = document.querySelector(`article[data-key="${kr.key}"]`); if (el) el.classList.add("indicator-required-warn"); });
+    belumInd.forEach(i => { const el = document.querySelector(`article[data-no="${i.originalNo}"]`); if (el) el.classList.add("indicator-required-warn"); });
     return;
   }
 
