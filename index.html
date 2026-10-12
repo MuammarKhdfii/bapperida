@@ -822,10 +822,7 @@
     
     // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
     // Bukan property object seperti 'activeJuri', 'bentukInovasi', dll
-    // Filter juga berdasarkan role: juri_sid hanya lihat inovasi SID, juri_judul hanya lihat inovasi judul
     const currentRole = SESSION?.role;
-    const daftarRole  = currentRole === 'juri_sid' ? daftarInovasiSID : daftarInovasiJudulLengkap;
-    const judulDaftarRole = new Set(daftarRole.map(i => i.judul));
 
     const entries = Object.entries(all).filter(([key, value]) => {
       // Skip jika value bukan object atau tidak punya struktur inovasi
@@ -839,19 +836,30 @@
         console.log(`  [SKIPPED] "${key}" - property object, bukan inovasi`);
         return false;
       }
-      
-      // Filter sesuai role — hanya tampilkan inovasi yang ada di list role ini
-      if (!judulDaftarRole.has(key)) {
-        console.log(`  [SKIPPED] "${key}" - tidak ada di list inovasi role ${currentRole}`);
+
+      // Hanya ambil yang punya judulState atau juriState
+      if (!value.hasOwnProperty('judulState') && !value.hasOwnProperty('juriState')) {
+        console.log(`  [SKIPPED] "${key}" - tidak punya judulState/juriState`);
         return false;
       }
 
-      // Hanya ambil yang punya judulState atau juriState
-      const isValid = value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
-      if (!isValid) {
-        console.log(`  [SKIPPED] "${key}" - tidak punya judulState/juriState`);
+      // Filter berdasarkan role: juri_judul hanya tampilkan inovasi yang punya data judulState
+      // juri_sid hanya tampilkan inovasi yang punya data juriState
+      if (currentRole === 'juri_judul') {
+        const hasJudulData = value.judulState && Object.keys(value.judulState).length > 0;
+        if (!hasJudulData) {
+          console.log(`  [SKIPPED] "${key}" - tidak punya data judulState untuk juri_judul`);
+          return false;
+        }
+      } else if (currentRole === 'juri_sid') {
+        const hasSIDData = value.juriState && Object.keys(value.juriState).length > 0;
+        if (!hasSIDData) {
+          console.log(`  [SKIPPED] "${key}" - tidak punya data juriState untuk juri_sid`);
+          return false;
+        }
       }
-      return isValid;
+
+      return true;
     });
     
     console.log('[loadRankingData] Filtered entries count:', entries.length);
