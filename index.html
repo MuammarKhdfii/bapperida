@@ -843,18 +843,20 @@
         return false;
       }
 
-      // Filter berdasarkan role: juri_judul hanya tampilkan inovasi yang punya data judulState
-      // juri_sid hanya tampilkan inovasi yang punya data juriState
+      // Filter berdasarkan role: juri_judul hanya tampilkan inovasi yang punya skor judul
+      // juri_sid hanya tampilkan inovasi yang punya skor SID
       if (currentRole === 'juri_judul') {
-        const hasJudulData = value.judulState && Object.keys(value.judulState).length > 0;
-        if (!hasJudulData) {
-          console.log(`  [SKIPPED] "${key}" - tidak punya data judulState untuk juri_judul`);
+        const hasSkorJudul = value.skorJudulPerJuri && Object.values(value.skorJudulPerJuri).some(s => s > 0);
+        const hasJudulState = value.judulState && Object.keys(value.judulState).length > 0;
+        if (!hasSkorJudul && !hasJudulState) {
+          console.log(`  [SKIPPED] "${key}" - tidak punya data penilaian judul`);
           return false;
         }
       } else if (currentRole === 'juri_sid') {
-        const hasSIDData = value.juriState && Object.keys(value.juriState).length > 0;
-        if (!hasSIDData) {
-          console.log(`  [SKIPPED] "${key}" - tidak punya data juriState untuk juri_sid`);
+        const hasSkorSID = value.skorPerJuri && Object.values(value.skorPerJuri).some(s => s > 0);
+        const hasJuriState = value.juriState && Object.keys(value.juriState).length > 0;
+        if (!hasSkorSID && !hasJuriState) {
+          console.log(`  [SKIPPED] "${key}" - tidak punya data penilaian SID`);
           return false;
         }
       }
@@ -888,13 +890,22 @@
       const avgInd  = indArr.length  > 0 ? indArr.reduce((a,b)=>a+b,0)  / indArr.length  : 0;
       const avgJud  = judArr.length  > 0 ? judArr.reduce((a,b)=>a+b,0)  / judArr.length  : 0;
 
-      // Tentukan total berdasarkan jenis inovasi (jangan gabung judul + SID)
+      // Tentukan total berdasarkan role yang login
+      let total;
+      if (currentRole === 'juri_judul') {
+        total = parseFloat(avgJud.toFixed(2));
+      } else if (currentRole === 'juri_sid') {
+        total = parseFloat(avgInd.toFixed(2));
+      } else {
+        // Fallback: gabungkan jika role tidak diketahui
+        const adaDiJudul = !!daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
+        const adaDiSID   = !!daftarInovasiSID.find(i => i.judul === judulKey);
+        if (adaDiJudul && !adaDiSID)      total = parseFloat(avgJud.toFixed(2));
+        else if (adaDiSID && !adaDiJudul) total = parseFloat(avgInd.toFixed(2));
+        else                              total = parseFloat((avgInd + avgJud).toFixed(2));
+      }
       const adaDiJudul = !!daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
       const adaDiSID   = !!daftarInovasiSID.find(i => i.judul === judulKey);
-      let total;
-      if (adaDiJudul && !adaDiSID)      total = parseFloat(avgJud.toFixed(2));
-      else if (adaDiSID && !adaDiJudul) total = parseFloat(avgInd.toFixed(2));
-      else                              total = parseFloat((avgInd + avgJud).toFixed(2));
       
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID) untuk mendapatkan perangkatDaerah
       // karena ranking dashboard harus tampilkan SEMUA inovasi, bukan hanya role user saat ini
@@ -1001,9 +1012,12 @@
       ? new Date(item.savedAt).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})
       : "";
     
-    // Hitung total juri yang sudah menilai (gabungan judul + indikator)
-    // Karena bisa jadi ada juri yang menilai judul saja, atau indikator saja
-    const totalJuriDinilai = Math.max(item.judulJuri, item.indJuri);
+    // Hitung total juri yang sudah menilai sesuai role
+    const role = SESSION?.role;
+    const totalJuriDinilai = role === 'juri_judul' ? item.judulJuri : role === 'juri_sid' ? item.indJuri : Math.max(item.judulJuri, item.indJuri);
+    const skorLabel = role === 'juri_judul' ? '📋 Skor Judul' : role === 'juri_sid' ? '📊 Skor SID' : '📊 Skor';
+    const skorVal   = role === 'juri_judul' ? item.avgJud : role === 'juri_sid' ? item.avgInd : item.total;
+    const juriTotal = role === 'juri_judul' ? 3 : 3;
     
     return `
       <div class="rk-card ${rkClass}">
@@ -1021,13 +1035,13 @@
             ${date ? `<span class="rk-date">📅 ${date}</span>` : ""}
           </div>
           <div class="rk-juri-row">
-            <div class="rk-juri-cell ${item.avgInd>0?'has-score':item.avgJud>0?'has-score':'no-score'}">
-              <span class="rk-juri-name">${item.adaDiSID && !item.adaDiJudul ? '📊 Skor SID' : item.adaDiJudul && !item.adaDiSID ? '📋 Skor Judul' : '📊 Skor'}</span>
-              <span class="rk-juri-val">${item.total > 0 ? item.total.toFixed(2) : "—"}</span>
+            <div class="rk-juri-cell ${skorVal>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">${skorLabel}</span>
+              <span class="rk-juri-val">${skorVal>0 ? skorVal.toFixed(2) : "—"}</span>
             </div>
             <div class="rk-juri-cell juri-total">
               <span class="rk-juri-name">Juri Dinilai</span>
-              <span class="rk-juri-val">${totalJuriDinilai}/3</span>
+              <span class="rk-juri-val">${totalJuriDinilai}/${juriTotal}</span>
             </div>
           </div>
         </div>
