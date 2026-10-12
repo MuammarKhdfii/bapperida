@@ -843,20 +843,17 @@
         return false;
       }
 
-      // Filter berdasarkan role: juri_judul hanya tampilkan inovasi yang punya skor judul
-      // juri_sid hanya tampilkan inovasi yang punya skor SID
+      // Filter berdasarkan role: HANYA tampilkan inovasi yang punya skor aktual sesuai role
       if (currentRole === 'juri_judul') {
-        const hasSkorJudul = value.skorJudulPerJuri && Object.values(value.skorJudulPerJuri).some(s => s > 0);
-        const hasJudulState = value.judulState && Object.keys(value.judulState).length > 0;
-        if (!hasSkorJudul && !hasJudulState) {
-          console.log(`  [SKIPPED] "${key}" - tidak punya data penilaian judul`);
+        const hasSkorJudul = value.skorJudulPerJuri && Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
+        if (!hasSkorJudul) {
+          console.log(`  [SKIPPED] "${key}" - tidak punya skor judul > 0`);
           return false;
         }
       } else if (currentRole === 'juri_sid') {
-        const hasSkorSID = value.skorPerJuri && Object.values(value.skorPerJuri).some(s => s > 0);
-        const hasJuriState = value.juriState && Object.keys(value.juriState).length > 0;
-        if (!hasSkorSID && !hasJuriState) {
-          console.log(`  [SKIPPED] "${key}" - tidak punya data penilaian SID`);
+        const hasSkorSID = value.skorPerJuri && Object.values(value.skorPerJuri).some(s => Number(s) > 0);
+        if (!hasSkorSID) {
+          console.log(`  [SKIPPED] "${key}" - tidak punya skor SID > 0`);
           return false;
         }
       }
