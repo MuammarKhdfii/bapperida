@@ -129,6 +129,10 @@ if (namaInovasi) {
 } else {
   document.getElementById("heroJudulInovasi").textContent = "Form Penilaian";
   document.getElementById("heroPDInovasi").textContent    = "Kembali ke beranda untuk memilih inovasi";
+  // Jika namaInovasi kosong, redirect ke index.html setelah 2 detik
+  console.warn('⚠️ namaInovasi kosong! Redirect ke index.html...');
+  alert('⚠️ Inovasi belum dipilih!\n\nSilakan pilih inovasi terlebih dahulu dari halaman beranda.');
+  window.location.replace('index.html');
 }
 
 // Restore state hanya untuk user yang login - wrapped in async IIFE
@@ -622,6 +626,13 @@ function calculate() {
 // ── Simpan ──
 async function saveAll(showAnim = false) {
   console.log('=== saveAll START ===');
+  
+  // Guard: jangan simpan jika namaInovasi kosong
+  if (!namaInovasi) {
+    console.error('❌ saveAll dibatalkan: namaInovasi kosong!');
+    alert('❌ Tidak dapat menyimpan: inovasi belum dipilih!\n\nKembali ke beranda dan pilih inovasi terlebih dahulu.');
+    return;
+  }
   
   saveJudulStateLocal();
   saveIndikatorStateLocal();
