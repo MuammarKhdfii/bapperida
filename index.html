@@ -838,35 +838,11 @@
       }
 
       // Hanya ambil yang punya judulState atau juriState
-      if (!value.hasOwnProperty('judulState') && !value.hasOwnProperty('juriState')) {
+      const isValid = value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
+      if (!isValid) {
         console.log(`  [SKIPPED] "${key}" - tidak punya judulState/juriState`);
-        return false;
       }
-
-      // Filter berdasarkan role: HANYA tampilkan inovasi yang punya data penilaian sesuai role
-      if (currentRole === 'juri_judul') {
-        // Cek skorJudulPerJuri ATAU judulState yang ada isinya (bukan object kosong semua)
-        const hasSkorJudul = value.skorJudulPerJuri && 
-          Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
-        const hasJudulState = value.judulState && 
-          Object.values(value.judulState).some(v => v && typeof v === 'object' && Object.keys(v).length > 0);
-        if (!hasSkorJudul && !hasJudulState) {
-          console.log(`  [SKIPPED] "${key}" - tidak punya data penilaian judul`);
-          return false;
-        }
-      } else if (currentRole === 'juri_sid') {
-        // Cek skorPerJuri ATAU juriState yang ada isinya
-        const hasSkorSID = value.skorPerJuri && 
-          Object.values(value.skorPerJuri).some(s => Number(s) > 0);
-        const hasJuriState = value.juriState && 
-          Object.values(value.juriState).some(v => v && typeof v === 'object' && v.radio && Object.keys(v.radio).length > 0);
-        if (!hasSkorSID && !hasJuriState) {
-          console.log(`  [SKIPPED] "${key}" - tidak punya data penilaian SID`);
-          return false;
-        }
-      }
-
-      return true;
+      return isValid;
     });
     
     console.log('[loadRankingData] Filtered entries count:', entries.length);
