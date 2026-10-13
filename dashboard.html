@@ -835,7 +835,7 @@
       
       html += `
         <tr>
-          <td>${i===0?"":i===1?"":i===2?"":i+1}</td>
+          <td>${i===0?"#1":i===1?"#2":i===2?"#3":i+1}</td>
           <td><b>${esc(r.judulKey)}</b></td>
           <td style="font-size:11px;color:#667085">${esc(r.meta.perangkatDaerah||"-")}</td>
           <td class="skor-cell">
