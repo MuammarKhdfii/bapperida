@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Admin  BAPPERIDA 2027</title>
+  <title>Dashboard Admin - BAPPERIDA 2027</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
   <link rel="stylesheet" href="penilaian.css">
   <style>
-    /* ”€ Dashboard Admin ”€ */
+    /*  Dashboard Admin  */
     .hero-admin {
       background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #9333ea 100%) !important;
       background-size: 300% 300% !important;
@@ -315,9 +315,9 @@
       }
     }
 
-    /* •••••••••••••••••••••
+    /* 
        MODAL DETAIL PENILAIAN JURI
-    ••••••••••••••••••••• */
+     */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -466,7 +466,7 @@
   <header class="hero hero-admin">
     <div class="container hero-inner">
       <div class="hero-text">
-        <div class="badge"> SUPER ADMIN  BAPPERIDA 2027</div>
+        <div class="badge">SUPER ADMIN - BAPPERIDA 2027</div>
         <h1>Dashboard Rekapitulasi</h1>
         <p>Seluruh data penilaian inovasi dari semua juri</p>
       </div>
@@ -490,7 +490,7 @@
         <button onclick="loadDashboard()" class="btn primary"> Refresh Data</button>
         <button onclick="showDeleteAllModal()" class="btn" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white;"> Hapus Semua Data</button>
         <a href="dashboard_sid.html" class="btn" style="background:linear-gradient(135deg,#2563eb,#1e3a8a);color:white;"> Dashboard SID</a>
-        <a href="index.html" class="btn secondary">  Beranda</a>
+        <a href="index.html" class="btn secondary"> Beranda</a>
       </div>
     </section>
 
@@ -515,11 +515,11 @@
     <div class="modal-header">
       <div class="modal-header-content">
         <div class="modal-title" id="modalJuriTitle">Detail Penilaian</div>
-        <div class="modal-subtitle" id="modalJuriSubtitle">/div>
+        <div class="modal-subtitle" id="modalJuriSubtitle">-</div>
       </div>
       <div class="modal-actions">
         <button class="modal-btn" onclick="printJuriDetail()"> Cetak</button>
-        <button class="modal-close" onclick="closeModalJuri()">Ã—</button>
+        <button class="modal-close" onclick="closeModalJuri()"></button>
       </div>
     </div>
     <div class="modal-body" id="modalJuriBody">
@@ -533,12 +533,12 @@
   <div class="modal-detail" style="max-width: 500px;">
     <div class="modal-header" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
       <div class="modal-header-content">
-        <div class="modal-title">!  Konfirmasi Hapus</div>
+        <div class="modal-title"> Konfirmasi Hapus</div>
       </div>
-      <button class="modal-close" onclick="closeDeleteModal()">Ã—</button>
+      <button class="modal-close" onclick="closeDeleteModal()"></button>
     </div>
     <div class="modal-body" style="padding: 30px; text-align: center;">
-      <div style="font-size: 64px; margin-bottom: 20px;">
+      <div style="font-size: 64px; margin-bottom: 20px;"></div>
       <h3 id="deleteModalTitle" style="margin-bottom: 15px; color: #1f2937; font-size: 18px;">Hapus Data?</h3>
       <p id="deleteModalMessage" style="color: #6b7280; margin-bottom: 30px; line-height: 1.6;">
         Data yang dihapus tidak dapat dikembalikan!
@@ -557,9 +557,9 @@
     <div class="modal-header">
       <div class="modal-header-content">
         <div class="modal-title" id="juriNamesModalTitle">Daftar Juri</div>
-        <div class="modal-subtitle" id="juriNamesModalSubtitle">/div>
+        <div class="modal-subtitle" id="juriNamesModalSubtitle">-</div>
       </div>
-      <button class="modal-close" onclick="closeJuriNamesModal()">Ã—</button>
+      <button class="modal-close" onclick="closeJuriNamesModal()"></button>
     </div>
     <div class="modal-body" id="juriNamesModalBody" style="padding: 24px;">
       <!-- Content will be injected here -->
@@ -583,16 +583,16 @@
   </div>
   <div class="print-divider"></div>
   <div class="print-meta-grid">
-    <div class="print-meta-item"><span class="print-meta-label">Nama Inovasi</span><span class="print-meta-value" id="printNamaInovasi">/span></div>
-    <div class="print-meta-item"><span class="print-meta-label">Nama Juri</span><span class="print-meta-value" id="printNamaJuri">/span></div>
-    <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="printTanggal">/span></div>
-    <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="printTotalSkor">/span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Nama Inovasi</span><span class="print-meta-value" id="printNamaInovasi">-</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Nama Juri</span><span class="print-meta-value" id="printNamaJuri">-</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Tanggal</span><span class="print-meta-value" id="printTanggal">-</span></div>
+    <div class="print-meta-item"><span class="print-meta-label">Total Skor</span><span class="print-meta-value print-skor-total" id="printTotalSkor">-</span></div>
   </div>
   <div class="print-section-heading" id="printSectionHeading">PENILAIAN</div>
   <table class="print-table">
     <thead><tr><th class="pt-no">No</th><th class="pt-nama" id="printTableHeaderNama">Kriteria</th><th class="pt-bobot">Bobot</th><th class="pt-param">Nilai</th><th class="pt-nilai">Skor</th><th class="pt-ket">Deskripsi Pilihan</th></tr></thead>
     <tbody id="printTableBody"></tbody>
-    <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label" id="printTotalLabel">TOTAL SKOR</td><td class="print-total-value" id="printTotalValue">0.00</td><td class="print-total-max" id="printTotalMax">Maks: /td></tr></tfoot>
+    <tfoot><tr class="print-total-row"><td colspan="4" class="print-total-label" id="printTotalLabel">TOTAL SKOR</td><td class="print-total-value" id="printTotalValue">0.00</td><td class="print-total-max" id="printTotalMax">Maks: -</td></tr></tfoot>
   </table>
   
   <!-- Catatan dan Rekomendasi -->
@@ -600,11 +600,11 @@
     <div class="print-notes-row">
       <div class="print-notes-col">
         <div class="print-notes-header"> CATATAN PENILAIAN</div>
-        <div class="print-notes-content" id="printCatatan">/div>
+        <div class="print-notes-content" id="printCatatan">-</div>
       </div>
       <div class="print-notes-col">
         <div class="print-notes-header"> REKOMENDASI PERBAIKAN</div>
-        <div class="print-notes-content" id="printRekomendasi">/div>
+        <div class="print-notes-content" id="printRekomendasi">-</div>
       </div>
     </div>
   </div>
@@ -623,7 +623,7 @@
       <div class="print-sign-role">Juri Penilai</div>
     </div>
   </div>
-  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2027  BAPPERIDA Kota Metro</div>
+  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2027 - BAPPERIDA Kota Metro</div>
 </div>
 
 <!-- Firebase SDK -->
@@ -639,7 +639,7 @@
 <script src="auth.js"></script>
 <script src="realtime-sync.js"></script>
 <script>
-  // ”€ Route Guard: hanya admin ”€
+  //  Route Guard: hanya admin 
   const SESSION = requireAuth("admin");
   if (!SESSION) throw new Error("Unauthorized");
 
@@ -689,7 +689,7 @@
 
     // 3. Fallback: ambil dari data Firebase itu sendiri (perangkatDaerah disimpan saat save)
     if (firebaseData && firebaseData.perangkatDaerah) {
-      return { judul: judulKey, perangkatDaerah: firebaseData.perangkatDaerah, bentuk: firebaseData.bentukInovasi || ", waktu: firebaseData.tahun || " };
+      return { judul: judulKey, perangkatDaerah: firebaseData.perangkatDaerah, bentuk: firebaseData.bentukInovasi || "-", waktu: firebaseData.tahun || "-" };
     }
 
     return {};
@@ -721,7 +721,7 @@
     
     console.log(' Processing', inovasiList.length, 'valid innovation entries');
 
-    // ”€ Stat cards ”€
+    //  Stat cards 
     const totalInovasi   = inovasiList.length;
     const selesaiJudul   = inovasiList.filter(([,d]) => {
       return JURI_JUDUL_LIST.filter(j => {
@@ -738,26 +738,26 @@
 
     document.getElementById("dashStats").innerHTML = `
       <div class="dash-stat">
-        <div class="dash-stat-icon">
+        <div class="dash-stat-icon"></div>
         <div class="dash-stat-val">${totalInovasi}</div>
         <div class="dash-stat-lbl">Inovasi Terdata</div>
       </div>
       <div class="dash-stat">
-        <div class="dash-stat-icon">
+        <div class="dash-stat-icon"></div>
         <div class="dash-stat-val">${selesaiJudul}</div>
         <div class="dash-stat-lbl">Judul Dinilai Lengkap</div>
       </div>
       <div class="dash-stat">
-        <div class="dash-stat-icon">ok
+        <div class="dash-stat-icon"></div>
         <div class="dash-stat-val">${selesaiSID}</div>
-        <div class="dash-stat-lbl">SID Dinilai >=3 Juri</div>
+        <div class="dash-stat-lbl">SID Dinilai 3 Juri</div>
       </div>`;
 
-    // ”€ Tabel rekap ”€
+    //  Tabel rekap 
     if (inovasiList.length === 0) {
       document.getElementById("rekapTable").innerHTML = `
         <div class="empty-state">
-          <div class="empty-state-icon">
+          <div class="empty-state-icon"></div>
           <div>Belum ada data penilaian. Juri perlu login dan menyimpan penilaian terlebih dahulu.</div>
         </div>`;
       return;
@@ -813,7 +813,7 @@
 
     rows.forEach((r, i) => {
       const badgeCls = r.status === 'lengkap' ? 'badge-lengkap' : r.status === 'partial' ? 'badge-partial' : 'badge-kosong';
-      const badgeTxt = r.status === 'lengkap' ? 'ok Lengkap' : r.status === 'partial' ? ' Sebagian' : ';
+      const badgeTxt = r.status === 'lengkap' ? 'Lengkap' : r.status === 'partial' ? 'Sebagian' : '-';
       const escapedJudul = r.judulKey.replace(/'/g, "\\'");
       
       // Dapatkan nama juri yang sudah menilai
@@ -827,29 +827,29 @@
       });
       
       const judulTooltip = juriJudulList.length > 0 
-        ? juriJudulList.map(j => `ok ${j}`).join('\\n')
+        ? juriJudulList.map(j => `${j}`).join('\\n')
         : 'Belum ada juri yang menilai';
       const sidTooltip = juriSIDList.length > 0 
-        ? juriSIDList.map(j => `ok ${j}`).join('\\n')
+        ? juriSIDList.map(j => `${j}`).join('\\n')
         : 'Belum ada juri yang menilai';
       
       html += `
         <tr>
-          <td>${i===0?"
+          <td>${i===0?"":i===1?"":i===2?"":i+1}</td>
           <td><b>${esc(r.judulKey)}</b></td>
-          <td style="font-size:11px;color:#667085">${esc(r.meta.perangkatDaerah||")}</td>
+          <td style="font-size:11px;color:#667085">${esc(r.meta.perangkatDaerah||"-")}</td>
           <td class="skor-cell">
-            ${r.avgJudul>0?r.avgJudul.toFixed(2):"} 
+            ${r.avgJudul>0?r.avgJudul.toFixed(2):"-"} 
             <small class="juri-progress-badge" title="${judulTooltip}" onclick="showJuriNames('${escapedJudul}', 'judul')" style="font-weight:600;color:#7c3aed;cursor:help;text-decoration:underline dotted;">(${r.judulJuri}/3)</small>
           </td>
           <td class="skor-cell">
-            ${r.avgSID>0?r.avgSID.toFixed(2):"} 
+            ${r.avgSID>0?r.avgSID.toFixed(2):"-"} 
             <small class="juri-progress-badge" title="${sidTooltip}" onclick="showJuriNames('${escapedJudul}', 'sid')" style="font-weight:600;color:#2563eb;cursor:help;text-decoration:underline dotted;">(${r.sidJuri}/3)</small>
           </td>
-          <td class="total-cell">${r.total>0?r.total.toFixed(2):"}</td>
+          <td class="total-cell">${r.total>0?r.total.toFixed(2):"-"}</td>
           <td><span class="${badgeCls}">${badgeTxt}</span></td>
           <td style="text-align: center;">
-            <button onclick="deleteInovasi('${escapedJudul}')" class="btn-delete" title="Hapus data inovasi ini" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            <button onclick="deleteInovasi('${escapedJudul}')" class="btn-delete" title="Hapus data inovasi ini" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"></button>
           </td>
         </tr>`;
     });
@@ -857,7 +857,7 @@
     html += `</tbody></table>`;
     document.getElementById("rekapTable").innerHTML = html;
 
-    // ”€ Rekap per juri ”€
+    //  Rekap per juri 
     const allJuri = [
       // Juri Judul
       ...JURI_JUDUL_LIST.map(j => ({ nama: j, isJudul: true, isSID: false })),
@@ -932,7 +932,7 @@
             </span>
             <span>
               <small style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em">Rata-rata Skor</small>
-              <b>${count>0?(totalSkor/count).toFixed(2):"}</b>
+              <b>${count>0?(totalSkor/count).toFixed(2):"-"}</b>
             </span>
           </div>
           <div style="margin-top: 12px; text-align: center; font-size: 11px; color: #7c3aed; font-weight: 700;">
@@ -947,9 +947,9 @@
     return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   }
 
-  // •••••••••••••••••••••
+  // 
   //  MODAL DETAIL JURI & PRINT
-  // •••••••••••••••••••••
+  // 
   
   let currentJuriData = null;
   
@@ -1020,7 +1020,7 @@
     // Update modal
     document.getElementById("modalJuriTitle").textContent = namaJuri;
     const roleLabel = isJudul && isSID ? "Juri Judul & SID" : isJudul ? "Juri Judul Inovasi" : "Juri Penilaian SID";
-    document.getElementById("modalJuriSubtitle").textContent = `${roleLabel}  ${inovasiDinilai.length} Inovasi Dinilai`;
+    document.getElementById("modalJuriSubtitle").textContent = `${roleLabel} - ${inovasiDinilai.length} Inovasi Dinilai`;
     
     // Build content
     let bodyHtml = '<div style="display: flex; flex-direction: column; gap: 32px;">';
@@ -1048,9 +1048,9 @@
           
           bodyHtml += `<tr style="border-bottom: 1px solid #f3f4f6;">
             <td style="padding: 10px;">${k.no}</td>
-            <td style="padding: 10px;"><strong>${esc(k.nama)}</strong><div style="font-size: 11px; color: #6b7280; margin-top: 4px;">${esc(k.parameter[nilai - 1] || ")}</div></td>
+            <td style="padding: 10px;"><strong>${esc(k.nama)}</strong><div style="font-size: 11px; color: #6b7280; margin-top: 4px;">${esc(k.parameter[nilai - 1] || "-")}</div></td>
             <td style="padding: 10px; text-align: center; font-weight: 700;">${k.bobot}</td>
-            <td style="padding: 10px; text-align: center; font-weight: 700; color: #7c3aed;">${nilai || "}</td>
+            <td style="padding: 10px; text-align: center; font-weight: 700; color: #7c3aed;">${nilai || "-"}</td>
             <td style="padding: 10px; text-align: center; font-weight: 800; color: #16a34a;">${skor.toFixed(2)}</td>
           </tr>`;
         });
@@ -1073,9 +1073,9 @@
           
           bodyHtml += `<tr style="border-bottom: 1px solid #f3f4f6;">
             <td style="padding: 10px;">${ind.displayNo}</td>
-            <td style="padding: 10px;"><strong>${esc(ind.nama)}</strong><div style="font-size: 11px; color: #6b7280; margin-top: 4px;">${esc(ind.parameter[nilai - 1] || ")}</div></td>
+            <td style="padding: 10px;"><strong>${esc(ind.nama)}</strong><div style="font-size: 11px; color: #6b7280; margin-top: 4px;">${esc(ind.parameter[nilai - 1] || "-")}</div></td>
             <td style="padding: 10px; text-align: center; font-weight: 700;">${ind.bobot}</td>
-            <td style="padding: 10px; text-align: center; font-weight: 700; color: #7c3aed;">${nilai || "}</td>
+            <td style="padding: 10px; text-align: center; font-weight: 700; color: #7c3aed;">${nilai || "-"}</td>
             <td style="padding: 10px; text-align: center; font-weight: 800; color: #2563eb;">${skor.toFixed(2)}</td>
           </tr>`;
         });
@@ -1110,7 +1110,7 @@
       // Tanda Tangan
       bodyHtml += `
         <div style="margin-top: 20px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6; border-radius: 12px; padding: 16px; text-align: center;">
-          <div style="font-size: 13px; font-weight: 800; color: #1e40af; margin-bottom: 12px;">ok Tanda Tangan</div>`;
+          <div style="font-size: 13px; font-weight: 800; color: #1e40af; margin-bottom: 12px;"> Tanda Tangan</div>`;
       
       if (item.signature) {
         bodyHtml += `<img src="${item.signature}" alt="Tanda Tangan" style="max-width: 300px; max-height: 100px; border: 2px dashed #93c5fd; border-radius: 8px; padding: 10px; background: white;" />`;
@@ -1139,9 +1139,9 @@
     document.body.style.overflow = "";
   }
   
-  // •••••••••••••••••••••
+  // 
   //  DELETE DATA FUNCTIONS
-  // •••••••••••••••••••••
+  // 
   
   let deleteTarget = null;
   let deleteType = null; // 'single' or 'all'
@@ -1152,7 +1152,7 @@
     
     document.getElementById('deleteModalTitle').textContent = 'Hapus Semua Data?';
     document.getElementById('deleteModalMessage').innerHTML = `
-      <strong>!  PERHATIAN!</strong><br><br>
+      <strong> PERHATIAN!</strong><br><br>
       Anda akan menghapus <strong>SEMUA DATA PENILAIAN</strong> dari sistem.<br><br>
       Data yang dihapus meliputi:<br>
        Semua penilaian judul inovasi<br>
@@ -1206,21 +1206,21 @@
       closeDeleteModal();
       
       // Tampilkan notifikasi
-      alert(`ok Data penilaian "${deleteTarget}" berhasil dihapus!`);
+      alert(` Data penilaian "${deleteTarget}" berhasil dihapus!`);
       
       // Reload dashboard
       await loadDashboard();
       
     } catch (error) {
       console.error('Error deleting data:', error);
-      alert('Gagal menghapus data: ' + error.message);
+      alert(' Gagal menghapus data: ' + error.message);
     }
   }
   
   async function confirmDeleteAll() {
     try {
       // Konfirmasi sekali lagi
-      const confirm2 = confirm('!  KONFIRMASI TERAKHIR!\n\nApakah Anda YAKIN akan menghapus SEMUA DATA?\n\nKlik OK untuk melanjutkan atau Cancel untuk membatalkan.');
+      const confirm2 = confirm('KONFIRMASI TERAKHIR!\n\nApakah Anda YAKIN akan menghapus SEMUA DATA?\n\nKlik OK untuk melanjutkan atau Cancel untuk membatalkan.');
       
       if (!confirm2) {
         closeDeleteModal();
@@ -1235,7 +1235,7 @@
       if (typeof cloudStorage !== 'undefined' && database) {
         try {
           await database.ref('penilaian').remove();
-          console.log('ok Firebase data cleared');
+          console.log(' Firebase data cleared');
         } catch (e) {
           console.warn('Firebase delete error:', e);
         }
@@ -1244,14 +1244,14 @@
       closeDeleteModal();
       
       // Tampilkan notifikasi
-      alert('ok Semua data berhasil dihapus!\n\nSistem akan me-refresh halaman.');
+      alert(' Semua data berhasil dihapus!\n\nSistem akan me-refresh halaman.');
       
       // Reload dashboard
       await loadDashboard();
       
     } catch (error) {
       console.error('Error deleting all data:', error);
-      alert('Gagal menghapus data: ' + error.message);
+      alert(' Gagal menghapus data: ' + error.message);
     }
   }
   
@@ -1262,9 +1262,9 @@
     deleteType = null;
   }
   
-  // •••••••••••••••••••••
+  // 
   //  SHOW JURI NAMES POPUP
-  // •••••••••••••••••••••
+  // 
   
   let currentJuriNamesData = null;
   
@@ -1304,7 +1304,7 @@
     if (juriList.length === 0) {
       bodyHtml = `
         <div style="text-align: center; padding: 40px 20px; color: #9ca3af;">
-          <div style="font-size: 48px; margin-bottom: 16px;">
+          <div style="font-size: 48px; margin-bottom: 16px;"></div>
           <div style="font-size: 14px;">Belum ada juri yang menilai</div>
         </div>`;
     } else {
@@ -1337,7 +1337,7 @@
         bodyHtml += `
           <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px;">
             <div style="background: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-              ${idx === 0 ? ' : idx === 1 ? ' : idx === 2 ? ' : 'ok
+              ${idx === 0 ? '' : idx === 1 ? '' : idx === 2 ? '' : ''}
             </div>
             <div style="flex: 1;">
               <div style="font-weight: 800; color: #1f2937; font-size: 15px; margin-bottom: 4px;">${esc(juri)}</div>
@@ -1406,9 +1406,9 @@
           <td class="pt-no">${k.no}</td>
           <td class="pt-nama"><strong>${esc(k.nama)}</strong></td>
           <td class="pt-bobot">${k.bobot}</td>
-          <td class="pt-param">${nilai || "}</td>
+          <td class="pt-param">${nilai || "-"}</td>
           <td class="pt-nilai">${skor.toFixed(2)}</td>
-          <td class="pt-ket">${esc(k.parameter[nilai - 1] || ")}</td>
+          <td class="pt-ket">${esc(k.parameter[nilai - 1] || "-")}</td>
         </tr>`;
       });
     } else {
@@ -1423,9 +1423,9 @@
           <td class="pt-no">${ind.displayNo}</td>
           <td class="pt-nama"><strong>${esc(ind.nama)}</strong></td>
           <td class="pt-bobot">${ind.bobot}</td>
-          <td class="pt-param">${nilai || "}</td>
+          <td class="pt-param">${nilai || "-"}</td>
           <td class="pt-nilai">${skor.toFixed(2)}</td>
-          <td class="pt-ket">${esc(ind.parameter[nilai - 1] || ")}</td>
+          <td class="pt-ket">${esc(ind.parameter[nilai - 1] || "-")}</td>
         </tr>`;
       });
     }
@@ -1436,8 +1436,8 @@
     document.getElementById("printTotalMax").textContent = `Maks: ${maxTotal}`;
     
     // Catatan dan Rekomendasi
-    document.getElementById("printCatatan").textContent = item.notes.catatan || ";
-    document.getElementById("printRekomendasi").textContent = item.notes.rekomendasi || ";
+    document.getElementById("printCatatan").textContent = item.notes.catatan || "-";
+    document.getElementById("printRekomendasi").textContent = item.notes.rekomendasi || "-";
     
     // Tanda Tangan
     const signatureImage = document.getElementById("printSignatureImage");
@@ -1480,18 +1480,21 @@
     return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   }
 
-  // •••••••••••••••••••••
+  // 
   //  EXPORT TO EXCEL
-  // •••••••••••••••••••••
+  // 
   async function exportToExcel() {
     const all = await loadAllDraf();
     
+    // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
     const inovasiList = Object.entries(all).filter(([key, value]) => {
       if (typeof value !== 'object' || value === null) return false;
       if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
            'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
            'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
-           'userMetadata'].includes(key)) return false;
+           'userMetadata'].includes(key)) {
+        return false;
+      }
       return value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
     });
 
@@ -1500,161 +1503,196 @@
       return;
     }
 
-    // Hitung skor per juri per inovasi
-    const rows = inovasiList.map(([judulKey, d]) => {
-      const meta = findMetaInovasi(judulKey, d);
+    // Build HTML table for Excel
+    let html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          table { border-collapse: collapse; width: 100%; }
+          th { background-color: #7c3aed; color: white; font-weight: bold; padding: 10px; border: 1px solid #333; text-align: center; font-size: 11pt; }
+          td { padding: 8px; border: 1px solid #ccc; font-size: 10pt; }
+          .header-row { background-color: #e9d5ff; font-weight: bold; }
+          .section-title { background-color: #4c1d95; color: white; font-weight: bold; font-size: 14pt; padding: 12px; }
+          .number-cell { text-align: center; }
+          .score-cell { text-align: center; font-weight: bold; }
+        </style>
+      </head>
+      <body>`;
 
-      // Skor judul per juri
-      const skorJudul = {};
-      JURI_JUDUL_LIST.forEach(juri => {
+    // 
+    // MATRIK JUDUL
+    // 
+    html += `
+      <h2 style="background-color: #4c1d95; color: white; padding: 15px; margin-bottom: 10px;">MATRIK PENILAIAN JUDUL INOVASI</h2>
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="vertical-align: middle;">No</th>
+            <th rowspan="2" style="vertical-align: middle; min-width: 300px;">Judul Inovasi</th>
+            <th rowspan="2" style="vertical-align: middle; min-width: 200px;">Asal Instansi</th>
+            <th colspan="6" style="background-color: #9333ea;">Parameter Penilaian</th>
+            <th rowspan="2" style="vertical-align: middle; background-color: #fbbf24;">Jumlah</th>
+            <th rowspan="2" style="vertical-align: middle; min-width: 150px;">Penilai/Juri</th>
+          </tr>
+          <tr>
+            <th style="background-color: #a855f7;">1</th>
+            <th style="background-color: #a855f7;">2</th>
+            <th style="background-color: #a855f7;">3</th>
+            <th style="background-color: #a855f7;">4</th>
+            <th style="background-color: #a855f7;">5</th>
+            <th style="background-color: #a855f7;">6</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    inovasiList.forEach(([judulKey, d], idx) => {
+      // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
+      let meta = findMetaInovasi(judulKey, d);
+      
+      html += `<tr>`;
+      html += `<td class="number-cell">${idx + 1}</td>`;
+      html += `<td><strong>${esc(judulKey)}</strong></td>`;
+      html += `<td>${esc(meta.perangkatDaerah || "-")}</td>`;
+
+      // Calculate 6 parameters
+      let totalJudul = 0;
+      kriteriaJudul.forEach((k) => {
+        let paramTotal = 0;
+        let juriCount = 0;
+        
+        JURI_JUDUL_LIST.forEach(juri => {
+          const judulData = findJuriData(d.judulState, juri);
+          const nilai = judulData?.[k.no];
+          if (nilai) {
+            paramTotal += Number(nilai) * k.bobot;
+            juriCount++;
+          }
+        });
+        
+        const avgParam = juriCount > 0 ? (paramTotal / juriCount) : 0;
+        html += `<td class="score-cell" style="background-color: ${avgParam > 0 ? '#f3e8ff' : '#f9fafb'};">${avgParam > 0 ? avgParam.toFixed(2) : '-'}</td>`;
+        totalJudul += avgParam;
+      });
+      
+      // Jumlah
+      html += `<td class="score-cell" style="background-color: #fef3c7; font-size: 11pt;"><strong>${totalJudul > 0 ? totalJudul.toFixed(2) : '-'}</strong></td>`;
+      
+      // Penilai
+      const juriYangMenilai = JURI_JUDUL_LIST.filter(juri => {
         const judulData = findJuriData(d.judulState, juri);
-        if (!judulData) { skorJudul[juri] = 0; return; }
-        let t = 0;
-        kriteriaJudul.forEach(k => {
-          const v = judulData[k.no] || '';
-          if (v) t += Number(v) * k.bobot;
-        });
-        skorJudul[juri] = t;
+        return judulData && Object.values(judulData).some(v => v);
       });
-      const judulArr = Object.values(skorJudul).filter(s => s > 0);
-      const avgJudul = judulArr.length > 0 ? judulArr.reduce((a,b)=>a+b,0)/judulArr.length : 0;
-
-      // Skor SID per juri
-      const skorSID = {};
-      JURI_SID_LIST.forEach(juri => {
-        const juriData = findJuriData(d.juriState, juri);
-        if (!juriData) { skorSID[juri] = 0; return; }
-        let t = 0;
-        sidIndicators.filter(i=>!i.type).forEach(i => {
-          const v = juriData.radio?.[i.originalNo] || '';
-          if (v) t += Number(v) * i.bobot;
-        });
-        skorSID[juri] = t;
-      });
-      const sidArr = Object.values(skorSID).filter(s => s > 0);
-      const avgSID = sidArr.length > 0 ? sidArr.reduce((a,b)=>a+b,0)/sidArr.length : 0;
-
-      return { judulKey, meta, skorJudul, avgJudul, skorSID, avgSID, total: avgJudul + avgSID };
-    }).sort((a,b) => b.total - a.total);
-
-    const tgl = new Date().toLocaleString('id-ID');
-
-    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" 
-      xmlns:x="urn:schemas-microsoft-com:office:excel" 
-      xmlns="http://www.w3.org/1999/xhtml">
-    <head><meta charset="UTF-8">
-    <style>
-      body { font-family: Arial, sans-serif; font-size: 10pt; }
-      table { border-collapse: collapse; width: 100%; margin-bottom: 32px; }
-      th { padding: 10px 12px; border: 1px solid #333; text-align: center; font-size: 10pt; font-weight: bold; vertical-align: middle; }
-      td { padding: 8px 10px; border: 1px solid #ccc; font-size: 10pt; vertical-align: middle; }
-      .title-row td { background-color: #4c1d95; color: white; font-size: 14pt; font-weight: bold; padding: 14px; }
-      .sub-row td { background-color: #7c3aed; color: white; font-size: 10pt; padding: 6px 12px; }
-      .header-judul { background-color: #7c3aed; color: white; }
-      .header-sid   { background-color: #1e3a8a; color: white; }
-      .header-total { background-color: #b45309; color: white; }
-      .skor-cell    { text-align: center; font-weight: bold; }
-      .avg-cell     { text-align: center; font-weight: 900; background-color: #fef9c3; color: #92400e; }
-      .total-cell   { text-align: center; font-weight: 900; background-color: #fde68a; color: #78350f; font-size: 11pt; }
-      .no-cell      { text-align: center; color: #9ca3af; width: 36px; }
-      .kosong       { color: #d1d5db; text-align: center; }
-    </style>
-    </head><body>`;
-
-    // • JUDUL DOKUMEN •
-    html += `<table>
-      <tr><td colspan="${3 + JURI_JUDUL_LIST.length + 1 + JURI_SID_LIST.length + 2}" 
-        style="background:#4c1d95;color:white;font-size:16pt;font-weight:900;padding:16px;text-align:center;">
-        REKAP PENILAIAN INOVASI DAERAH  BAPPERIDA KOTA METRO 2027
-      </td></tr>
-      <tr><td colspan="${3 + JURI_JUDUL_LIST.length + 1 + JURI_SID_LIST.length + 2}"
-        style="background:#7c3aed;color:white;font-size:10pt;padding:8px;text-align:center;">
-        Diekspor pada: ${tgl} &nbsp;|&nbsp; Total Inovasi: ${rows.length}
-      </td></tr>
-    </table>`;
-
-    // • TABEL REKAP PENILAIAN JUDUL •
-    html += `<table>
-      <thead>
-        <tr>
-          <th rowspan="2" class="no-cell" style="background:#6b7280;color:white;">No</th>
-          <th rowspan="2" style="background:#374151;color:white;min-width:300px;text-align:left;">Nama Inovasi</th>
-          <th rowspan="2" style="background:#374151;color:white;min-width:180px;">OPD / Instansi</th>
-          <th colspan="${JURI_JUDUL_LIST.length}" class="header-judul">PENILAIAN JUDUL INOVASI</th>
-          <th rowspan="2" class="avg-cell" style="background:#d97706;color:white;min-width:80px;">Rata-rata<br>Judul</th>
-          <th colspan="${JURI_SID_LIST.length}" class="header-sid">PENILAIAN INDIKATOR SID</th>
-          <th rowspan="2" class="avg-cell" style="background:#1d4ed8;color:white;min-width:80px;">Rata-rata<br>SID</th>
-          <th rowspan="2" class="total-cell" style="background:#92400e;color:white;min-width:80px;">TOTAL<br>GABUNGAN</th>
-        </tr>
-        <tr>
-          ${JURI_JUDUL_LIST.map(j => `<th class="header-judul" style="min-width:120px;font-size:9pt;">${j.split(',')[0]}</th>`).join('')}
-          ${JURI_SID_LIST.map(j => `<th class="header-sid" style="min-width:120px;font-size:9pt;">${j.split(',')[0]}</th>`).join('')}
-        </tr>
-      </thead>
-      <tbody>`;
-
-    rows.forEach((r, i) => {
-      const medal = i===0?' ':i===1?' ':i===2?' ':'';
-      html += `<tr style="background:${i%2===0?'#ffffff':'#f9fafb'};">
-        <td class="no-cell">${i+1}</td>
-        <td><strong>${medal}${r.judulKey}</strong></td>
-        <td style="font-size:9pt;color:#4b5563;">${r.meta.perangkatDaerah||'}</td>`;
-
-      // Skor per juri judul
-      JURI_JUDUL_LIST.forEach(j => {
-        const s = r.skorJudul[j] || 0;
-        html += `<td class="${s>0?'skor-cell':'kosong'}" style="${s>0?'background:#f3e8ff;':''}">
-          ${s>0?s.toFixed(2):'}</td>`;
-      });
-
-      // Rata-rata judul
-      html += `<td class="avg-cell">${r.avgJudul>0?r.avgJudul.toFixed(2):'}</td>`;
-
-      // Skor per juri SID
-      JURI_SID_LIST.forEach(j => {
-        const s = r.skorSID[j] || 0;
-        html += `<td class="${s>0?'skor-cell':'kosong'}" style="${s>0?'background:#dbeafe;':''}">
-          ${s>0?s.toFixed(2):'}</td>`;
-      });
-
-      // Rata-rata SID
-      html += `<td class="avg-cell">${r.avgSID>0?r.avgSID.toFixed(2):'}</td>`;
-
-      // Total gabungan
-      html += `<td class="total-cell">${r.total>0?r.total.toFixed(2):'}</td>`;
-
+      html += `<td style="font-size: 9pt;">${juriYangMenilai.length > 0 ? juriYangMenilai.join("<br>") : '-'}</td>`;
+      
       html += `</tr>`;
     });
 
-    html += `</tbody></table>`;
+    html += `
+        </tbody>
+      </table>
+      <br><br><br>`;
 
-    html += `<p style="font-size:9pt;color:#666;margin-top:16px;">
-      <strong>Keterangan:</strong><br>
-       Juri Penilaian Judul: ${JURI_JUDUL_LIST.join(' | ')}<br>
-       Juri Penilaian SID: ${JURI_SID_LIST.join(' | ')}<br>
-       Skor = nilai aktual yang diberikan masing-masing juri<br>
-       Rata-rata = rata-rata dari juri yang sudah menilai<br>
-       Total Gabungan = Rata-rata Judul + Rata-rata SID
-    </p>
-    </body></html>`;
+    // 
+    // MATRIK INDIKATOR (SID)
+    // 
+    const activeIndicators = sidIndicators.filter(i => !i.type).slice(0, 20);
+    
+    html += `
+      <h2 style="background-color: #4c1d95; color: white; padding: 15px; margin-bottom: 10px;">MATRIK PENILAIAN INDIKATOR SID</h2>
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="vertical-align: middle;">No</th>
+            <th rowspan="2" style="vertical-align: middle; min-width: 300px;">Judul Inovasi</th>
+            <th rowspan="2" style="vertical-align: middle; min-width: 200px;">Asal Instansi</th>
+            <th colspan="${activeIndicators.length}" style="background-color: #0ea5e9;">INDIKATOR</th>
+            <th rowspan="2" style="vertical-align: middle; background-color: #fbbf24;">Kematangan<br>(Total Nilai)</th>
+          </tr>
+          <tr>`;
+    
+    activeIndicators.forEach((ind, idx) => {
+      html += `<th style="background-color: #38bdf8; font-size: 9pt; min-width: 60px;">${idx + 1}</th>`;
+    });
+    
+    html += `
+          </tr>
+        </thead>
+        <tbody>`;
 
+    inovasiList.forEach(([judulKey, d], idx) => {
+      // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
+      let meta = findMetaInovasi(judulKey, d);
+      
+      html += `<tr>`;
+      html += `<td class="number-cell">${idx + 1}</td>`;
+      html += `<td><strong>${esc(judulKey)}</strong></td>`;
+      html += `<td>${esc(meta.perangkatDaerah || "-")}</td>`;
+
+      // Calculate indicators
+      let totalSID = 0;
+      
+      activeIndicators.forEach((ind) => {
+        let indTotal = 0;
+        let juriCount = 0;
+        
+        JURI_SID_LIST.forEach(juri => {
+          const juriData = findJuriData(d.juriState, juri);
+          const nilai = juriData?.radio?.[ind.originalNo];
+          if (nilai) {
+            indTotal += Number(nilai) * ind.bobot;
+            juriCount++;
+          }
+        });
+        
+        const avgScore = juriCount > 0 ? indTotal / juriCount : 0;
+        html += `<td class="score-cell" style="background-color: ${avgScore > 0 ? '#e0f2fe' : '#f9fafb'};">${avgScore > 0 ? avgScore.toFixed(2) : '-'}</td>`;
+        totalSID += avgScore;
+      });
+      
+      // Kematangan
+      html += `<td class="score-cell" style="background-color: #fef3c7; font-size: 11pt;"><strong>${totalSID > 0 ? totalSID.toFixed(2) : '-'}</strong></td>`;
+      
+      html += `</tr>`;
+    });
+
+    html += `
+        </tbody>
+      </table>
+      <br><br>
+      <p style="font-size: 9pt; color: #666; margin-top: 20px;">
+        <strong>Keterangan:</strong><br>
+        - Data diekspor pada: ${new Date().toLocaleString('id-ID')}<br>
+        - Juri Judul: ${JURI_JUDUL_LIST.join(', ')}<br>
+        - Juri SID: ${JURI_SID_LIST.join(', ')}<br>
+        - Skor merupakan rata-rata dari semua juri yang telah menilai
+      </p>
+      </body>
+      </html>`;
+
+    // Create download link
     const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Rekap_Penilaian_Inovasi_${new Date().toISOString().split('T')[0]}.xls`;
-    link.style.display = 'none';
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Rekap_Penilaian_Inovasi_${new Date().toISOString().split('T')[0]}.xls`);
+    link.style.visibility = 'hidden';
+    
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    alert(" Data berhasil di-export ke Excel!\n\nFile dapat dibuka langsung dengan Microsoft Excel.\n\nFormat: 2 tabel (Matrik Judul & Matrik Indikator SID)");
   }
 
   // Load dashboard dengan async support
   (async function() {
     try {
       await loadDashboard();
-      console.log('✅ Dashboard loaded successfully');
+      console.log(' Dashboard loaded successfully');
     } catch (error) {
-      console.error('❌ Dashboard load error:', error);
+      console.error(' Dashboard load error:', error);
       alert('Error loading dashboard. Please refresh the page.');
     }
   })();
