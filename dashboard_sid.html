@@ -564,51 +564,83 @@
   }
 
   // ── Export Excel ──
-  function exportToExcel() {
-    loadAllDraf().then(all => {
-      const inovasiList = filterInovasiValid(all);
-      const aktifInd = sidIndicators.filter(i => !i.type);
+  async function exportToExcel() {
+    const all = await loadAllDraf();
+    const inovasiList = filterInovasiValid(all);
 
-      let html = `<html><head><meta charset="UTF-8"></head><body>
-        <h2>REKAP PENILAIAN INDIKATOR SID — BAPPERIDA 2027</h2>
-        <p>Diekspor: ${new Date().toLocaleString('id-ID')}</p>
-        <table border="1">
-          <thead>
-            <tr style="background-color:#1e3a8a;color:white;">
-              <th>No</th><th>Nama Inovasi</th><th>OPD</th>
-              ${JURI_SID_LIST.map(j => `<th>${j.split(',')[0]}</th>`).join('')}
-              <th>Rata-rata SID</th><th>Juri (x/3)</th>
-            </tr>
-          </thead>
-          <tbody>`;
+    if (inovasiList.length === 0) { alert("Tidak ada data untuk di-export!"); return; }
 
-      inovasiList.forEach(([judulKey, d], idx) => {
-        const meta = findMetaInovasi(judulKey, d);
-        const skorPerJuri = JURI_SID_LIST.map(j => {
+    const tgl = new Date().toLocaleString('id-ID');
+    const tglFile = new Date().toISOString().split('T')[0];
+
+    const sorted = [...inovasiList].sort((a, b) => {
+      const getAvg = ([,d]) => {
+        const scores = JURI_SID_LIST.map(j => {
           const jd = findJuriData(d.juriState, j);
-          return hitungSkorSID(jd);
-        });
-        const arr = skorPerJuri.filter(s => s > 0);
-        const avg = arr.length > 0 ? arr.reduce((a,b) => a+b,0) / arr.length : 0;
-        html += `<tr>
-          <td>${idx+1}</td>
-          <td>${judulKey}</td>
-          <td>${meta.perangkatDaerah || '—'}</td>
-          ${skorPerJuri.map(s => `<td>${s>0?s.toFixed(2):'—'}</td>`).join('')}
-          <td><strong>${avg>0?avg.toFixed(2):'—'}</strong></td>
-          <td>${arr.length}/3</td>
-        </tr>`;
-      });
-
-      html += `</tbody></table></body></html>`;
-
-      const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `Rekap_Penilaian_SID_${new Date().toISOString().split('T')[0]}.xls`;
-      link.click();
-      alert('✅ Export Excel berhasil!');
+          return hitungSkorSID(jd) || 0;
+        }).filter(s => s > 0);
+        return scores.length > 0 ? scores.reduce((x,y)=>x+y,0)/scores.length : 0;
+      };
+      return getAvg(b) - getAvg(a);
     });
+
+    const cols = 3 + JURI_SID_LIST.length + 1;
+    let html = `<html><head><meta charset="UTF-8"><style>
+      body{font-family:Calibri,Arial,sans-serif;font-size:11pt;}
+      table{border-collapse:collapse;width:100%;}
+      .th{background:#1e3a8a;color:white;padding:10px 12px;border:1px solid #444;text-align:center;font-weight:bold;}
+      .td-no{text-align:center;color:#888;width:40px;padding:8px;border:1px solid #ddd;}
+      .td-nama{padding:8px 12px;border:1px solid #ddd;font-weight:bold;}
+      .td-opd{padding:8px 12px;border:1px solid #ddd;font-size:10pt;color:#555;min-width:180px;}
+      .td-skor{text-align:center;font-weight:700;padding:8px;border:1px solid #ddd;background:#dbeafe;}
+      .td-kosong{text-align:center;color:#bbb;padding:8px;border:1px solid #ddd;}
+      .td-jumlah{text-align:center;font-weight:900;font-size:12pt;background:#fde68a;color:#92400e;padding:8px;border:1px solid #ddd;}
+      tr:nth-child(even) .td-skor{background:#bfdbfe;}
+    </style></head><body>
+    <table>
+      <tr><td colspan="${cols}" style="background:#1e3a8a;color:white;font-size:14pt;font-weight:900;padding:14px;text-align:center;border:1px solid #444;">REKAP PENILAIAN INDIKATOR SID - BAPPERIDA KOTA METRO 2027</td></tr>
+      <tr><td colspan="${cols}" style="background:#555;color:white;font-size:9pt;padding:6px 12px;text-align:center;border:1px solid #444;">Diekspor: ${tgl} | Total: ${sorted.length} inovasi</td></tr>
+      <tr>
+        <td class="th">No</td>
+        <td class="th" style="min-width:280px;text-align:left;">Nama Inovasi</td>
+        <td class="th" style="min-width:180px;">OPD / Instansi</td>
+        ${JURI_SID_LIST.map(j => `<td class="th" style="min-width:130px;">${j}</td>`).join('')}
+        <td class="th" style="background:#b45309;min-width:90px;">Jumlah<br><small style="font-size:9pt;font-weight:400;">(rata-rata)</small></td>
+      </tr>`;
+
+    sorted.forEach(([judulKey, d], idx) => {
+      const meta = findMetaInovasi(judulKey, d);
+      const scores = JURI_SID_LIST.map(j => {
+        const jd = findJuriData(d.juriState, j);
+        const s = hitungSkorSID(jd);
+        return s > 0 ? s : null;
+      });
+      const valid = scores.filter(s => s !== null);
+      const jumlah = valid.length > 0 ? parseFloat((valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(2)) : null;
+
+      html += `<tr>
+        <td class="td-no">${idx+1}</td>
+        <td class="td-nama">${judulKey}</td>
+        <td class="td-opd">${meta.perangkatDaerah||'-'}</td>
+        ${scores.map(s => s!==null ? `<td class="td-skor">${s.toFixed(2)}</td>` : `<td class="td-kosong">-</td>`).join('')}
+        ${jumlah!==null ? `<td class="td-jumlah">${jumlah.toFixed(2)}</td>` : `<td class="td-kosong">-</td>`}
+      </tr>`;
+    });
+
+    html += `</table><br><p style="font-size:9pt;color:#666;">
+      Juri: ${JURI_SID_LIST.join(' | ')}<br>
+      Jumlah = rata-rata dari juri yang sudah menilai
+    </p></body></html>`;
+
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Rekap_SID_Inovasi_${tglFile}.xls`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    alert('Export Penilaian SID berhasil!\nFile: Rekap_SID_Inovasi_' + tglFile + '.xls');
   }
 
   // ── Init ──

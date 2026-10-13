@@ -1488,9 +1488,9 @@
     
     const inovasiList = Object.entries(all).filter(([key, value]) => {
       if (typeof value !== 'object' || value === null) return false;
-      if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
-           'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
-           'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
+      if (['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+           'namaInovasi','notesState','savedAt','signatureState','skorPerJuri',
+           'skorJudulPerJuri','perangkatDaerah','tahun','ringkasan','kategori',
            'userMetadata'].includes(key)) return false;
       return value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
     });
@@ -1507,110 +1507,67 @@
       return filled > 0 ? parseFloat(t.toFixed(2)) : null;
     }
 
-    function hitungSkorSID(juriData) {
-      if (!juriData) return null;
-      let t = 0, filled = 0;
-      sidIndicators.filter(i => !i.type).forEach(i => { const v = juriData.radio?.[i.originalNo] || ''; if (v) { t += Number(v) * i.bobot; filled++; } });
-      return filled > 0 ? parseFloat(t.toFixed(2)) : null;
-    }
+    const sorted = [...inovasiList].sort((a, b) => {
+      const getAvg = ([,d]) => {
+        const scores = JURI_JUDUL_LIST.map(j => hitungSkorJudul(findJuriData(d.judulState, j))).filter(s => s !== null);
+        return scores.length > 0 ? scores.reduce((x,y)=>x+y,0)/scores.length : 0;
+      };
+      return getAvg(b) - getAvg(a);
+    });
 
-    function buildExcel(title, juriList, isJudul, bgColor) {
-      // Urutkan berdasarkan rata-rata tertinggi
-      const sorted = [...inovasiList].sort((a, b) => {
-        const getAvg = ([,d]) => {
-          const scores = juriList.map(j => {
-            const data = isJudul ? findJuriData(d.judulState, j) : findJuriData(d.juriState, j);
-            return isJudul ? hitungSkorJudul(data) : hitungSkorSID(data);
-          }).filter(s => s !== null);
-          return scores.length > 0 ? scores.reduce((x,y)=>x+y,0)/scores.length : 0;
-        };
-        return getAvg(b) - getAvg(a);
-      });
+    const cols = 3 + JURI_JUDUL_LIST.length + 1;
+    let html = `<html><head><meta charset="UTF-8"><style>
+      body{font-family:Calibri,Arial,sans-serif;font-size:11pt;}
+      table{border-collapse:collapse;width:100%;}
+      .th{background:#7c3aed;color:white;padding:10px 12px;border:1px solid #444;text-align:center;font-weight:bold;}
+      .td-no{text-align:center;color:#888;width:40px;padding:8px;border:1px solid #ddd;}
+      .td-nama{padding:8px 12px;border:1px solid #ddd;font-weight:bold;}
+      .td-opd{padding:8px 12px;border:1px solid #ddd;font-size:10pt;color:#555;min-width:180px;}
+      .td-skor{text-align:center;font-weight:700;padding:8px;border:1px solid #ddd;background:#f3e8ff;}
+      .td-kosong{text-align:center;color:#bbb;padding:8px;border:1px solid #ddd;}
+      .td-jumlah{text-align:center;font-weight:900;font-size:12pt;background:#fde68a;color:#92400e;padding:8px;border:1px solid #ddd;}
+      tr:nth-child(even) .td-nama,.td-opd,.td-no{background:#f9fafb;}
+      tr:nth-child(even) .td-skor{background:#ede9fe;}
+    </style></head><body>
+    <table>
+      <tr><td colspan="${cols}" style="background:#4c1d95;color:white;font-size:14pt;font-weight:900;padding:14px;text-align:center;border:1px solid #444;">REKAP PENILAIAN JUDUL INOVASI - BAPPERIDA KOTA METRO 2027</td></tr>
+      <tr><td colspan="${cols}" style="background:#555;color:white;font-size:9pt;padding:6px 12px;text-align:center;border:1px solid #444;">Diekspor: ${tgl} | Total: ${sorted.length} inovasi</td></tr>
+      <tr>
+        <td class="th">No</td>
+        <td class="th" style="min-width:280px;text-align:left;">Nama Inovasi</td>
+        <td class="th" style="min-width:180px;">OPD / Instansi</td>
+        ${JURI_JUDUL_LIST.map(j => `<td class="th" style="min-width:130px;">${j}</td>`).join('')}
+        <td class="th" style="background:#b45309;min-width:90px;">Jumlah<br><small style="font-size:9pt;font-weight:400;">(rata-rata)</small></td>
+      </tr>`;
 
-      const cols = 3 + juriList.length + 1;
+    sorted.forEach(([judulKey, d], idx) => {
+      const meta = findMetaInovasi(judulKey, d);
+      const scores = JURI_JUDUL_LIST.map(j => hitungSkorJudul(findJuriData(d.judulState, j)));
+      const valid = scores.filter(s => s !== null);
+      const jumlah = valid.length > 0 ? parseFloat((valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(2)) : null;
+      html += `<tr>
+        <td class="td-no">${idx+1}</td>
+        <td class="td-nama">${judulKey}</td>
+        <td class="td-opd">${meta.perangkatDaerah||'-'}</td>
+        ${scores.map(s => s!==null ? `<td class="td-skor">${s.toFixed(2)}</td>` : `<td class="td-kosong">-</td>`).join('')}
+        ${jumlah!==null ? `<td class="td-jumlah">${jumlah.toFixed(2)}</td>` : `<td class="td-kosong">-</td>`}
+      </tr>`;
+    });
 
-      let html = `<html><head><meta charset="UTF-8"><style>
-        body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
-        table { border-collapse: collapse; width: 100%; }
-        .th-main { background: ${bgColor}; color: white; padding: 10px 12px; border: 1px solid #444; text-align: center; font-weight: bold; font-size: 11pt; }
-        .th-juri { background: ${bgColor}; color: white; padding: 10px 12px; border: 1px solid #444; text-align: center; font-weight: bold; font-size: 10pt; min-width: 120px; }
-        .td-no { text-align: center; color: #888; width: 40px; padding: 8px; border: 1px solid #ddd; }
-        .td-nama { padding: 8px 12px; border: 1px solid #ddd; font-weight: bold; }
-        .td-opd { padding: 8px 12px; border: 1px solid #ddd; font-size: 10pt; color: #555; min-width: 180px; }
-        .td-skor { text-align: center; font-weight: 700; padding: 8px; border: 1px solid #ddd; }
-        .td-kosong { text-align: center; color: #bbb; padding: 8px; border: 1px solid #ddd; }
-        .td-jumlah { text-align: center; font-weight: 900; font-size: 12pt; background: #fde68a; color: #92400e; padding: 8px; border: 1px solid #ddd; }
-        .title-row { background: ${bgColor}; color: white; font-size: 14pt; font-weight: 900; padding: 14px; text-align: center; border: 1px solid #444; }
-        .sub-row { background: #444; color: white; font-size: 9pt; padding: 6px 12px; text-align: center; border: 1px solid #444; }
-        tr:nth-child(even) .td-nama, tr:nth-child(even) .td-opd, tr:nth-child(even) .td-no { background: #f9fafb; }
-        tr:nth-child(even) .td-skor { background: #f0f4ff; }
-      </style></head><body>
-      <table>
-        <tr><td colspan="${cols}" class="title-row">${title}</td></tr>
-        <tr><td colspan="${cols}" class="sub-row">Diekspor: ${tgl} | Total: ${sorted.length} inovasi</td></tr>
-        <tr>
-          <td class="th-main">No</td>
-          <td class="th-main" style="min-width:280px;text-align:left;">Nama Inovasi</td>
-          <td class="th-main" style="min-width:180px;">OPD / Instansi</td>
-          ${juriList.map(j => `<td class="th-juri">${j}</td>`).join('')}
-          <td class="th-main" style="background:#b45309;">Jumlah<br><small style="font-size:9pt;font-weight:400;">(rata-rata)</small></td>
-        </tr>`;
+    html += `</table><br><p style="font-size:9pt;color:#666;">
+      Juri: ${JURI_JUDUL_LIST.join(' | ')}<br>
+      Jumlah = rata-rata dari juri yang sudah menilai
+    </p></body></html>`;
 
-      sorted.forEach(([judulKey, d], idx) => {
-        const meta = findMetaInovasi(judulKey, d);
-        const scores = juriList.map(j => {
-          const data = isJudul ? findJuriData(d.judulState, j) : findJuriData(d.juriState, j);
-          return isJudul ? hitungSkorJudul(data) : hitungSkorSID(data);
-        });
-        const validScores = scores.filter(s => s !== null);
-        const jumlah = validScores.length > 0 ? parseFloat((validScores.reduce((a,b)=>a+b,0)/validScores.length).toFixed(2)) : null;
-
-        html += `<tr>
-          <td class="td-no">${idx+1}</td>
-          <td class="td-nama">${judulKey}</td>
-          <td class="td-opd">${meta.perangkatDaerah || '-'}</td>
-          ${scores.map(s => s !== null
-            ? `<td class="td-skor">${s.toFixed(2)}</td>`
-            : `<td class="td-kosong">-</td>`
-          ).join('')}
-          ${jumlah !== null
-            ? `<td class="td-jumlah">${jumlah.toFixed(2)}</td>`
-            : `<td class="td-kosong">-</td>`}
-        </tr>`;
-      });
-
-      html += `</table><br>
-        <p style="font-size:9pt;color:#666;">
-          Juri: ${juriList.join(' | ')}<br>
-          Jumlah = rata-rata dari juri yang sudah menilai
-        </p>
-      </body></html>`;
-      return html;
-    }
-
-    function downloadFile(html, filename) {
-      const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    downloadFile(
-      buildExcel('REKAP PENILAIAN JUDUL INOVASI - BAPPERIDA KOTA METRO 2027', JURI_JUDUL_LIST, true, '#7c3aed'),
-      `Rekap_Judul_${tglFile}.xls`
-    );
-    setTimeout(() => {
-      downloadFile(
-        buildExcel('REKAP PENILAIAN INDIKATOR SID - BAPPERIDA KOTA METRO 2027', JURI_SID_LIST, false, '#1e3a8a'),
-        `Rekap_SID_${tglFile}.xls`
-      );
-    }, 600);
-
-    alert('Export berhasil! 2 file didownload:\n- Rekap_Judul_xxx.xls\n- Rekap_SID_xxx.xls');
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Rekap_Judul_Inovasi_${tglFile}.xls`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    alert('Export Penilaian Judul berhasil!\nFile: Rekap_Judul_Inovasi_' + tglFile + '.xls');
   }
   // Load dashboard dengan async support
   (async function() {
