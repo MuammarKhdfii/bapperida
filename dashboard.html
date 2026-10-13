@@ -1498,76 +1498,98 @@
     if (inovasiList.length === 0) { alert("Tidak ada data untuk di-export!"); return; }
 
     const tgl = new Date().toLocaleString('id-ID');
+    const tglFile = new Date().toISOString().split('T')[0];
 
     function hitungSkorJudul(judulData) {
-      if (!judulData) return 0;
-      let t = 0;
-      kriteriaJudul.forEach(k => { const v = judulData[k.no] || ''; if (v) t += Number(v) * k.bobot; });
-      return parseFloat(t.toFixed(2));
-    }
-    function hitungSkorSID(juriData) {
-      if (!juriData) return 0;
-      let t = 0;
-      sidIndicators.filter(i => !i.type).forEach(i => { const v = juriData.radio?.[i.originalNo] || ''; if (v) t += Number(v) * i.bobot; });
-      return parseFloat(t.toFixed(2));
+      if (!judulData) return null;
+      let t = 0, filled = 0;
+      kriteriaJudul.forEach(k => { const v = judulData[k.no] || ''; if (v) { t += Number(v) * k.bobot; filled++; } });
+      return filled > 0 ? parseFloat(t.toFixed(2)) : null;
     }
 
-    function buildTable(title, juriList, isJudul, color) {
-      const sorted = [...inovasiList].sort((a,b) => {
-        const key = isJudul ? 'skorJudulPerJuri' : 'skorPerJuri';
-        const sA = Object.values(a[1][key]||{}).filter(s=>Number(s)>0);
-        const sB = Object.values(b[1][key]||{}).filter(s=>Number(s)>0);
-        const avgA = sA.length ? sA.reduce((x,y)=>x+y,0)/sA.length : 0;
-        const avgB = sB.length ? sB.reduce((x,y)=>x+y,0)/sB.length : 0;
-        return avgB - avgA;
+    function hitungSkorSID(juriData) {
+      if (!juriData) return null;
+      let t = 0, filled = 0;
+      sidIndicators.filter(i => !i.type).forEach(i => { const v = juriData.radio?.[i.originalNo] || ''; if (v) { t += Number(v) * i.bobot; filled++; } });
+      return filled > 0 ? parseFloat(t.toFixed(2)) : null;
+    }
+
+    function buildExcel(title, juriList, isJudul, bgColor) {
+      // Urutkan berdasarkan rata-rata tertinggi
+      const sorted = [...inovasiList].sort((a, b) => {
+        const getAvg = ([,d]) => {
+          const scores = juriList.map(j => {
+            const data = isJudul ? findJuriData(d.judulState, j) : findJuriData(d.juriState, j);
+            return isJudul ? hitungSkorJudul(data) : hitungSkorSID(data);
+          }).filter(s => s !== null);
+          return scores.length > 0 ? scores.reduce((x,y)=>x+y,0)/scores.length : 0;
+        };
+        return getAvg(b) - getAvg(a);
       });
 
+      const cols = 3 + juriList.length + 1;
+
       let html = `<html><head><meta charset="UTF-8"><style>
-        body{font-family:Calibri,Arial,sans-serif;font-size:11pt;}
-        table{border-collapse:collapse;width:100%;}
-        th{background:${color};color:white;padding:8px 10px;border:1px solid #555;text-align:center;font-weight:bold;}
-        td{padding:7px 10px;border:1px solid #ccc;vertical-align:middle;}
-        .no{text-align:center;color:#888;width:40px;}
-        .skor{text-align:center;font-weight:700;}
-        .kosong{text-align:center;color:#ccc;}
-        .jml{text-align:center;font-weight:900;background:#fde68a;color:#92400e;font-size:12pt;}
-        tr:nth-child(even) td{background:#f9fafb;}
+        body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+        table { border-collapse: collapse; width: 100%; }
+        .th-main { background: ${bgColor}; color: white; padding: 10px 12px; border: 1px solid #444; text-align: center; font-weight: bold; font-size: 11pt; }
+        .th-juri { background: ${bgColor}; color: white; padding: 10px 12px; border: 1px solid #444; text-align: center; font-weight: bold; font-size: 10pt; min-width: 120px; }
+        .td-no { text-align: center; color: #888; width: 40px; padding: 8px; border: 1px solid #ddd; }
+        .td-nama { padding: 8px 12px; border: 1px solid #ddd; font-weight: bold; }
+        .td-opd { padding: 8px 12px; border: 1px solid #ddd; font-size: 10pt; color: #555; min-width: 180px; }
+        .td-skor { text-align: center; font-weight: 700; padding: 8px; border: 1px solid #ddd; }
+        .td-kosong { text-align: center; color: #bbb; padding: 8px; border: 1px solid #ddd; }
+        .td-jumlah { text-align: center; font-weight: 900; font-size: 12pt; background: #fde68a; color: #92400e; padding: 8px; border: 1px solid #ddd; }
+        .title-row { background: ${bgColor}; color: white; font-size: 14pt; font-weight: 900; padding: 14px; text-align: center; border: 1px solid #444; }
+        .sub-row { background: #444; color: white; font-size: 9pt; padding: 6px 12px; text-align: center; border: 1px solid #444; }
+        tr:nth-child(even) .td-nama, tr:nth-child(even) .td-opd, tr:nth-child(even) .td-no { background: #f9fafb; }
+        tr:nth-child(even) .td-skor { background: #f0f4ff; }
       </style></head><body>
       <table>
-        <tr><td colspan="${3+juriList.length+1}" style="background:${color};color:white;font-size:14pt;font-weight:900;padding:12px;text-align:center;">${title} - BAPPERIDA KOTA METRO 2027</td></tr>
-        <tr><td colspan="${3+juriList.length+1}" style="background:#555;color:white;font-size:9pt;padding:5px 12px;text-align:center;">Diekspor: ${tgl}</td></tr>
+        <tr><td colspan="${cols}" class="title-row">${title}</td></tr>
+        <tr><td colspan="${cols}" class="sub-row">Diekspor: ${tgl} | Total: ${sorted.length} inovasi</td></tr>
         <tr>
-          <th>No</th>
-          <th style="min-width:280px;text-align:left;">Nama Inovasi</th>
-          <th style="min-width:160px;">OPD / Instansi</th>
-          ${juriList.map(j => `<th style="min-width:100px;">${j.split(',')[0]}</th>`).join('')}
-          <th style="min-width:80px;background:#b45309;">Jumlah</th>
+          <td class="th-main">No</td>
+          <td class="th-main" style="min-width:280px;text-align:left;">Nama Inovasi</td>
+          <td class="th-main" style="min-width:180px;">OPD / Instansi</td>
+          ${juriList.map(j => `<td class="th-juri">${j}</td>`).join('')}
+          <td class="th-main" style="background:#b45309;">Jumlah<br><small style="font-size:9pt;font-weight:400;">(rata-rata)</small></td>
         </tr>`;
 
       sorted.forEach(([judulKey, d], idx) => {
         const meta = findMetaInovasi(judulKey, d);
-        const skorPerJuri = juriList.map(j => {
+        const scores = juriList.map(j => {
           const data = isJudul ? findJuriData(d.judulState, j) : findJuriData(d.juriState, j);
-          return data ? (isJudul ? hitungSkorJudul(data) : hitungSkorSID(data)) : 0;
+          return isJudul ? hitungSkorJudul(data) : hitungSkorSID(data);
         });
-        const arr = skorPerJuri.filter(s => s > 0);
-        const jumlah = arr.length > 0 ? parseFloat((arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)) : 0;
+        const validScores = scores.filter(s => s !== null);
+        const jumlah = validScores.length > 0 ? parseFloat((validScores.reduce((a,b)=>a+b,0)/validScores.length).toFixed(2)) : null;
 
         html += `<tr>
-          <td class="no">${idx+1}</td>
-          <td><strong>${judulKey}</strong></td>
-          <td style="font-size:10pt;color:#555;">${meta.perangkatDaerah||'-'}</td>
-          ${skorPerJuri.map(s => `<td class="${s>0?'skor':'kosong'}">${s>0?s.toFixed(2):'-'}</td>`).join('')}
-          <td class="${jumlah>0?'jml':'kosong'}">${jumlah>0?jumlah.toFixed(2):'-'}</td>
+          <td class="td-no">${idx+1}</td>
+          <td class="td-nama">${judulKey}</td>
+          <td class="td-opd">${meta.perangkatDaerah || '-'}</td>
+          ${scores.map(s => s !== null
+            ? `<td class="td-skor">${s.toFixed(2)}</td>`
+            : `<td class="td-kosong">-</td>`
+          ).join('')}
+          ${jumlah !== null
+            ? `<td class="td-jumlah">${jumlah.toFixed(2)}</td>`
+            : `<td class="td-kosong">-</td>`}
         </tr>`;
       });
 
-      html += `</table></body></html>`;
+      html += `</table><br>
+        <p style="font-size:9pt;color:#666;">
+          Juri: ${juriList.join(' | ')}<br>
+          Jumlah = rata-rata dari juri yang sudah menilai
+        </p>
+      </body></html>`;
       return html;
     }
 
-    function downloadFile(content, filename) {
-      const blob = new Blob([content], { type: 'application/vnd.ms-excel' });
+    function downloadFile(html, filename) {
+      const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = filename;
@@ -1577,11 +1599,18 @@
       document.body.removeChild(link);
     }
 
-    const tglFile = new Date().toISOString().split('T')[0];
-    downloadFile(buildTable('REKAP PENILAIAN JUDUL INOVASI', JURI_JUDUL_LIST, true, '#7c3aed'), `Rekap_Judul_${tglFile}.xls`);
-    setTimeout(() => downloadFile(buildTable('REKAP PENILAIAN INDIKATOR SID', JURI_SID_LIST, false, '#1e3a8a'), `Rekap_SID_${tglFile}.xls`), 600);
+    downloadFile(
+      buildExcel('REKAP PENILAIAN JUDUL INOVASI - BAPPERIDA KOTA METRO 2027', JURI_JUDUL_LIST, true, '#7c3aed'),
+      `Rekap_Judul_${tglFile}.xls`
+    );
+    setTimeout(() => {
+      downloadFile(
+        buildExcel('REKAP PENILAIAN INDIKATOR SID - BAPPERIDA KOTA METRO 2027', JURI_SID_LIST, false, '#1e3a8a'),
+        `Rekap_SID_${tglFile}.xls`
+      );
+    }, 600);
 
-    alert('Export berhasil!\n\n- Rekap_Judul_xxx.xls\n- Rekap_SID_xxx.xls\n\nKolom: No | Nama Inovasi | OPD | Juri 1 | Juri 2 | Juri 3 | Jumlah');
+    alert('Export berhasil! 2 file didownload:\n- Rekap_Judul_xxx.xls\n- Rekap_SID_xxx.xls');
   }
   // Load dashboard dengan async support
   (async function() {
