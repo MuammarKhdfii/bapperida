@@ -238,16 +238,16 @@
   }
 
   function filterInovasiValid(all) {
-    const judulSID = new Set(daftarInovasiSID.map(i => i.judul));
     return Object.entries(all).filter(([key, value]) => {
       if (typeof value !== 'object' || value === null) return false;
       if (['activeJuri','bentukInovasi','createdAt','judulState','juriState',
            'namaInovasi','notesState','savedAt','signatureState','skorPerJuri',
            'skorJudulPerJuri','perangkatDaerah','tahun','ringkasan','kategori',
            'userMetadata'].includes(key)) return false;
-      // Hanya inovasi yang ada di daftar SID dan punya juriState
-      if (!judulSID.has(key)) return false;
-      return value.hasOwnProperty('juriState') || value.hasOwnProperty('judulState');
+      // Hanya inovasi yang punya skorPerJuri > 0 (sudah dinilai juri SID)
+      const hasSkorSID = value.skorPerJuri &&
+        Object.values(value.skorPerJuri).some(s => Number(s) > 0);
+      return hasSkorSID;
     });
   }
 
