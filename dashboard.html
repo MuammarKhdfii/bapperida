@@ -1483,8 +1483,8 @@
   // ══════════════════════════════════════════
   //  EXPORT TO EXCEL
   // ══════════════════════════════════════════
-  function exportToExcel() {
-    const all = loadAllDraf();
+  async function exportToExcel() {
+    const all = await loadAllDraf();
     
     // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
     const inovasiList = Object.entries(all).filter(([key, value]) => {
