@@ -437,11 +437,11 @@ const indicators = [
     "special": false,
     "skip": false,
     "parameter": [
-      "Cakupan 1-200 orang / unit 5-20% / efisiensi 0.01-10%",
-      "Cakupan 201-500 orang / unit 20-50% / efisiensi 10.01-20%",
-      "Cakupan >=501 orang / unit >50% / efisiensi >20%"
+      "Cakupan penerima manfaat 1-200 orang / Cakupan unit penerima manfaat 5%-20% total dari unit sasaran / Efisiensi belanja 0,01%-10% / Penambahan pendapatan bagi pemda atau perangkat daerah atau unit kerja yang menerapkan inovasi 0,01%-9,99% / Jumlah produk yang dihasilkan atau diperjualbelikan 1-100 barang / Dampak Inovasi telah menunjukkan tren kinerja positif dalam 1 (satu) periode",
+      "Cakupan penerima manfaat 201-500 orang / Cakupan unit penerima manfaat 20,01%-50% total dari unit sasaran / Efisiensi belanja 10,01%-20% / Penambahan pendapatan bagi pemda atau perangkat daerah atau unit kerja yang menerapkan inovasi 10%-19,99% / Jumlah produk yang dihasilkan atau diperjualbelikan 101-200 / Dampak Inovasi telah menunjukkan tren kinerja positif dalam 2 (dua) periode",
+      "Cakupan penerima manfaat 501 orang atau lebih / Cakupan unit penerima manfaat diatas 50% total dari unit sasaran / Efisiensi belanja sebesar 20,01%-30% / Penambahan pendapatan bagi pemda atau perangkat daerah atau unit kerja yang menerapkan inovasi ≥20% / Jumlah produk yang dihasilkan atau diperjualbelikan lebih dari 200 barang / Dampak Inovasi telah menunjukkan tren kinerja positif dalam 3 (tiga) periode"
     ],
-    "keterangan": "Dari 6 kriteria kemanfaatan, cukup pilih 3 kriteria yang paling relevan (cakupan penerima manfaat, efisiensi unit, atau efisiensi biaya)"
+    "keterangan": "Dari 6 kriteria kemanfaatan (a-f), cukup pilih 3 kriteria yang paling relevan: a) cakupan penerima manfaat, b) cakupan unit penerima manfaat, c) efisiensi belanja, d) penambahan pendapatan, e) jumlah produk, f) tren kinerja positif"
   },
   {
     "no": 34,

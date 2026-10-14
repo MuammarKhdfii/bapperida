@@ -219,7 +219,7 @@
       // Sanitize nama juri current user
       const sanitizedName = currentUser ? currentUser.replace(/[\.,#$\[\]\/]/g, '_') : '';
       
-      // Check apakah CURRENT USER sudah menilai lengkap inovasi ini
+      // Check apakah CURRENT USER sudah menilai inovasi ini
       let currentUserComplete = false;
       
       if (draft && currentUser && currentRole) {
@@ -231,16 +231,16 @@
           // Check apakah semua 6 kriteria judul sudah diisi
           if (judulData && typeof judulData === 'object') {
             const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
-            currentUserComplete = filledCount >= 6; // 6 kriteria judul
+            currentUserComplete = filledCount >= 6;
           }
         } else if (currentRole === 'juri_sid') {
-          // Check apakah semua indikator SID sudah diisi
-          if (juriData && juriData.radio && typeof juriData.radio === 'object') {
-            // Count indikator yang harus diisi (exclude monev & video)
-            const requiredIndicators = sidIndicators.filter(i => !i.type).length;
-            const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
-            currentUserComplete = filledCount >= requiredIndicators;
-          }
+          // Check apakah minimal sudah pernah menyimpan atau membuka form penilaian SID
+          const skorSID = draft.skorPerJuri?.[currentUser] || draft.skorPerJuri?.[sanitizedName] || 0;
+          const hasRadio = juriData && juriData.radio && 
+            Object.values(juriData.radio).some(v => v);
+          // Cek juga apakah juriState ada (pernah dibuka/disimpan)
+          const hasJuriState = !!(draft.juriState?.[currentUser] || draft.juriState?.[sanitizedName]);
+          currentUserComplete = Number(skorSID) > 0 || hasRadio || hasJuriState;
         }
       }
       
@@ -856,38 +856,30 @@
     // ── B. Preview Indikator SID (semua 20 indikator) ──
     const sidContainer = document.getElementById('previewSIDContainer');
     if (sidContainer && typeof sidIndicators !== 'undefined') {
-      const aktif = sidIndicators; // semua 20, termasuk monev & video
+      const aktif = sidIndicators; // semua 20
       let html = '';
       aktif.forEach((ind, idx) => {
-        const isSpecial = ind.type === 'monev' || ind.type === 'video';
-        const badgeLabel = ind.type === 'monev' ? 'Monev' : ind.type === 'video' ? 'Video' : `Bobot: ${ind.bobot}`;
-        const badgeColor = ind.type === 'monev' ? '#0ea5e9' : ind.type === 'video' ? '#8b5cf6' : '#2563eb';
-
         html += `
           <div style="padding:14px 20px;border-bottom:1px solid #e0f2fe;background:${idx%2===0?'#fff':'#f8fbff'};">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:${isSpecial?'8':'10'}px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
               <div style="font-weight:700;color:#1e3a8a;font-size:14px;">
-                <span style="display:inline-block;width:28px;height:28px;background:${badgeColor};color:white;
+                <span style="display:inline-block;width:28px;height:28px;background:#2563eb;color:white;
                   border-radius:50%;text-align:center;line-height:28px;font-size:12px;margin-right:8px;">${ind.displayNo}</span>
                 ${esc(ind.nama)}
               </div>
-              <span style="background:#dbeafe;color:${badgeColor};padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">
-                ${badgeLabel}
+              <span style="background:#dbeafe;color:#1e40af;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">
+                Bobot: ${ind.bobot}
               </span>
             </div>
-            ${isSpecial ? `
-              <div style="margin-left:36px;padding:8px 12px;border:2px dashed #e0f2fe;border-radius:8px;background:#f0f9ff;color:#0369a1;font-size:12px;cursor:not-allowed;opacity:.85;">
-                ${ind.type === 'monev' ? '📋 Input jumlah dokumen Monev (tidak dapat diisi di sini)' : '🎥 Input link/URL video inovasi (tidak dapat diisi di sini)'}
-              </div>` : `
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-left:36px;">
-                ${ind.parameter.map((p, i) => `
-                  <div style="flex:1;min-width:140px;padding:8px 12px;border:2px solid #e0f2fe;border-radius:8px;
-                       background:#eff6ff;cursor:not-allowed;opacity:.85;">
-                    <div style="font-size:11px;font-weight:700;color:#2563eb;margin-bottom:3px;">Parameter ${i+1} — Nilai ${i+1}</div>
-                    <div style="font-size:12px;color:#374151;">${esc(p)}</div>
-                  </div>
-                `).join('')}
-              </div>`}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-left:36px;">
+              ${ind.parameter.map((p, i) => `
+                <div style="flex:1;min-width:140px;padding:8px 12px;border:2px solid #e0f2fe;border-radius:8px;
+                     background:#eff6ff;cursor:not-allowed;opacity:.85;">
+                  <div style="font-size:11px;font-weight:700;color:#2563eb;margin-bottom:3px;">Parameter ${i+1} — Nilai ${i+1}</div>
+                  <div style="font-size:12px;color:#374151;">${esc(p)}</div>
+                </div>
+              `).join('')}
+            </div>
             ${ind.keterangan ? `<div style="margin-top:8px;margin-left:36px;font-size:12px;color:#6b7280;"><b>Keterangan:</b> ${esc(ind.keterangan)}</div>` : ''}
           </div>`;
       });
@@ -957,10 +949,18 @@
           Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
         if (!hasSkor) return false;
       } else if (currentRole === 'juri_sid') {
-        // Hanya tampilkan inovasi yang punya skorPerJuri > 0
+        // Tampilkan hanya jika punya skor SID > 0 ATAU radio terisi (belum simpan)
         const hasSkor = value.skorPerJuri && 
           Object.values(value.skorPerJuri).some(s => Number(s) > 0);
-        if (!hasSkor) return false;
+        const hasRadioFilled = value.juriState &&
+          Object.values(value.juriState).some(v => 
+            v && typeof v === 'object' && v.radio && 
+            Object.values(v.radio).some(r => r && r !== 'null' && r !== null)
+          );
+        // Pastikan TIDAK ada skorJudulPerJuri > 0 (bukan inovasi judul)
+        const isBukanJudul = !value.skorJudulPerJuri || 
+          !Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
+        if ((!hasSkor && !hasRadioFilled) || !isBukanJudul) return false;
       }
 
       return true;
