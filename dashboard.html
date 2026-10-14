@@ -716,7 +716,11 @@
       }
       
       // Hanya ambil yang punya judulState atau juriState
-      return value.hasOwnProperty('judulState') || value.hasOwnProperty('juriState');
+      if (!value.hasOwnProperty('judulState') && !value.hasOwnProperty('juriState')) return false;
+      // Filter: hanya inovasi yang punya skorJudulPerJuri > 0 (penilaian judul saja)
+      const hasSkorJudul = value.skorJudulPerJuri &&
+        Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
+      return hasSkorJudul;
     });
     
     console.log(' Processing', inovasiList.length, 'valid innovation entries');

@@ -60,6 +60,12 @@ if (!SHOW_SID) {
   document.querySelectorAll(".section-rancang-wrapper").forEach(el => el.style.display = "none");
 }
 
+// Tampilkan tombol Simpan Draft hanya untuk juri_sid
+if (SHOW_SID) {
+  const fabDraft = document.getElementById('fabDraft');
+  if (fabDraft) fabDraft.style.display = 'flex';
+}
+
 // ── State untuk juri yang sedang login ──
 // judulState / juriState hanya untuk user ini
 const judulState   = { [SESSION.nama]: {} };
@@ -147,19 +153,21 @@ if (namaInovasi) {
     const sigData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'signatureState');
     
     if (judulData) judulState[SESSION.nama] = judulData;
-    if (juriData) juriState[SESSION.nama] = juriData;
+    if (juriData) juriState[SESSION.nama] = { 
+      ...{ radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} },
+      ...juriData 
+    };
     if (notesData) notesState[SESSION.nama] = notesData;
     if (sigData) signatureState[SESSION.nama] = sigData;
 
     // Load rancangState
     const rancangData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'rancangState');
     if (rancangData) rancangState[SESSION.nama] = rancangData;
-    
+
     console.log('Restored state for:', SESSION.nama);
     console.log('- judulState:', !!judulData);
-    console.log('- juriState:', !!juriData);
-    console.log('- notesState:', !!notesData);
-    console.log('- signatureState:', !!sigData);
+    console.log('- juriState radio keys:', Object.keys(juriState[SESSION.nama]?.radio || {}).length);
+    console.log('- rancangState:', !!rancangData, JSON.stringify(rancangState[SESSION.nama]));
   }
 
   // Sembunyikan session login grid, tampilkan form langsung

@@ -106,31 +106,6 @@
       </div>
     </div>
 
-    <!-- Preview Kriteria Penilaian (hanya juri_sid) -->
-    <section id="previewKriteriaSection" style="display:none; margin-bottom: 32px;">
-
-      <!-- A. Form Penilaian Proposal Inovasi -->
-      <div class="preview-section-header" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);color:white;border-radius:14px 14px 0 0;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:15px;font-weight:800;">A. Form Penilaian Proposal Inovasi</div>
-          <div style="font-size:12px;opacity:.85;margin-top:3px;">4 kriteria &middot; Kurang (1-5) / Sesuai (6-8) / Sangat Sesuai (9-10) &middot; Maks 40</div>
-        </div>
-        <span style="background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">Read Only</span>
-      </div>
-      <div id="previewProposalContainer" style="border:2px solid #2563eb;border-top:none;border-radius:0 0 14px 14px;overflow:hidden;margin-bottom:16px;"></div>
-
-      <!-- B. Penilaian Indikator SID -->
-      <div class="preview-section-header" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);color:white;border-radius:14px 14px 0 0;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:15px;font-weight:800;">B. Penilaian Indikator SID</div>
-          <div style="font-size:12px;opacity:.85;margin-top:3px;">20 indikator &middot; Nilai = parameter (1-3) &times; bobot</div>
-        </div>
-        <span style="background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">Read Only</span>
-      </div>
-      <div id="previewSIDContainer" style="border:2px solid #2563eb;border-top:none;border-radius:0 0 14px 14px;overflow:hidden;"></div>
-
-    </section>
-
     <!-- Dashboard Ranking -->
     <section class="landing-ranking" id="rankingSection">
       <div class="ranking-section-header">
@@ -146,7 +121,7 @@
             ☁️↓ Tarik dari Cloud
           </button>
           <button onclick="renderLandingRanking()" class="rk-action-btn rk-btn-refresh" title="Refresh tampilan ranking tanpa mengubah data">🔄 Refresh</button>
-          <button onclick="clearAllData()" class="rk-action-btn rk-btn-clear" title="HATI-HATI: Hapus semua data penilaian dari laptop ini">🗑️ Hapus Data</button>
+          <button id="btnHapusData" onclick="clearAllData()" class="rk-action-btn rk-btn-clear" title="Hapus data penilaian sesuai role">🗑️ Hapus Data</button>
         </div>
       </div>
 
@@ -196,6 +171,20 @@
 
   initScrollTop("scrollTopBtn");
   renderSessionNav("sessionNav");
+
+  // Update label tombol Hapus Data sesuai role
+  const btnHapus = document.getElementById('btnHapusData');
+  if (btnHapus) {
+    if (SESSION?.role === 'juri_judul') {
+      btnHapus.innerHTML = '🗑️ Hapus Data Judul';
+      btnHapus.title = 'Hapus semua data penilaian Judul Inovasi';
+      btnHapus.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+    } else if (SESSION?.role === 'juri_sid') {
+      btnHapus.innerHTML = '🗑️ Hapus Data SID';
+      btnHapus.title = 'Hapus semua data penilaian Indikator SID';
+      btnHapus.style.background = 'linear-gradient(135deg, #dc2626, #991b1b)';
+    }
+  }
 
   const sel = document.getElementById("globalInovasi");
 
@@ -547,9 +536,6 @@
     
     // Update assessment progress on load
     updateAssessmentProgress().catch(err => console.error('[updateAssessmentProgress] Error:', err));
-
-    // Render preview kriteria penilaian (hanya juri_sid)
-    renderPreviewKriteria();
   })();
   
   // Clear search when dropdown changes
@@ -818,75 +804,6 @@
   }
 
   // ══════════════════════════════════════════
-  //  PREVIEW KRITERIA PENILAIAN (juri_sid)
-  // ══════════════════════════════════════════
-  function renderPreviewKriteria() {
-    if (SESSION?.role !== 'juri_sid') return;
-
-    const section = document.getElementById('previewKriteriaSection');
-    if (section) section.style.display = 'block';
-
-    // ── A. Preview Form Proposal Inovasi ──
-    const proposalContainer = document.getElementById('previewProposalContainer');
-    if (proposalContainer && typeof RANCANG_KRITERIA === 'undefined') {
-      // RANCANG_KRITERIA belum tersedia di index.html, definisikan lokal
-      const PROPOSAL_KRITERIA = [
-        { label: 'A. Rancang Bangun Inovasi', opsi: ['Kurang Sesuai (1-5)', 'Sesuai (6-8)', 'Sangat Sesuai (9-10)'] },
-        { label: 'B. Tujuan Inovasi',         opsi: ['Kurang Sesuai (1-5)', 'Sesuai (6-8)', 'Sangat Sesuai (9-10)'] },
-        { label: 'C. Manfaat Inovasi',        opsi: ['Kurang Baik (1-5)',   'Baik (6-8)',   'Sangat Baik (9-10)']   },
-        { label: 'D. Hasil Inovasi',          opsi: ['Kurang Baik (1-5)',   'Baik (6-8)',   'Sangat Baik (9-10)']   }
-      ];
-      let html = '';
-      PROPOSAL_KRITERIA.forEach((kr, idx) => {
-        html += `
-          <div style="padding:14px 20px;border-bottom:1px solid #e0f2fe;background:${idx%2===0?'#fff':'#f8fbff'};">
-            <div style="font-weight:700;color:#1e3a8a;margin-bottom:10px;">${idx+1}. ${esc(kr.label)}</div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              ${kr.opsi.map(op => `
-                <div style="flex:1;min-width:120px;padding:8px 12px;border:2px solid #e0f2fe;border-radius:8px;
-                     background:#eff6ff;color:#1e40af;font-size:13px;font-weight:600;text-align:center;
-                     cursor:not-allowed;opacity:.85;">${esc(op)}</div>
-              `).join('')}
-            </div>
-          </div>`;
-      });
-      proposalContainer.innerHTML = html;
-    }
-
-    // ── B. Preview Indikator SID (semua 20 indikator) ──
-    const sidContainer = document.getElementById('previewSIDContainer');
-    if (sidContainer && typeof sidIndicators !== 'undefined') {
-      const aktif = sidIndicators; // semua 20
-      let html = '';
-      aktif.forEach((ind, idx) => {
-        html += `
-          <div style="padding:14px 20px;border-bottom:1px solid #e0f2fe;background:${idx%2===0?'#fff':'#f8fbff'};">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-              <div style="font-weight:700;color:#1e3a8a;font-size:14px;">
-                <span style="display:inline-block;width:28px;height:28px;background:#2563eb;color:white;
-                  border-radius:50%;text-align:center;line-height:28px;font-size:12px;margin-right:8px;">${ind.displayNo}</span>
-                ${esc(ind.nama)}
-              </div>
-              <span style="background:#dbeafe;color:#1e40af;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;">
-                Bobot: ${ind.bobot}
-              </span>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-left:36px;">
-              ${ind.parameter.map((p, i) => `
-                <div style="flex:1;min-width:140px;padding:8px 12px;border:2px solid #e0f2fe;border-radius:8px;
-                     background:#eff6ff;cursor:not-allowed;opacity:.85;">
-                  <div style="font-size:11px;font-weight:700;color:#2563eb;margin-bottom:3px;">Parameter ${i+1} — Nilai ${i+1}</div>
-                  <div style="font-size:12px;color:#374151;">${esc(p)}</div>
-                </div>
-              `).join('')}
-            </div>
-            ${ind.keterangan ? `<div style="margin-top:8px;margin-left:36px;font-size:12px;color:#6b7280;"><b>Keterangan:</b> ${esc(ind.keterangan)}</div>` : ''}
-          </div>`;
-      });
-      sidContainer.innerHTML = html;
-    }
-  }
-
   // ══════════════════════════════════════════
   //  DASHBOARD RANKING
   // ══════════════════════════════════════════
