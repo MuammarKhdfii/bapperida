@@ -446,22 +446,28 @@ const indicators = [
   {
     "no": 34,
     "nama": "Jumlah Inovasi & Hasil Kreatif: Monev (Monitoring & Evaluasi)",
-    "bobot": 0,
+    "bobot": 2,
     "special": false,
     "skip": false,
-    "type": "monev",
-    "parameter": [],
-    "keterangan": "Unggah atau masukkan data dokumen Monev (Monitoring dan Evaluasi) inovasi daerah"
+    "parameter": [
+      "Hasil laporan monev internal pemerintah daerah",
+      "Laporan hasil pengukuran kepuasan pengguna dari evaluasi Survei Kepuasan Masyarakat",
+      "Hasil laporan monev eksternal berdasarkan hasil penelitian/kajian/analisis"
+    ],
+    "keterangan": "Dokumen Monev (Monitoring dan Evaluasi) inovasi daerah"
   },
   {
     "no": 35,
     "nama": "Jumlah Inovasi & Hasil Kreatif: Video Inovasi",
-    "bobot": 0,
+    "bobot": 4,
     "special": false,
     "skip": false,
-    "type": "video",
-    "parameter": [],
-    "keterangan": "Masukkan link/URL video dokumentasi inovasi daerah (YouTube, Google Drive, dll.)"
+    "parameter": [
+      "Memenuhi 1 atau 2 unsur substansi",
+      "Memenuhi 3 atau 4 unsur substansi",
+      "Memenuhi 5 unsur substansi"
+    ],
+    "keterangan": "Kelengkapan unsur substansi video inovasi daerah"
   },
   {
     "no": 36,

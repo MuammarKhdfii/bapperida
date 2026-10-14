@@ -129,10 +129,9 @@ if (namaInovasi) {
 } else {
   document.getElementById("heroJudulInovasi").textContent = "Form Penilaian";
   document.getElementById("heroPDInovasi").textContent    = "Kembali ke beranda untuk memilih inovasi";
-  // Jika namaInovasi kosong, redirect ke index.html setelah 2 detik
+  // Jika namaInovasi kosong, redirect ke index.html
   console.warn('⚠️ namaInovasi kosong! Redirect ke index.html...');
-  alert('⚠️ Inovasi belum dipilih!\n\nSilakan pilih inovasi terlebih dahulu dari halaman beranda.');
-  window.location.replace('index.html');
+  window.location.href = 'index.html';
 }
 
 // Restore state hanya untuk user yang login - wrapped in async IIFE
