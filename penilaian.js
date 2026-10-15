@@ -812,7 +812,18 @@ async function doSaveWithValidation() {
   document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
   
   // Save
-  await saveAll(true);  // ← Make it await
+  await saveAll(true);
+
+  // Tandai sebagai penilaian selesai (bukan draft) di storage
+  if (SHOW_SID && namaInovasi) {
+    const all = await loadAllDraf();
+    if (all[namaInovasi]) {
+      const sanitizedJuriName = SESSION.nama.replace(/[\.,#$\[\]\/]/g, '_');
+      all[namaInovasi].penilaianSelesai = all[namaInovasi].penilaianSelesai || {};
+      all[namaInovasi].penilaianSelesai[sanitizedJuriName] = true;
+      await saveAllDraf(all);
+    }
+  }
   
   console.log('=== Save complete ===');
   

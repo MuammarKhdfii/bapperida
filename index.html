@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Penilaian Inovasi Daerah 2027 — BAPPERIDA Kota Metro</title>
+  <title>Sistem Penilaian Inovasi Daerah 2026 — BAPPERIDA Kota Metro</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
 </head>
@@ -13,7 +13,7 @@
   <header class="hero hero-landing">
     <div class="container hero-inner">
       <div class="hero-text">
-        <div class="badge">BAPPERIDA KOTA METRO · 2027</div>
+        <div class="badge">BAPPERIDA KOTA METRO · 2026</div>
         <h1>Sistem Penilaian<br>Inovasi Daerah</h1>
       </div>
       <div id="liveIndicator" style="display:none;"></div>
@@ -65,6 +65,18 @@
       </div>
       <!-- Status inovasi yang dipilih -->
       <div id="inovasiStatusBar" class="inovasi-status-bar" style="display:none"></div>
+    </section>
+
+    <!-- Lanjutkan Draft Penilaian SID (hanya juri_sid) -->
+    <section id="draftSIDSection" class="assessed-inovasi-section" style="display:none; margin-top: 40px; border: 2px solid #0ea5e9; border-radius: 16px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+      <div class="assessed-header" style="border-bottom: 1px solid #bae6fd; padding-bottom: 12px;">
+        <span class="assessed-icon" style="font-size:28px;">📝</span>
+        <div>
+          <div class="assessed-title" style="color:#0369a1;">Draft Penilaian SID Belum Selesai</div>
+          <div class="assessed-sub">Lanjutkan penilaian yang belum selesai disimpan</div>
+        </div>
+      </div>
+      <div id="draftSIDList" class="assessed-list"></div>
     </section>
 
     <!-- Daftar Inovasi yang Sudah Dinilai -->
@@ -258,6 +270,11 @@
     
     // Populate assessed list untuk tombol edit
     populateAssessedList(assessedList, allDraf, currentUser);
+
+    // Populate draft SID list (hanya juri_sid)
+    if (currentRole === 'juri_sid') {
+      populateDraftSIDList(allDraf, currentUser, sanitizedName);
+    }
   }
   
   // Helper: Hitung berapa juri yang sudah menilai lengkap sebuah inovasi
@@ -436,6 +453,79 @@
     assessedCurrentPage = page;
     renderAssessedPage(page);
   };
+
+  function populateDraftSIDList(allDraf, currentUser, sanitizedName) {
+    const draftSection = document.getElementById('draftSIDSection');
+    const draftList    = document.getElementById('draftSIDList');
+    if (!draftSection || !draftList) return;
+
+    // Cari inovasi yang punya juriState untuk user ini TAPI skor = 0 (belum selesai/simpan draft)
+    const draftItems = [];
+    Object.entries(allDraf).forEach(([judulKey, d]) => {
+      if (typeof d !== 'object' || !d) return;
+      // Skip property standar
+      if (['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+           'namaInovasi','notesState','savedAt','signatureState','skorPerJuri',
+           'skorJudulPerJuri','perangkatDaerah','tahun','ringkasan','kategori',
+           'userMetadata'].includes(judulKey)) return;
+      if (!d.juriState) return;
+
+      // Cek apakah user ini punya juriState
+      const juriData = d.juriState?.[currentUser] || d.juriState?.[sanitizedName];
+      if (!juriData) return;
+
+      // Cek skor dan kelengkapan — draft = punya juriState tapi belum semua indikator terisi
+      const skor = d.skorPerJuri?.[currentUser] || d.skorPerJuri?.[sanitizedName] || 0;
+      
+      // Hitung berapa indikator yang sudah diisi
+      const radioFilled = juriData?.radio ? 
+        Object.values(juriData.radio).filter(v => v && v !== 'null').length : 0;
+      const totalRequired = sidIndicators ? sidIndicators.length : 20;
+      const isIncomplete = radioFilled < totalRequired;
+      
+      // Tampilkan sebagai draft jika: ada juriState tapi belum lengkap ATAU skor = 0
+      const isDraft = isIncomplete || Number(skor) === 0;
+      if (!isDraft) return; // sudah selesai lengkap
+
+      const meta = daftarInovasiSID.find(i => i.judul === judulKey) ||
+                   daftarInovasiJudulLengkap.find(i => i.judul === judulKey) || {};
+
+      draftItems.push({ judulKey, perangkatDaerah: meta.perangkatDaerah || d.perangkatDaerah || '—', radioFilled, totalRequired });
+    });
+
+    if (draftItems.length === 0) {
+      draftSection.style.display = 'none';
+      return;
+    }
+
+    draftSection.style.display = 'block';
+    draftList.innerHTML = '';
+
+    draftItems.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'assessed-card';
+      card.style.animationDelay = (idx * 0.05) + 's';
+      card.style.borderLeft = '4px solid #0ea5e9';
+      card.innerHTML = `
+        <div class="assessed-card-icon" style="font-size:24px;">📝</div>
+        <div class="assessed-card-content">
+          <div class="assessed-card-title">${item.judulKey}</div>
+          <div class="assessed-card-meta">
+            <span class="assessed-badge">🏛️ ${item.perangkatDaerah}</span>
+            <span class="assessed-badge" style="background:#fff0f0;color:#e11d48;border-color:#fca5a5;">
+              ⏳ ${item.radioFilled}/${item.totalRequired} indikator terisi
+            </span>
+          </div>
+        </div>
+        <button class="btn-edit-assessed" 
+          onclick="editAssessedInovasi('${item.judulKey.replace(/'/g, "\\'")}')"
+          style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+          <span>▶</span> Lanjutkan
+        </button>
+      `;
+      draftList.appendChild(card);
+    });
+  }
 
   function populateAssessedList(assessedList, allDraf, currentUser) {
     const assessedSection = document.getElementById('assessedInovasiSection');
@@ -866,18 +956,16 @@
           Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
         if (!hasSkor) return false;
       } else if (currentRole === 'juri_sid') {
-        // Tampilkan hanya jika punya skor SID > 0 ATAU radio terisi (belum simpan)
+        // Tampilkan hanya jika punya skorPerJuri > 0 (sudah ada penilaian final dari minimal 1 juri SID)
+        // DAN minimal 1 juri sudah menandai penilaianSelesai = true
         const hasSkor = value.skorPerJuri && 
           Object.values(value.skorPerJuri).some(s => Number(s) > 0);
-        const hasRadioFilled = value.juriState &&
-          Object.values(value.juriState).some(v => 
-            v && typeof v === 'object' && v.radio && 
-            Object.values(v.radio).some(r => r && r !== 'null' && r !== null)
-          );
+        const adaPenilaianSelesai = value.penilaianSelesai &&
+          Object.values(value.penilaianSelesai).some(v => v === true);
         // Pastikan TIDAK ada skorJudulPerJuri > 0 (bukan inovasi judul)
         const isBukanJudul = !value.skorJudulPerJuri || 
           !Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
-        if ((!hasSkor && !hasRadioFilled) || !isBukanJudul) return false;
+        if (!hasSkor || !adaPenilaianSelesai || !isBukanJudul) return false;
       }
 
       return true;
@@ -951,56 +1039,25 @@
         total
       });
       
-      // Count completed assessments properly (check filled fields, not just scores)
-      // For juri_judul: count juries with 6 filled kriteria
+      // For juri_judul: count juries yang sudah simpan final (skorJudulPerJuri > 0)
       let judulJuriCompleted = 0;
-      console.log('  Checking JURI_LIST_JUDUL:', JURI_LIST_JUDUL);
       JURI_LIST_JUDUL.forEach(juriName => {
         const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
-        console.log(`    Checking judul for: "${juriName}" (sanitized: "${sanitizedName}")`);
-        const judulData = draf.judulState?.[juriName] || draf.judulState?.[sanitizedName];
-        console.log(`      judulData found:`, !!judulData, judulData);
-        if (judulData && typeof judulData === 'object') {
-          const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
-          console.log(`      Filled count: ${filledCount}/6`);
-          if (filledCount >= 6) {
-            judulJuriCompleted++;
-            console.log(`      ✅ COMPLETE`);
-          }
+        const skor = draf.skorJudulPerJuri?.[juriName] || draf.skorJudulPerJuri?.[sanitizedName] || 0;
+        if (Number(skor) > 0) {
+          judulJuriCompleted++;
         }
       });
       console.log('  judulJuriCompleted:', judulJuriCompleted);
       
-      // For juri_sid: count juries with all required indicators filled
+      // For juri_sid: count juries yang sudah simpan final (skorPerJuri > 0)
       let indJuriCompleted = 0;
-      console.log('  Checking JURI_LIST:', JURI_LIST);
       JURI_LIST.forEach(juriName => {
         const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
-        console.log(`    Checking SID for: "${juriName}" (sanitized: "${sanitizedName}")`);
-        const juriData = draf.juriState?.[juriName] || draf.juriState?.[sanitizedName];
-        console.log(`      juriData found:`, !!juriData);
-        if (juriData) {
-          console.log(`      juriData.radio:`, juriData.radio);
-        }
-        if (juriData && juriData.radio && typeof juriData.radio === 'object') {
-          // Check if sidIndicators is defined
-          if (typeof sidIndicators !== 'undefined') {
-            const requiredIndicators = sidIndicators.filter(i => !i.type).length;
-            const filledCount = Object.keys(juriData.radio).filter(k => juriData.radio[k]).length;
-            console.log(`      Filled count: ${filledCount}/${requiredIndicators}`);
-            if (filledCount >= requiredIndicators) {
-              indJuriCompleted++;
-              console.log(`      ✅ COMPLETE`);
-            }
-          } else {
-            // Fallback: assume 19 required indicators
-            const filledCount = Object.keys(juriData.radio).length;
-            console.log(`      Filled count: ${filledCount}/19 (fallback)`);
-            if (filledCount >= 19) {
-              indJuriCompleted++;
-              console.log(`      ✅ COMPLETE`);
-            }
-          }
+        // Cek dari skorPerJuri (simpan final) - lebih reliable dari cek radio
+        const skor = draf.skorPerJuri?.[juriName] || draf.skorPerJuri?.[sanitizedName] || 0;
+        if (Number(skor) > 0) {
+          indJuriCompleted++;
         }
       });
       console.log('  indJuriCompleted:', indJuriCompleted);
