@@ -10,7 +10,7 @@ const USERS = [
   // Super Admin
   {
     username: "admin",
-    password: "admin2027",
+    password: "rida2026",
     nama    : "Administrator",
     roles   : ["admin"],
     label   : "Super Admin"
