@@ -1151,6 +1151,16 @@ const JUDUL_ALIAS = {
   "AMBULANCE SEHAT (DOKTER SPESIALIS KELILING)": "SUMBERSARI HADIR",
   "Ambulance Sehat":                              "SUMBERSARI HADIR",
   "AMBULANCE SEHAT":                              "SUMBERSARI HADIR",
+
+  // Digitalisasi Laporan — judul lama → judul baru (e-ILHP)
+  "Digitalisasi Laporan Ikhtisar Pengawasan APIP":            "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+  "DIGITALISASI LAPORAN IKHTISAR PENGAWASAN APIP":            "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+  "Digitalisasi Laporan Ikhtisar Pengawasan":                 "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+
+  // SI GEMBIRA → SIAP GEMBIRA (judul lama di Firebase berbeda dari master)
+  "SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)":  "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+  "SI GEMBIRA (Sistem Gerakan Metro Bebas Dari Narkotika)":   "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+  "SI GEMBIRA":                                               "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
 };
 
 /**
@@ -1168,28 +1178,65 @@ function findMetaInovasiByJudul(judulKey, list) {
   const arr = list || daftarInovasiJudulLengkap;
   if (!judulKey) return {};
 
+  // Helper: normalisasi string (hapus tanda baca ganda, trim spasi berlebih)
+  const normalize = s => s.toLowerCase().trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[""'']/g, '"')
+    .replace(/[–—]/g, '-');
+
   // 1. Exact match
   let meta = arr.find(i => i.judul === judulKey);
   if (meta) return meta;
 
-  // 2. Alias mapping
+  // 2. Alias mapping (judul lama → judul baru)
   const mapped = JUDUL_ALIAS[judulKey] || JUDUL_ALIAS[judulKey.trim()];
   if (mapped) {
     meta = arr.find(i => i.judul === mapped);
     if (meta) return meta;
   }
 
-  // 3. Case-insensitive
-  const lower = judulKey.toLowerCase().trim();
-  meta = arr.find(i => i.judul.toLowerCase().trim() === lower);
+  // 3. Case-insensitive + normalize whitespace
+  const lower = normalize(judulKey);
+  meta = arr.find(i => normalize(i.judul) === lower);
   if (meta) return meta;
 
-  // 4. Substring (salah satu mengandung yang lain)
-  meta = arr.find(i => {
-    const a = i.judul.toLowerCase().trim();
-    return a.includes(lower) || lower.includes(a);
-  });
-  if (meta) return meta;
+  // 4. Coba di daftarInovasiSID juga (kalau list yang dilewat adalah JudulLengkap)
+  if (arr === daftarInovasiJudulLengkap || !list) {
+    meta = daftarInovasiSID.find(i => normalize(i.judul) === lower);
+    if (meta) return meta;
+  }
+
+  // 5. Substring match — salah satu mengandung yang lain (min 10 karakter)
+  if (lower.length >= 10) {
+    meta = arr.find(i => {
+      const a = normalize(i.judul);
+      return a.includes(lower) || lower.includes(a);
+    });
+    if (meta) return meta;
+
+    // Coba di SID juga
+    if (arr === daftarInovasiJudulLengkap || !list) {
+      meta = daftarInovasiSID.find(i => {
+        const a = normalize(i.judul);
+        return a.includes(lower) || lower.includes(a);
+      });
+      if (meta) return meta;
+    }
+  }
+
+  // 6. Word-based match: minimal 60% kata kunci cocok
+  const words = lower.split(/\s+/).filter(w => w.length > 3);
+  if (words.length >= 2) {
+    const allArr = (arr === daftarInovasiJudulLengkap || !list)
+      ? [...arr, ...daftarInovasiSID]
+      : arr;
+    meta = allArr.find(i => {
+      const iWords = normalize(i.judul).split(/\s+/);
+      const matchCount = words.filter(w => iWords.some(iw => iw.includes(w) || w.includes(iw))).length;
+      return matchCount / words.length >= 0.6;
+    });
+    if (meta) return meta;
+  }
 
   return {};
 }
