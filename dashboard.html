@@ -939,27 +939,50 @@
 
   // Helper: Cari metadata inovasi dengan fallback ke partial match dan data Firebase
   function findMetaInovasi(judulKey, firebaseData) {
-    // 1. Exact match di kedua list
-    let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
-    if (!meta) meta = daftarInovasiSID.find(i => i.judul === judulKey);
-    if (meta) return meta;
+    // Helper normalisasi
+    const norm = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
 
-    // 2. Partial match (key Firebase mengandung sebagian judul di daftar, atau sebaliknya)
-    const keyLower = judulKey.toLowerCase();
+    // 0. Alias mapping (judul lama → judul baru)
+    const aliasMap = {
+      "Ambulance Sehat (Dokter Spesialis Keliling)": "SUMBERSARI HADIR",
+      "Ambulance Sehat":                             "SUMBERSARI HADIR",
+      "Digitalisasi Laporan Ikhtisar Pengawasan APIP":   "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+      "Digitalisasi Laporan Ikhtisar Pengawasan":        "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+      "SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)": "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+      "SI GEMBIRA (Sistem Gerakan Metro Bebas Dari Narkotika)":  "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+      "SI GEMBIRA": "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+    };
+    const resolvedJudul = aliasMap[judulKey] || aliasMap[judulKey?.trim()] || judulKey;
+
+    // Cari di kedua list dengan judul yang sudah di-resolve
+    const searchKey = resolvedJudul;
+    const searchLower = norm(searchKey);
+
+    // 1. Exact match
+    let meta = daftarInovasiJudulLengkap.find(i => i.judul === searchKey);
+    if (!meta) meta = daftarInovasiSID.find(i => i.judul === searchKey);
+    if (meta) return { ...meta, _judulDisplay: resolvedJudul };
+
+    // 2. Case-insensitive match
+    meta = daftarInovasiJudulLengkap.find(i => norm(i.judul) === searchLower);
+    if (!meta) meta = daftarInovasiSID.find(i => norm(i.judul) === searchLower);
+    if (meta) return { ...meta, _judulDisplay: resolvedJudul };
+
+    // 3. Partial match
     meta = daftarInovasiJudulLengkap.find(i =>
-      i.judul.toLowerCase().includes(keyLower) || keyLower.includes(i.judul.toLowerCase())
+      norm(i.judul).includes(searchLower) || searchLower.includes(norm(i.judul))
     );
     if (!meta) meta = daftarInovasiSID.find(i =>
-      i.judul.toLowerCase().includes(keyLower) || keyLower.includes(i.judul.toLowerCase())
+      norm(i.judul).includes(searchLower) || searchLower.includes(norm(i.judul))
     );
-    if (meta) return meta;
+    if (meta) return { ...meta, _judulDisplay: resolvedJudul };
 
-    // 3. Fallback: ambil dari data Firebase itu sendiri (perangkatDaerah disimpan saat save)
+    // 4. Fallback: ambil dari data Firebase itu sendiri
     if (firebaseData && firebaseData.perangkatDaerah) {
-      return { judul: judulKey, perangkatDaerah: firebaseData.perangkatDaerah, bentuk: firebaseData.bentukInovasi || "-", waktu: firebaseData.tahun || "-" };
+      return { judul: resolvedJudul, perangkatDaerah: firebaseData.perangkatDaerah, bentuk: firebaseData.bentukInovasi || "-", waktu: firebaseData.tahun || "-", _judulDisplay: resolvedJudul };
     }
 
-    return {};
+    return { _judulDisplay: resolvedJudul };
   }
 
   async function loadDashboard() {
@@ -1080,7 +1103,7 @@
       if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
       else if (judulArr.length > 0 || sidArr.length > 0) status = 'partial';
 
-      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: d.savedAt||"", allData: d };
+      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: d.savedAt||"", allData: d, judulDisplay: meta._judulDisplay || judulKey };
     }).sort((a,b) => b.total - a.total);
 
     let html = `
@@ -1124,7 +1147,7 @@
       html += `
         <tr>
           <td>${i===0?"#1":i===1?"#2":i===2?"#3":i+1}</td>
-          <td><b>${esc(r.judulKey)}</b></td>
+          <td><b>${esc(r.judulDisplay)}</b></td>
           <td style="font-size:11px;color:#667085">${esc(r.meta.perangkatDaerah||"-")}</td>
           <td class="skor-cell">
             ${r.avgJudul>0?r.avgJudul.toFixed(2):"-"} 
