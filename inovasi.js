@@ -1146,12 +1146,6 @@ let daftarInovasi = daftarInovasiJudulLengkap;
 //  Dipakai saat data Firebase masih menyimpan judul versi lama
 // ══════════════════════════════════════════════════════════════════
 const JUDUL_ALIAS = {
-  // 4 inovasi RSUD Sumbersari yang digabung menjadi SUMBERSARI HADIR
-  "Ambulance Sehat (Dokter Spesialis Keliling)": "SUMBERSARI HADIR",
-  "AMBULANCE SEHAT (DOKTER SPESIALIS KELILING)": "SUMBERSARI HADIR",
-  "Ambulance Sehat":                              "SUMBERSARI HADIR",
-  "AMBULANCE SEHAT":                              "SUMBERSARI HADIR",
-
   // Digitalisasi Laporan — judul lama dikecualikan via JUDUL_EXCLUDED, tidak perlu alias lagi
   // "Digitalisasi Laporan Ikhtisar Pengawasan APIP" → masuk JUDUL_EXCLUDED
 
@@ -1167,7 +1161,11 @@ const JUDUL_ALIAS = {
 //  sebagai entry terpisah di perangkingan.
 // ══════════════════════════════════════════════════════════════════
 const JUDUL_EXCLUDED = new Set([
-  // 3 judul lama yang digabung ke SUMBERSARI HADIR (selain Ambulance Sehat yg sudah di-alias)
+  // Semua judul lama yang digabung ke SUMBERSARI HADIR
+  "Ambulance Sehat (Dokter Spesialis Keliling)",
+  "AMBULANCE SEHAT (DOKTER SPESIALIS KELILING)",
+  "Ambulance Sehat",
+  "AMBULANCE SEHAT",
   "Bincang Sehat Sumber Sari Bantul",
   "BINCANG SEHAT SUMBER SARI BANTUL",
   "Pelayanan Kesehatan terpadu Bahagia",
