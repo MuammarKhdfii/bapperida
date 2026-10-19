@@ -1075,23 +1075,44 @@
       return;
     }
 
-    // Buat lookup semua data untuk merge entry alias
-    const allLookup = {};
-    inovasiList.forEach(([k, d]) => { allLookup[k] = d; });
+    // Buat lookup SEMUA data (termasuk yang excluded) untuk merge entry alias
+    const allLookupFull = {};
+    Object.entries(all).forEach(([k, d]) => { if (typeof d === 'object' && d) allLookupFull[k] = d; });
+
+    // Buat reverse map: canonical → semua key alias yang mengarah ke canonical
+    const aliasToCanonical = typeof JUDUL_ALIAS === 'object' ? JUDUL_ALIAS : {};
+    const canonicalToAliases = {};
+    Object.entries(aliasToCanonical).forEach(([alias, canonical]) => {
+      if (!canonicalToAliases[canonical]) canonicalToAliases[canonical] = [];
+      canonicalToAliases[canonical].push(alias);
+    });
 
     // Hitung total gabungan per inovasi
     const rows = inovasiList.map(([judulKey, d]) => {
-      // Merge data dari entry canonical jika judulKey adalah alias
-      const canonicalKey = typeof resolveJudulAlias === 'function' ? resolveJudulAlias(judulKey) : judulKey;
-      let mergedD = d;
-      if (canonicalKey !== judulKey && allLookup[canonicalKey]) {
-        const canonical = allLookup[canonicalKey];
+      // Merge data dari SEMUA entry alias yang mengarah ke judulKey ini
+      const aliases = canonicalToAliases[judulKey] || [];
+      let mergedD = { ...d };
+      aliases.forEach(alias => {
+        const aliasData = allLookupFull[alias];
+        if (!aliasData) return;
         mergedD = {
-          ...d,
-          judulState: { ...(canonical.judulState || {}), ...(d.judulState || {}) },
-          juriState:  { ...(canonical.juriState  || {}), ...(d.juriState  || {}) },
-          skorJudulPerJuri: { ...(canonical.skorJudulPerJuri || {}), ...(d.skorJudulPerJuri || {}) },
-          skorPerJuri:      { ...(canonical.skorPerJuri || {}),      ...(d.skorPerJuri || {}) },
+          ...mergedD,
+          judulState:       { ...(aliasData.judulState || {}),       ...(mergedD.judulState || {}) },
+          juriState:        { ...(aliasData.juriState  || {}),       ...(mergedD.juriState  || {}) },
+          skorJudulPerJuri: { ...(aliasData.skorJudulPerJuri || {}), ...(mergedD.skorJudulPerJuri || {}) },
+          skorPerJuri:      { ...(aliasData.skorPerJuri || {}),      ...(mergedD.skorPerJuri || {}) },
+        };
+      });
+      // Juga cek apakah judulKey sendiri adalah alias dari sesuatu
+      const canonicalKey = typeof resolveJudulAlias === 'function' ? resolveJudulAlias(judulKey) : judulKey;
+      if (canonicalKey !== judulKey && allLookupFull[canonicalKey]) {
+        const canonical = allLookupFull[canonicalKey];
+        mergedD = {
+          ...mergedD,
+          judulState:       { ...(canonical.judulState || {}),       ...(mergedD.judulState || {}) },
+          juriState:        { ...(canonical.juriState  || {}),       ...(mergedD.juriState  || {}) },
+          skorJudulPerJuri: { ...(canonical.skorJudulPerJuri || {}), ...(mergedD.skorJudulPerJuri || {}) },
+          skorPerJuri:      { ...(canonical.skorPerJuri || {}),      ...(mergedD.skorPerJuri || {}) },
         };
       }
 
@@ -1146,14 +1167,19 @@
       const badgeTxt = r.status === 'lengkap' ? 'Lengkap' : r.status === 'partial' ? 'Sebagian' : '-';
       const escapedJudul = r.judulKey.replace(/'/g, "\\'");
       
-      // Dapatkan nama juri yang sudah menilai
+      // Dapatkan nama juri yang sudah menilai (pakai allData yang sudah di-merge)
       const juriJudulList = JURI_JUDUL_LIST.filter(j => {
         const data = findJuriData(r.allData.judulState, j);
-        return data && Object.values(data).some(v => v);
+        // Cek judulState ATAU skorJudulPerJuri > 0
+        const sanitized = j.replace(/[\.,#$\[\]\/]/g, '_');
+        const hasSkor = Number(r.allData.skorJudulPerJuri?.[j] || r.allData.skorJudulPerJuri?.[sanitized] || 0) > 0;
+        return hasSkor || (data && Object.values(data).some(v => v));
       });
       const juriSIDList = JURI_SID_LIST.filter(j => {
         const data = findJuriData(r.allData.juriState, j);
-        return data && Object.values(data.radio||{}).some(v => v);
+        const sanitized = j.replace(/[\.,#$\[\]\/]/g, '_');
+        const hasSkor = Number(r.allData.skorPerJuri?.[j] || r.allData.skorPerJuri?.[sanitized] || 0) > 0;
+        return hasSkor || (data && Object.values(data.radio||{}).some(v => v));
       });
       
       const judulTooltip = juriJudulList.length > 0 

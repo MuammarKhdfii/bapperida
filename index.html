@@ -1228,25 +1228,43 @@
     
     console.log('[loadRankingData] Filtered entries count:', entries.length);
 
-    // Buat lookup semua data untuk merge entry alias
-    const allLookup = {};
-    entries.forEach(([k, d]) => { allLookup[k] = d; });
+    // Buat lookup SEMUA data (termasuk excluded) untuk merge alias
+    const allLookupFull = {};
+    Object.entries(all).forEach(([k, d]) => { if (typeof d === 'object' && d) allLookupFull[k] = d; });
+
+    // Reverse map: canonical → semua alias yang mengarah ke canonical
+    const aliasToCanonical = typeof JUDUL_ALIAS === 'object' ? JUDUL_ALIAS : {};
+    const canonicalToAliases = {};
+    Object.entries(aliasToCanonical).forEach(([alias, canonical]) => {
+      if (!canonicalToAliases[canonical]) canonicalToAliases[canonical] = [];
+      canonicalToAliases[canonical].push(alias);
+    });
 
     const result = entries.map(([judulKey, draf]) => {
-      console.log(`\n[loadRankingData] Processing: "${judulKey}"`);
-
-      // Cek apakah ada entry canonical (judul baru) yang berbeda key
-      // Jika ya, gabungkan skorJudulPerJuri dan skorPerJuri dari kedua entry
-      const canonicalKey = resolveJudulAlias ? resolveJudulAlias(judulKey) : judulKey;
-      let mergedDraf = draf;
-      if (canonicalKey !== judulKey && allLookup[canonicalKey]) {
-        const canonical = allLookup[canonicalKey];
+      // Merge dari semua alias yang mengarah ke judulKey ini
+      const aliases = canonicalToAliases[judulKey] || [];
+      let mergedDraf = { ...draf };
+      aliases.forEach(alias => {
+        const aliasData = allLookupFull[alias];
+        if (!aliasData) return;
         mergedDraf = {
-          ...draf,
-          skorJudulPerJuri: { ...(canonical.skorJudulPerJuri || {}), ...(draf.skorJudulPerJuri || {}) },
-          skorPerJuri:      { ...(canonical.skorPerJuri || {}),      ...(draf.skorPerJuri || {}) },
-          judulState:       { ...(canonical.judulState || {}),       ...(draf.judulState || {}) },
-          juriState:        { ...(canonical.juriState || {}),        ...(draf.juriState || {}) },
+          ...mergedDraf,
+          skorJudulPerJuri: { ...(aliasData.skorJudulPerJuri || {}), ...(mergedDraf.skorJudulPerJuri || {}) },
+          skorPerJuri:      { ...(aliasData.skorPerJuri || {}),      ...(mergedDraf.skorPerJuri || {}) },
+          judulState:       { ...(aliasData.judulState || {}),       ...(mergedDraf.judulState || {}) },
+          juriState:        { ...(aliasData.juriState  || {}),       ...(mergedDraf.juriState  || {}) },
+        };
+      });
+      // Juga cek jika judulKey sendiri adalah alias
+      const canonicalKey = resolveJudulAlias ? resolveJudulAlias(judulKey) : judulKey;
+      if (canonicalKey !== judulKey && allLookupFull[canonicalKey]) {
+        const canonical = allLookupFull[canonicalKey];
+        mergedDraf = {
+          ...mergedDraf,
+          skorJudulPerJuri: { ...(canonical.skorJudulPerJuri || {}), ...(mergedDraf.skorJudulPerJuri || {}) },
+          skorPerJuri:      { ...(canonical.skorPerJuri || {}),      ...(mergedDraf.skorPerJuri || {}) },
+          judulState:       { ...(canonical.judulState || {}),       ...(mergedDraf.judulState || {}) },
+          juriState:        { ...(canonical.juriState  || {}),       ...(mergedDraf.juriState  || {}) },
         };
       }
       
