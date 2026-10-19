@@ -1254,24 +1254,25 @@
         total = parseFloat(avgInd.toFixed(2));
       } else {
         // Fallback: gabungkan jika role tidak diketahui
-        const adaDiJudul = !!daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
-        const adaDiSID   = !!daftarInovasiSID.find(i => i.judul === judulKey);
+        const adaDiJudul = !!(findMetaInovasiByJudul(judulKey, daftarInovasiJudulLengkap)?.perangkatDaerah);
+        const adaDiSID   = !!(findMetaInovasiByJudul(judulKey, daftarInovasiSID)?.perangkatDaerah);
         if (adaDiJudul && !adaDiSID)      total = parseFloat(avgJud.toFixed(2));
         else if (adaDiSID && !adaDiJudul) total = parseFloat(avgInd.toFixed(2));
         else                              total = parseFloat((avgInd + avgJud).toFixed(2));
       }
-      const adaDiJudul = !!daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
-      const adaDiSID   = !!daftarInovasiSID.find(i => i.judul === judulKey);
+      const adaDiJudul = !!(findMetaInovasiByJudul(judulKey, daftarInovasiJudulLengkap)?.perangkatDaerah);
+      const adaDiSID   = !!(findMetaInovasiByJudul(judulKey, daftarInovasiSID)?.perangkatDaerah);
       
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID) untuk mendapatkan perangkatDaerah
-      // karena ranking dashboard harus tampilkan SEMUA inovasi, bukan hanya role user saat ini
-      let meta = daftarInovasiJudulLengkap.find(i => i.judul === judulKey);
-      if (!meta) {
-        meta = daftarInovasiSID.find(i => i.judul === judulKey);
+      // Gunakan findMetaInovasiByJudul yang sudah support alias & fuzzy match
+      let meta = findMetaInovasiByJudul(judulKey, daftarInovasiJudulLengkap);
+      if (!meta || !meta.perangkatDaerah) {
+        meta = findMetaInovasiByJudul(judulKey, daftarInovasiSID);
       }
-      if (!meta) {
-        meta = {};
-      }
+      if (!meta) meta = {};
+
+      // Resolve judul ke nama canonical (alias → judul baru)
+      const judulDisplay = resolveJudulAlias(judulKey);
       
       console.log('  Metadata lookup:', {
         judulKey,
@@ -1312,7 +1313,7 @@
       console.log('  indJuriCompleted:', indJuriCompleted);
       
       return {
-        judul: judulKey,
+        judul: judulDisplay,
         perangkatDaerah: meta.perangkatDaerah || "—",
         kategori: getKategori(meta.perangkatDaerah),
         avgInd:  parseFloat(avgInd.toFixed(2)),

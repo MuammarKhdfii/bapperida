@@ -489,8 +489,9 @@ function loadRankingData() {
       const avgJud  = judArr.length  > 0 ? judArr.reduce((a, b) => a + b, 0) / judArr.length  : 0;
       const rataRata = parseFloat((avgInd + avgJud).toFixed(2));
       const jm       = [...new Set([...Object.keys(sp).filter(j => sp[j] > 0), ...Object.keys(sjp).filter(j => sjp[j] > 0)])];
-      const meta     = daftarInovasi.find(i => i.judul === k) || {};
-      return { judul:k, perangkatDaerah:meta.perangkatDaerah||"—", kategori:getKategori(meta.perangkatDaerah), skorPerJuri:sp, juriYgMenilai:jm, rataRata, savedAt:d.savedAt||"" };
+      const meta     = findMetaInovasiByJudul(k) || {};
+      const judulDisplay = resolveJudulAlias(k);
+      return { judul:judulDisplay, perangkatDaerah:meta.perangkatDaerah||"—", kategori:getKategori(meta.perangkatDaerah), skorPerJuri:sp, juriYgMenilai:jm, rataRata, savedAt:d.savedAt||"" };
     }).sort((a, b) => b.rataRata - a.rataRata);
   } catch(e) { return []; }
 }
@@ -559,7 +560,7 @@ document.querySelectorAll(".ranking-tab").forEach(tab => {
   document.getElementById("exportExcelBtn").addEventListener("click", () => {
     dd.classList.remove("open");
     if (!activeJuri) { alert("Pilih juri dulu."); return; }
-    const rows = [["Penilaian Indikator — 2027"],["Inovasi",namaInovasi],["Juri",activeJuri],["Tanggal",new Date().toLocaleDateString("id-ID")],[],["No","Nama Indikator","Bobot","Param","Skor","Deskripsi"]];
+    const rows = [["Penilaian Indikator — 2026"],["Inovasi",namaInovasi],["Juri",activeJuri],["Tanggal",new Date().toLocaleDateString("id-ID")],[],["No","Nama Indikator","Bobot","Param","Skor","Deskripsi"]];
     let total = 0;
     sidIndicators.forEach(item => {
       if (item.type) { rows.push([item.displayNo,item.nama,"—","—","—",item.keterangan]); return; }

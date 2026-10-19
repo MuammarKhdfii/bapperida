@@ -911,7 +911,7 @@ function updateDashboard() {
     if (!activeJuri) { alert("Pilih juri terlebih dahulu."); return; }
     const namaInovasi = namaInovasiInput.value.trim() || "—";
     const rows = [
-      ["Indeks Inovasi Daerah 2027 — Hasil Penilaian"],
+      ["Indeks Inovasi Daerah 2026 — Hasil Penilaian"],
       ["Nama Inovasi", namaInovasi], ["Nama Juri Indikator", activeJuri], ["Tanggal", new Date().toLocaleDateString("id-ID")],
       [], ["No","Nama Indikator","Bobot","Param Dipilih","Nilai Indikator","Deskripsi Parameter"]
     ];
@@ -961,8 +961,9 @@ function loadRankingData() {
       const sp = draf.skorPerJuri || {};
       const jm = Object.entries(sp).filter(([,s]) => s > 0).map(([j]) => j);
       const rt = jm.length > 0 ? Object.values(sp).reduce((a,b)=>a+b,0) / jm.length : 0;
-      const meta = daftarInovasi.find(i => i.judul === judulKey) || {};
-      return { judul:judulKey, perangkatDaerah:meta.perangkatDaerah||"—", kategori:getKategori(meta.perangkatDaerah), skorPerJuri:sp, juriYgMenilai:jm, rataRata:parseFloat(rt.toFixed(2)), savedAt:draf.savedAt||"" };
+      const meta = findMetaInovasiByJudul(judulKey) || {};
+      const judulDisplay = resolveJudulAlias(judulKey);
+      return { judul:judulDisplay, perangkatDaerah:meta.perangkatDaerah||"—", kategori:getKategori(meta.perangkatDaerah), skorPerJuri:sp, juriYgMenilai:jm, rataRata:parseFloat(rt.toFixed(2)), savedAt:draf.savedAt||"" };
     }).sort((a,b) => b.rataRata - a.rataRata);
     
     console.log('📊 Processed results:', results);
