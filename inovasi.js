@@ -1173,6 +1173,11 @@ const JUDUL_EXCLUDED = new Set([
   "Pelayanan Kesehatan Terpadu Bahagia",
   "AMBULAN SIAGA (Jemput Sakit Pulang Sehat)",
   "Ambulan Siaga (Jemput Sakit Pulang Sehat)",
+  // Judul lain dari localStorage yang bukan inovasi aktif (konfirmasi dari console)
+  "Jumat Djajan Metro Bahagia",
+  "JUMAT DJAJAN METRO BAHAGIA",
+  "SRIKANDI BAHAGIA (Strategi responsif dan Inovatif Praja Wanita)",
+  "Srikandi Bahagia (Strategi responsif dan Inovatif Praja Wanita)",
 
   // Judul lama Digitalisasi Laporan — sudah ada versi baru (e-ILHP) di Firebase
   "Digitalisasi Laporan Ikhtisar Pengawasan APIP",
@@ -1195,6 +1200,41 @@ function isJudulExcluded(judulKey) {
   // Cek juga alias — kalau sudah punya alias ke judul lain, entry duplikat harus dicek
   // (sudah ditangani di resolveJudulAlias, tapi dobel-check di sini)
   return false;
+}
+
+/**
+ * Bersihkan localStorage dari entry judul yang sudah di-exclude.
+ * Dipanggil otomatis saat halaman load.
+ * Data di Firebase TIDAK ikut dihapus — hanya membersihkan cache lokal.
+ */
+function cleanupExcludedFromLocalStorage() {
+  try {
+    const KEY = 'draf_iid2026_all';
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const all = JSON.parse(raw);
+    let changed = false;
+    Object.keys(all).forEach(k => {
+      if (isJudulExcluded(k)) {
+        delete all[k];
+        changed = true;
+        console.log('[cleanupExcluded] Removed from localStorage:', k);
+      }
+    });
+    if (changed) {
+      localStorage.setItem(KEY, JSON.stringify(all));
+      console.log('[cleanupExcluded] localStorage cleaned up');
+    }
+  } catch(e) {
+    console.warn('[cleanupExcluded] Error:', e);
+  }
+}
+
+// Jalankan cleanup otomatis saat script di-load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', cleanupExcludedFromLocalStorage);
+} else {
+  cleanupExcludedFromLocalStorage();
 }
 
 /**
