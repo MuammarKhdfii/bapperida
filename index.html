@@ -6,6 +6,255 @@
   <title>Sistem Penilaian Inovasi Daerah 2026 — BAPPERIDA Kota Metro</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
+  <style>
+    /* ── Hero landing lebih dalam & bergerak ── */
+    .hero-landing {
+      background: linear-gradient(135deg, #0f2460 0%, #1e3a8a 35%, #2563eb 70%, #3b82f6 100%) !important;
+      padding: 72px 0 !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-landing::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(99,179,237,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(139,92,246,0.2) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .hero-landing::after {
+      content: "";
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, var(--bg, #f1f5f9));
+      pointer-events: none;
+    }
+    .hero-landing .hero-text,
+    .hero-landing .session-nav-header,
+    .hero-landing .hero-inner { position: relative; z-index: 1; }
+
+    .hero-landing .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      backdrop-filter: blur(8px);
+      color: white;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+    .hero-landing h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin: 12px 0 6px;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    }
+    .hero-landing p {
+      font-size: 16px;
+      opacity: 0.85;
+      font-weight: 500;
+    }
+
+    /* ── Role greeting lebih menonjol ── */
+    .role-greeting {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 18px 24px;
+      margin: 24px 0 8px;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.25);
+      animation: fadeSlideUp 0.5s ease both;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* ── Inovasi picker lebih segar ── */
+    .landing-inovasi-picker {
+      background: linear-gradient(135deg, #0f766e 0%, #059669 50%, #10b981 100%) !important;
+      border-radius: 20px !important;
+      padding: 28px !important;
+      box-shadow: 0 12px 40px rgba(16,185,129,0.25) !important;
+      margin: 28px 0 !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .landing-inovasi-picker::before {
+      content: "";
+      position: absolute;
+      top: -40%; right: -10%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .picker-label, .picker-title, .picker-sub,
+    .landing-inovasi-picker > * { position: relative; z-index: 1; }
+
+    /* Search input styling */
+    #searchInovasi {
+      border-radius: 14px !important;
+      border: 2px solid rgba(255,255,255,0.3) !important;
+      background: rgba(255,255,255,0.95) !important;
+      font-size: 15px !important;
+      padding: 14px 18px !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    }
+    #searchInovasi::placeholder { color: #6b7280 !important; }
+    #searchInovasi:focus {
+      border-color: white !important;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.25), 0 4px 12px rgba(0,0,0,0.1) !important;
+      background: white !important;
+    }
+
+    /* ── Assessed section lebih elegan ── */
+    .assessed-inovasi-section {
+      border-radius: 20px !important;
+      box-shadow: 0 8px 32px rgba(34,197,94,0.12) !important;
+    }
+    .assessed-card {
+      border-radius: 16px !important;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+      border: 1.5px solid #86efac !important;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+    }
+    .assessed-card:hover {
+      transform: translateX(6px) translateY(-2px) !important;
+      box-shadow: 0 8px 24px rgba(34,197,94,0.2) !important;
+    }
+
+    /* ── Enter card lebih impresif ── */
+    .landing-enter-card {
+      border-radius: 22px !important;
+      padding: 32px !important;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1) !important;
+      border: 1.5px solid #e0f2f1 !important;
+      background: linear-gradient(135deg, #ffffff 0%, #f0fdf9 100%) !important;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1) !important;
+    }
+    .landing-enter-card::before {
+      height: 5px !important;
+      background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%) !important;
+      border-radius: 22px 22px 0 0 !important;
+    }
+    .landing-enter-card:hover {
+      transform: translateY(-8px) !important;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.15) !important;
+      border-color: #10b981 !important;
+    }
+    .lec-icon { font-size: 56px !important; }
+    .lec-title {
+      font-size: 24px !important;
+      font-weight: 900 !important;
+      background: linear-gradient(135deg, #0f766e, #1e40af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lec-desc {
+      font-size: 15px !important;
+      color: #4b5563 !important;
+      line-height: 1.7 !important;
+    }
+    .lc-arrow {
+      font-size: 32px !important;
+      opacity: 0.4 !important;
+      color: #10b981 !important;
+    }
+    .landing-enter-card:hover .lc-arrow {
+      opacity: 1 !important;
+      transform: translateX(8px) !important;
+    }
+
+    /* ── Assessment progress stats lebih bersih ── */
+    .apc-stat {
+      border-radius: 14px !important;
+      padding: 14px 18px !important;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07) !important;
+      transition: all 0.25s ease !important;
+    }
+    .apc-stat:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+    .apc-assessed {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+      border: 2px solid #34d399 !important;
+    }
+    .apc-remaining {
+      background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+      border: 2px solid #fbbf24 !important;
+    }
+    .apc-total {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+      border: 2px solid #60a5fa !important;
+    }
+    .apc-number { font-size: 22px !important; font-weight: 900 !important; }
+    .apc-label  { font-size: 10px !important; font-weight: 800 !important; letter-spacing: 0.06em !important; }
+
+    /* ── Ranking section header ── */
+    .landing-ranking {
+      border-radius: 22px !important;
+      border: 1px solid rgba(0,0,0,0.06) !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06) !important;
+      padding: 28px !important;
+    }
+    .ranking-section-title {
+      font-size: 22px !important;
+      font-weight: 900 !important;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Tab ranking ── */
+    .ranking-tab {
+      border-radius: 10px !important;
+      font-weight: 700 !important;
+      transition: all 0.2s ease !important;
+    }
+    .ranking-tab.active {
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25) !important;
+    }
+
+    /* ── Warning box ── */
+    .warn-box {
+      border-radius: 16px !important;
+      border: 2px solid #fcd34d !important;
+      background: linear-gradient(135deg, #fffbeb, #fef9c3) !important;
+      padding: 18px 22px !important;
+      box-shadow: 0 4px 14px rgba(252,211,77,0.2) !important;
+    }
+
+    /* ── Scroll top button ── */
+    .scroll-top-btn {
+      border-radius: 50% !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
+      font-size: 20px !important;
+      transition: all 0.25s ease !important;
+    }
+    .scroll-top-btn:hover {
+      transform: translateY(-3px) scale(1.1) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25) !important;
+    }
+
+    /* ── Main container spacing ── */
+    .landing-main { padding-bottom: 60px; }
+
+    @media (max-width: 760px) {
+      .hero-landing { padding: 48px 0 56px !important; }
+      .hero-landing h1 { font-size: 28px !important; }
+      .landing-enter-card { padding: 22px !important; }
+      .lec-title { font-size: 20px !important; }
+      .landing-ranking { padding: 18px !important; }
+    }
+  </style>
 </head>
 <body>
 <div id="mainContent">

@@ -2352,3 +2352,403 @@ details[open] .rk-rest-toggle { border-radius: 10px 10px 0 0; }
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+
+/* ════════════════════════════════════════════════════════════════
+   ✨ ENHANCED UI — Halaman Juri (index.html & penilaian.html)
+   Ditambahkan di akhir agar cascade menang atas rule sebelumnya.
+   Tidak mengubah logika JS/HTML — hanya visual.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── HERO LANDING (Beranda Juri) ── */
+.hero-landing {
+  background: linear-gradient(135deg, #0f2460 0%, #1e3a8a 35%, #2563eb 70%, #3b82f6 100%) !important;
+  padding: 80px 0 !important;
+  position: relative;
+  overflow: hidden;
+}
+.hero-landing::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 80% at 85% 15%, rgba(99,179,237,.22) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 55% at 8% 85%,  rgba(139,92,246,.18) 0%, transparent 55%);
+  pointer-events: none;
+}
+.hero-landing .hero-text { position: relative; z-index: 1; }
+.hero-landing h1 {
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  text-shadow: 0 2px 18px rgba(0,0,0,.2);
+}
+.hero-landing .badge {
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(8px);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+/* ── HERO PENILAIAN (Form Penilaian) ── */
+.hero-penilaian {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 35%, #059669 70%, #10b981 100%) !important;
+  padding: 64px 0 !important;
+  position: relative;
+  overflow: hidden;
+}
+.hero-penilaian::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 70% at 90% 10%, rgba(52,211,153,.25) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 50% at 5% 90%,  rgba(16,185,129,.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-penilaian .hero-text { position: relative; z-index: 1; }
+.hero-penilaian h1 {
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: 900;
+  letter-spacing: -.02em;
+  text-shadow: 0 2px 14px rgba(0,0,0,.15);
+}
+.hero-penilaian .badge {
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(8px);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  padding: 6px 16px;
+  border-radius: 999px;
+}
+
+/* ── SCORE BOARD lebih mencolok ── */
+.score-board {
+  gap: 14px;
+  margin: 20px 0;
+}
+.score-card {
+  border-radius: 18px;
+  padding: 22px;
+  border: 1px solid rgba(0,0,0,.07);
+  box-shadow: 0 8px 24px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.04);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  position: relative;
+  overflow: hidden;
+}
+.score-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #155eef, #3b82f6);
+  opacity: .5;
+}
+.score-card.total {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  border: none;
+  box-shadow: 0 10px 32px rgba(37,99,235,.3);
+}
+.score-card.total::before { background: rgba(255,255,255,.3); opacity: 1; }
+.score-card.total span,
+.score-card.total small,
+.score-card.total strong { color: white !important; }
+.score-card strong { font-size: 38px; letter-spacing: -.02em; }
+
+/* ── TOOLBAR lebih bersih ── */
+.toolbar {
+  background: white;
+  border-radius: 18px;
+  padding: 20px 24px;
+  border: 1px solid rgba(0,0,0,.07);
+  box-shadow: 0 4px 16px rgba(0,0,0,.05);
+  margin: 24px 0;
+}
+.toolbar h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1f2937;
+  margin: 0 0 4px;
+}
+.toolbar p { margin: 0; color: #6b7280; font-size: 14px; }
+
+/* ── INOVASI CARD ── */
+.inovasi-card {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.06);
+  margin: 16px 0;
+}
+.inovasi-card-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  padding: 18px 20px;
+}
+.inovasi-card-judul { color: white; font-size: 17px; font-weight: 900; line-height: 1.4; }
+.inovasi-card-body  { background: white; padding: 16px 20px; }
+
+/* ── SESSION BAR (info juri aktif) ── */
+.session-bar {
+  background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+  border-radius: 16px;
+  padding: 16px 22px;
+  box-shadow: 0 8px 24px rgba(5,150,105,.25);
+  border: 1px solid rgba(255,255,255,.15);
+  margin: 16px 0;
+}
+.session-bar-nama  { color: white; font-size: 17px; font-weight: 900; }
+.session-bar-role  { color: rgba(255,255,255,.8); font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.session-logout-btn {
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.3);
+  color: white;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: 700;
+  transition: all .2s ease;
+  backdrop-filter: blur(4px);
+}
+.session-logout-btn:hover {
+  background: rgba(255,255,255,.32);
+  transform: translateY(-2px);
+}
+
+/* ── SESSION LOGIN (pilih juri) ── */
+.session-login {
+  background: white;
+  border-radius: 22px;
+  padding: 36px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.08), 0 4px 14px rgba(0,0,0,.04);
+  border: 1px solid rgba(16,185,129,.15);
+  margin: 32px 0;
+  position: relative;
+  overflow: hidden;
+}
+.session-login::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%);
+}
+.session-login-icon { font-size: 56px; display: block; margin-bottom: 16px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.15)); }
+.session-login-body h2 { font-size: 24px; font-weight: 900; color: #1f2937; margin: 0 0 8px; }
+.session-login-body p  { color: #6b7280; font-size: 15px; margin: 0 0 24px; }
+
+/* ── PENILAIAN SECTION HEADER ── */
+.penilaian-section-header {
+  border-radius: 18px;
+  padding: 20px 24px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.07);
+  margin-top: 36px;
+}
+.section-judul {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #6ee7b7;
+}
+.section-judul .psh-title { color: #065f46; font-size: 19px; font-weight: 900; }
+.section-judul .psh-sub   { color: #047857; }
+.section-judul .psh-score { background: #059669; color: white; border-radius: 12px; padding: 8px 16px; }
+
+.section-indikator {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 2px solid #93c5fd;
+}
+.section-indikator .psh-title { color: #1e3a8a; font-size: 19px; font-weight: 900; }
+.section-indikator .psh-sub   { color: #1d4ed8; }
+.section-indikator .psh-score { background: #2563eb; color: white; border-radius: 12px; padding: 8px 16px; }
+
+.section-rancang {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 2px solid #c4b5fd;
+}
+.section-rancang .psh-title { color: #4c1d95; font-size: 19px; font-weight: 900; }
+.section-rancang .psh-sub   { color: #6d28d9; }
+.section-rancang .psh-score { background: #7c3aed; color: white; border-radius: 12px; padding: 8px 16px; }
+
+/* ── PROGRESS BAR ── */
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+.progress > div {
+  border-radius: 999px;
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+  transition: width .5s ease;
+}
+
+/* ── SUMMARY SECTION ── */
+.summary {
+  border-radius: 20px;
+  padding: 24px;
+  background: white;
+  box-shadow: 0 6px 24px rgba(0,0,0,.07);
+  border: 1px solid rgba(0,0,0,.06);
+}
+.summary h2 { font-size: 20px; font-weight: 900; color: #1f2937; margin: 0 0 16px; }
+.summary-grid {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid rgba(0,0,0,.06);
+}
+.summary-grid b { font-size: 22px; font-weight: 900; color: #1e3a8a; }
+
+/* ── LANDING ENTER CARD (Mulai Penilaian) ── */
+.landing-enter-card {
+  border-radius: 22px !important;
+  padding: 32px !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,.1) !important;
+  border: 1.5px solid #e0f2f1 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf9 100%) !important;
+  transition: all .35s cubic-bezier(.4,0,.2,1) !important;
+}
+.landing-enter-card::before {
+  height: 5px !important;
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%) !important;
+}
+.landing-enter-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.15) !important;
+}
+.lec-title {
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #065f46, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.lec-desc  { font-size: 15px !important; color: #4b5563 !important; line-height: 1.7 !important; }
+.lec-icon  { font-size: 56px !important; }
+.lc-arrow  { font-size: 30px !important; color: #10b981 !important; }
+
+/* ── INOVASI PICKER (search + dropdown) ── */
+.landing-inovasi-picker {
+  background: linear-gradient(135deg, #0f766e 0%, #059669 55%, #10b981 100%) !important;
+  border-radius: 22px !important;
+  padding: 30px !important;
+  box-shadow: 0 12px 40px rgba(16,185,129,.25) !important;
+  margin: 28px 0 !important;
+}
+
+/* ── ASSESSED CARDS (Sudah Dinilai) lebih elegan ── */
+.assessed-inovasi-section {
+  border-radius: 22px !important;
+  box-shadow: 0 8px 32px rgba(34,197,94,.12) !important;
+}
+.assessed-card {
+  transition: all .3s cubic-bezier(.4,0,.2,1) !important;
+}
+.assessed-card:hover {
+  transform: translateX(6px) translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(34,197,94,.2) !important;
+}
+
+/* ── LANDING RANKING ── */
+.landing-ranking {
+  border-radius: 22px !important;
+  border: 1px solid rgba(0,0,0,.06) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.06) !important;
+  padding: 28px !important;
+}
+.ranking-section-title {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── FAB BUTTONS ── */
+.fab-save {
+  border-radius: 999px !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,.2) !important;
+  padding: 14px 28px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  transition: all .25s cubic-bezier(.4,0,.2,1) !important;
+}
+.fab-save:hover {
+  transform: translateX(-50%) translateY(-5px) scale(1.04) !important;
+  box-shadow: 0 14px 36px rgba(0,0,0,.25) !important;
+}
+
+/* ── PROGRESS COMPACT (assessment stats) ── */
+.apc-stat {
+  border-radius: 14px !important;
+  padding: 14px 18px !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,.07) !important;
+  transition: all .25s ease !important;
+}
+.apc-stat:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12) !important;
+}
+.apc-number { font-size: 22px !important; font-weight: 900 !important; }
+.apc-label  { font-size: 10px !important; font-weight: 800 !important; letter-spacing: .06em !important; }
+
+/* ── NOTES & SIGNATURE ── */
+.notes-section, .signature-section {
+  border-radius: 20px;
+  padding: 24px;
+  background: white;
+  box-shadow: 0 6px 24px rgba(0,0,0,.07);
+  border: 1px solid rgba(0,0,0,.06);
+  margin-top: 24px;
+}
+.notes-section h2, .signature-section h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1f2937;
+}
+.notes-textarea {
+  border-radius: 12px !important;
+  border: 2px solid #e5e7eb !important;
+  padding: 14px 16px !important;
+  transition: border-color .2s, box-shadow .2s !important;
+}
+.notes-textarea:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 4px rgba(37,99,235,.1) !important;
+  outline: none !important;
+}
+
+/* ── WARN BOX ── */
+.warn-box {
+  border-radius: 16px !important;
+  border: 2px solid #fcd34d !important;
+  background: linear-gradient(135deg, #fffbeb, #fef9c3) !important;
+  padding: 18px 22px !important;
+  box-shadow: 0 4px 14px rgba(252,211,77,.2) !important;
+}
+
+/* ── SCROLL TOP ── */
+.scroll-top-btn {
+  border-radius: 50% !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,.2) !important;
+  transition: all .25s ease !important;
+}
+.scroll-top-btn:hover {
+  transform: scale(1.1) translateY(-3px) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.25) !important;
+}
+
+@media (max-width: 760px) {
+  .hero-landing   { padding: 52px 0 60px !important; }
+  .hero-penilaian { padding: 44px 0 52px !important; }
+  .hero-landing h1, .hero-penilaian h1 { font-size: 26px !important; }
+  .landing-enter-card { padding: 22px !important; }
+  .lec-title { font-size: 20px !important; }
+  .session-login { padding: 24px !important; }
+  .penilaian-section-header { padding: 16px !important; }
+}
+/* ═══════════════ END ENHANCED UI ═══════════════ */
