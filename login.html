@@ -3,228 +3,592 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — Sistem Penilaian Inovasi 2027</title>
+  <title>Login — Sistem Penilaian Inovasi 2026</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--primary:#155eef;--green:#134e5e;--orange:#e07b39;--metro-blue:#1e3a8a;--metro-yellow:#fbbf24}
-    body{
-      min-height:100vh;
-      display:flex;align-items:center;justify-content:center;
-      font-family:Inter,'Segoe UI',Arial,sans-serif;
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
-      background-size:300% 300%;
-      animation:bgShift 15s ease infinite;
-      padding:20px;
-      position:relative;
-    }
-    body::before{
-      content:"";position:absolute;inset:0;
-      background:url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-      opacity:.4;
-    }
-    @keyframes bgShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-
-    /* Kartu Login */
-    .login-card{
-      background:white;
-      border-radius:28px;
-      padding:48px 42px 42px;
-      width:min(480px,100%);
-      box-shadow:0 40px 100px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.1);
-      animation:cardIn .6s cubic-bezier(.34,1.56,.64,1) both;
-      position:relative;
-      overflow:hidden;
-      z-index:1;
-    }
-    @keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.92)}to{opacity:1;transform:none}}
-    .login-card::before{
-      content:"";position:absolute;top:0;left:0;right:0;height:6px;
-      background:linear-gradient(90deg, #dc2626, #fbbf24, #3b82f6);
-      background-size:300% 100%;animation:bgShift 5s linear infinite;
+    :root{
+      --primary:#2563eb;--primary-dark:#1e40af;--primary-light:#dbeafe;
+      --green:#059669;--accent:#fbbf24;
+      --text:#111827;--muted:#6b7280;--border:#e5e7eb;
     }
 
-    /* Logo dan Header */
-    .login-logo{text-align:center;margin-bottom:32px}
-    .login-logo-icon{
-      width:100px;height:100px;margin:0 auto 16px;
-      display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-      border-radius:20px;
-      box-shadow:0 8px 24px rgba(30,58,138,.15);
-      animation:logoFloat 3s ease-in-out infinite;
-      position:relative;
-    }
-    @keyframes logoFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
-    .login-logo-icon::after{
-      content:"";position:absolute;inset:0;border-radius:20px;
-      box-shadow:inset 0 0 0 1px rgba(30,58,138,.1);
-    }
-    .login-logo-icon img{
-      width:85%;height:85%;object-fit:contain;
-      filter:drop-shadow(0 4px 8px rgba(0,0,0,.1));
-    }
-    .login-org{
-      font-size:14px;font-weight:800;color:#6b7280;
-      letter-spacing:.08em;text-transform:uppercase;
-      margin-bottom:6px;
-    }
-    .login-title{
-      font-size:24px;font-weight:900;color:#111827;
-      margin-top:4px;line-height:1.3;
-      background:linear-gradient(135deg, #1e3a8a, #3b82f6);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
+    body {
+      min-height: 100vh;
+      display: flex;
+      font-family: Inter, 'Segoe UI', Arial, sans-serif;
+      background: #0f172a;
+      overflow: hidden;
     }
 
-    /* Form */
-    label{
-      display:block;font-size:14px;font-weight:700;color:#374151;
-      margin-bottom:8px;
+    /* ── Background animated ── */
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
     }
-    .input-wrap{position:relative;margin-bottom:20px}
-    .input-wrap input{
-      width:100%;padding:14px 16px;
-      border:2px solid #e5e7eb;border-radius:12px;
-      font-size:15px;font-family:inherit;color:#111827;
-      background:#f9fafb;transition:all .2s ease;outline:none;
+    .bg-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+        #0f172a 0%,
+        #1e3a8a 40%,
+        #1e40af 70%,
+        #0f172a 100%);
+      background-size: 400% 400%;
+      animation: bgShift 12s ease infinite;
     }
-    .input-wrap input:hover{border-color:#d1d5db;background:#fff}
-    .input-wrap input:focus{
-      border-color:#3b82f6;background:white;
-      box-shadow:0 0 0 4px rgba(59,130,246,.12), 0 4px 12px rgba(59,130,246,.08);
-      transform:translateY(-1px);
+    @keyframes bgShift {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
     }
-    .input-wrap .pw-toggle{
-      position:absolute;right:14px;top:63%;transform:translateY(-50%);
-      background:none;border:none;cursor:pointer;
-      font-size:18px;color:#9ca3af;
-      transition:.2s;padding:4px 8px;border-radius:6px;
-      display:flex;align-items:center;justify-content:center;
-      line-height:1;
+    /* Orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      animation: orbFloat ease-in-out infinite;
     }
-    .input-wrap .pw-toggle:hover{background:#f3f4f6;color:#3b82f6}
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation-duration: 14s;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+      bottom: -150px; right: -100px;
+      animation-duration: 18s;
+      animation-delay: -6s;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #fbbf24 0%, transparent 70%);
+      top: 50%; left: 50%;
+      opacity: 0.15;
+      animation-duration: 22s;
+      animation-delay: -10s;
+    }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0, 0) scale(1); }
+      33%      { transform: translate(30px, -40px) scale(1.05); }
+      66%      { transform: translate(-20px, 25px) scale(0.97); }
+    }
+    /* Grid lines */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 3px; height: 3px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      animation: particleRise linear infinite;
+    }
+    @keyframes particleRise {
+      0%   { transform: translateY(0) translateX(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+    }
 
-    /* Submit */
-    .login-btn{
-      width:100%;padding:16px;
-      background:linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-      color:white;border:none;border-radius:14px;
-      font-size:16px;font-weight:800;font-family:inherit;
-      cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);
-      position:relative;overflow:hidden;
-      box-shadow:0 8px 20px rgba(37,99,235,.3), 0 2px 8px rgba(0,0,0,.1);
+    /* ── Layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      align-items: stretch;
+      justify-content: center;
     }
-    .login-btn::before{
-      content:"";position:absolute;inset:0;
-      background:linear-gradient(135deg, rgba(255,255,255,.2), transparent);
-      opacity:0;transition:.3s;
-    }
-    .login-btn:hover{
-      transform:translateY(-3px);
-      box-shadow:0 12px 32px rgba(37,99,235,.4), 0 4px 12px rgba(0,0,0,.15);
-    }
-    .login-btn:hover::before{opacity:1}
-    .login-btn:active{transform:translateY(-1px) scale(.98)}
-    .login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
 
-    /* Error */
-    .login-error{
-      background:linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
-      border:2px solid #fca5a5;
-      border-radius:12px;padding:12px 16px;
-      font-size:13px;color:#dc2626;font-weight:700;
-      margin-bottom:20px;display:none;
-      animation:shake .4s ease, fadeIn .3s ease;
-      box-shadow:0 4px 12px rgba(220,38,38,.15);
+    /* ── Left panel ── */
+    .left-panel {
+      flex: 1;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 48px 60px 56px;
+      color: white;
+      position: relative;
     }
-    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-    .login-error.show{display:block}
+    .left-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      color: #93c5fd;
+    }
+    .left-badge::before {
+      content: "";
+      width: 8px; height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.3);
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 3px rgba(74,222,128,0.3); }
+      50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0.1); }
+    }
+    .left-title {
+      font-size: clamp(32px, 3.5vw, 52px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+    .left-title span {
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .left-subtitle {
+      font-size: 17px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.7;
+      max-width: 420px;
+      margin-bottom: 16px;
+    }
+    /* Stats */
+    .left-stats {
+      display: flex;
+      gap: 28px;
+      margin-bottom: 12px;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 32px;
+      font-weight: 900;
+      color: #fbbf24;
+      line-height: 1;
+      display: block;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+      display: block;
+    }
+    .stat-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.15);
+      align-self: stretch;
+    }
+    /* Logo area */
+    .left-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+    }
+    .left-logo img {
+      width: 52px; height: 52px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    }
+    .left-logo-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.5;
+    }
+    .left-logo-text small {
+      display: block;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      font-weight: 600;
+    }
 
-    /* Role selection buttons */
-    .role-select-btn{
-      width:100%;padding:12px 16px;margin:6px 0;
-      background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      color:white;border:none;border-radius:10px;
-      font-size:14px;font-weight:700;font-family:inherit;
-      cursor:pointer;transition:all .2s ease;
-      box-shadow:0 4px 12px rgba(59,130,246,.3);
+    /* ── Right panel (form) ── */
+    .right-panel {
+      width: 460px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 48px 40px 32px;
     }
-    .role-select-btn:hover{
-      transform:translateY(-2px);
-      box-shadow:0 6px 16px rgba(59,130,246,.4);
+    .login-card {
+      width: 100%;
+      background: rgba(255,255,255,0.97);
+      border-radius: 28px;
+      padding: 44px 40px 36px;
+      box-shadow:
+        0 40px 80px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(255,255,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      animation: cardIn 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+      position: relative;
+      overflow: hidden;
     }
-    .role-select-btn:active{transform:translateY(0) scale(.98)}
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.92); }
+      to   { opacity: 1; transform: none; }
+    }
+    .login-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #dc2626 0%, #fbbf24 33%, #2563eb 66%, #059669 100%);
+      background-size: 300% 100%;
+      animation: bgShift 4s linear infinite;
+    }
 
-    /* Loading spinner */
-    .spinner{
-      display:inline-block;width:18px;height:18px;
-      border:3px solid rgba(255,255,255,.3);
-      border-top-color:white;border-radius:50%;
-      animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px;
+    /* Card header */
+    .card-header {
+      text-align: center;
+      margin-bottom: 32px;
     }
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* Footer text */
-    .login-footer{
-      text-align:center;margin-top:24px;padding-top:20px;
-      border-top:2px solid #f3f4f6;
-      font-size:12px;color:#9ca3af;
+    .card-icon {
+      width: 72px; height: 72px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(37,99,235,0.15);
     }
-    .login-footer strong{color:#6b7280}
+    .card-icon img {
+      width: 85%; height: 85%;
+      object-fit: contain;
+    }
+    .card-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #111827;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .card-sub {
+      font-size: 13px;
+      color: #9ca3af;
+      font-weight: 600;
+    }
 
-    /* Responsive */
-    @media (max-width:480px){
-      .login-card{padding:36px 28px 28px}
-      .login-logo-icon{width:85px;height:85px}
-      .login-title{font-size:20px}
+    /* Form elements */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 17px;
+      color: #9ca3af;
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: 13px 16px 13px 42px;
+      border: 2px solid #e5e7eb;
+      border-radius: 13px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #111827;
+      background: #f9fafb;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .input-wrap input:hover {
+      border-color: #d1d5db;
+      background: white;
+    }
+    .input-wrap input:focus {
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+    }
+    .input-wrap input:focus ~ .input-icon { color: #3b82f6; }
+    .pw-toggle {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 17px;
+      color: #9ca3af;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .pw-toggle:hover { background: #f3f4f6; color: #3b82f6; }
+
+    /* Submit button */
+    .login-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.3), 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .login-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .login-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(37,99,235,0.4), 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .login-btn:hover::after { opacity: 1; }
+    .login-btn:active { transform: translateY(-1px) scale(0.98); }
+    .login-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Error box */
+    .login-error {
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: none;
+      animation: shake 0.4s ease, fadeIn 0.3s ease;
+      background: linear-gradient(135deg, #fee2e2, #fef2f2);
+      border: 2px solid #fca5a5;
+      color: #dc2626;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.12);
+    }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+    .login-error.show { display: block; }
+
+    /* Role selection */
+    .role-select-btn {
+      width: 100%;
+      padding: 12px 16px;
+      margin: 6px 0;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+    }
+    .role-select-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59,130,246,0.4);
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    .card-footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1.5px solid #f3f4f6;
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+    .card-footer strong { color: #6b7280; }
+
+    /* ── Responsive: tablet & mobile ── */
+    @media (max-width: 900px) {
+      .left-panel { display: none; }
+      .right-panel { width: 100%; padding: 24px 20px; }
+    }
+    @media (max-width: 480px) {
+      .login-card { padding: 36px 24px 28px; border-radius: 20px; }
+      .card-title { font-size: 20px; }
     }
   </style>
 </head>
 <body>
 
-<div class="login-card">
-  <div class="login-logo">
-    <div class="login-logo-icon">
-      <!-- Logo Kota Metro -->
-      <img src="logo-metro.png" alt="Logo Kota Metro" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231e3a8a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23fbbf24%22 font-size=%2232%22 font-weight=%22bold%22 font-family=%22Arial%22%3EMETRO%3C/text%3E%3C/svg%3E'">
-    </div>
-    <div class="login-org">BAPPERIDA Kota Metro</div>
-    <div class="login-title">Sistem Penilaian Inovasi Daerah </div>
-  </div>
+<!-- Background -->
+<div class="bg-scene">
+  <div class="bg-gradient"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="bg-grid"></div>
+  <div class="particles" id="particles"></div>
+</div>
 
-  <div id="loginError" class="login-error"></div>
+<div class="page">
 
-  <div class="input-wrap">
-    <label for="username">Username</label>
-    <input id="username" type="text" placeholder="Masukkan username…" autocomplete="username" autofocus>
-  </div>
+  <!-- Left panel -->
+  <div class="left-panel">
+    <div class="left-badge">Sistem Aktif 2026</div>
 
-  <div class="input-wrap">
-    <label for="password">Password</label>
-    <input id="password" type="password" placeholder="Masukkan password…" autocomplete="current-password">
-    <button class="pw-toggle" onclick="togglePw()" type="button" id="pwToggle">👁</button>
-  </div>
+    <h1 class="left-title">
+      Penilaian<br>
+      Inovasi Daerah<br>
+      <span>Kota Metro Tahun 2026</span>
+    </h1>
 
-  <button class="login-btn" id="loginBtn" onclick="doLogin()"> Masuk</button>
+    <p class="left-subtitle">
+      Platform digital penilaian inovasi daerah berbasis kolaborasi multi-juri dengan sinkronisasi data real-time.
+    </p>
+
+    <div class="left-stats">
+     
   
-  <div class="login-footer">
-    <strong>BAPPERIDA Kota Metro</strong> <br>
-    Sistem Penilaian Inovasi Daerah
+      <div class="stat-item">
+       
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+       
+      </div>
+    </div>
+
+    <div class="left-logo">
+      <img src="logo-metro.png" alt="Logo Kota Metro"
+        onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231e3a8a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23fbbf24%22 font-size=%2228%22 font-weight=%22bold%22 font-family=%22Arial%22%3EM%3C/text%3E%3C/svg%3E'">
+      <div class="left-logo-text">
+        BAPPERIDA Kota Metro
+        <small>Badan Perencanaan, Pembangunan, Riset dan Inovasi Daerah</small>
+      </div>
+    </div>
   </div>
+
+  <!-- Right panel (form) -->
+  <div class="right-panel">
+    <div class="login-card">
+
+      <div class="card-header">
+        <div class="card-icon">
+          <img src="logo-metro.png" alt="Logo"
+            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%231e3a8a%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23fbbf24%22 font-size=%2228%22 font-weight=%22bold%22 font-family=%22Arial%22%3EM%3C/text%3E%3C/svg%3E'">
+        </div>
+        <div class="card-title">Masuk ke Sistem</div>
+        <div class="card-sub">Sistem Penilaian Inovasi Daerah 2026</div>
+      </div>
+
+      <div id="loginError" class="login-error"></div>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input id="username" type="text" placeholder="Masukkan username…" autocomplete="username" autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input id="password" type="password" placeholder="Masukkan password…" autocomplete="current-password">
+          <button class="pw-toggle" onclick="togglePw()" type="button" id="pwToggle">👁</button>
+        </div>
+      </div>
+
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">Masuk</button>
+
+      <div class="card-footer">
+        <strong>BAPPERIDA Kota Metro</strong><br>
+        Sistem Penilaian Inovasi Daerah
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
-<!-- Firebase Config & Cloud Storage -->
 <script src="firebase-config.js"></script>
-
 <script src="auth.js"></script>
+
 <script>
-  // Jika sudah login, redirect sesuai role
+  // ── Generate floating particles ──
+  (function() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.cssText = `
+        left: ${Math.random() * 100}%;
+        bottom: -10px;
+        width: ${Math.random() * 3 + 1}px;
+        height: ${Math.random() * 3 + 1}px;
+        animation-duration: ${Math.random() * 15 + 10}s;
+        animation-delay: ${Math.random() * -20}s;
+        opacity: ${Math.random() * 0.6 + 0.2};
+      `;
+      container.appendChild(p);
+    }
+  })();
+
+  // ── Redirect jika sudah login ──
   const existingSession = getSession();
   if (existingSession) {
     const cfg = { admin:"dashboard.html", juri_judul:"penilaian.html", juri_sid:"penilaian.html" };
@@ -235,7 +599,7 @@
     const inp = document.getElementById("password");
     const btn = document.getElementById("pwToggle");
     inp.type = inp.type === "password" ? "text" : "password";
-    btn.textContent = inp.type === "password" ? "👁" : "";
+    btn.textContent = inp.type === "password" ? "👁" : "🙈";
   }
 
   document.getElementById("password").addEventListener("keydown", e => {
@@ -245,7 +609,7 @@
     if (e.key === "Enter") document.getElementById("password").focus();
   });
 
-  let pendingUser = null; // Untuk menyimpan user yang perlu pilih role
+  let pendingUser = null;
 
   function doLogin() {
     const btn      = document.getElementById("loginBtn");
@@ -258,7 +622,6 @@
       return;
     }
 
-    // Tampilkan loading
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Memverifikasi…';
     errEl.classList.remove("show");
@@ -271,8 +634,7 @@
         btn.innerHTML = "Masuk";
         return;
       }
-      
-      // Jika perlu pilih role, tampilkan pilihan
+
       if (result.needRoleSelection) {
         pendingUser = result.user;
         showRoleSelection(result.user);
@@ -280,9 +642,8 @@
         btn.innerHTML = "Masuk";
         return;
       }
-      
-      // Sukses — animasi lalu redirect
-      btn.innerHTML = "Berhasil!";
+
+      btn.innerHTML = "✅ Berhasil!";
       btn.style.background = "linear-gradient(135deg,#10b981,#059669)";
       setTimeout(() => { window.location.href = result.redirect; }, 700);
     }, 600);
@@ -290,29 +651,22 @@
 
   function showRoleSelection(user) {
     const errEl = document.getElementById("loginError");
-    const roleLabels = {
-      juri_judul: "Juri Judul Inovasi",
-      juri_sid: "Juri Penilaian SID"
-    };
-    
-    let roleButtons = user.roles.map(role => 
-      `<button onclick="selectRole('${role}')" class="role-select-btn">${roleLabels[role]}</button>`
+    const roleLabels = { juri_judul: "🏛️ Juri Judul Inovasi", juri_sid: "📊 Juri Penilaian SID" };
+    let roleButtons = user.roles.map(role =>
+      `<button onclick="selectRole('${role}')" class="role-select-btn">${roleLabels[role] || role}</button>`
     ).join('');
-    
-    errEl.style.background = "linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%)";
+    errEl.style.background = "linear-gradient(135deg, #dbeafe, #eff6ff)";
     errEl.style.border = "2px solid #93c5fd";
     errEl.style.color = "#1e40af";
-    errEl.innerHTML = `<div style="margin-bottom:12px;font-weight:700;">Pilih Role Anda:</div>${roleButtons}`;
+    errEl.innerHTML = `<div style="margin-bottom:10px;font-weight:800;font-size:14px;">Pilih Role Anda:</div>${roleButtons}`;
     errEl.classList.add("show");
   }
 
   function selectRole(role) {
     if (!pendingUser) return;
-    
     const btn = document.getElementById("loginBtn");
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Memverifikasi…';
-    
     setTimeout(() => {
       const result = loginWithRole(pendingUser, role);
       if (!result.ok) {
@@ -321,18 +675,19 @@
         btn.innerHTML = "Masuk";
         return;
       }
-      
       btn.innerHTML = "✅ Berhasil!";
       btn.style.background = "linear-gradient(135deg,#10b981,#059669)";
       setTimeout(() => { window.location.href = result.redirect; }, 700);
     }, 400);
   }
-  
-  // Expose selectRole ke global scope
+
   window.selectRole = selectRole;
 
   function showError(msg) {
     const el = document.getElementById("loginError");
+    el.style.background = "";
+    el.style.border = "";
+    el.style.color = "";
     el.textContent = "❌ " + msg;
     el.classList.remove("show");
     void el.offsetWidth;
