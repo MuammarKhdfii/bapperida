@@ -1227,26 +1227,32 @@
     });
     
     console.log('[loadRankingData] Filtered entries count:', entries.length);
-    
+
+    // Buat lookup semua data untuk merge entry alias
+    const allLookup = {};
+    entries.forEach(([k, d]) => { allLookup[k] = d; });
+
     const result = entries.map(([judulKey, draf]) => {
       console.log(`\n[loadRankingData] Processing: "${judulKey}"`);
-      console.log('  Draft structure:', {
-        hasJudulState: !!draf.judulState,
-        hasJuriState: !!draf.juriState,
-        hasSkorPerJuri: !!draf.skorPerJuri,
-        hasSkorJudulPerJuri: !!draf.skorJudulPerJuri
-      });
-      
-      if (draf.judulState) {
-        console.log('  judulState keys:', Object.keys(draf.judulState));
-      }
-      if (draf.juriState) {
-        console.log('  juriState keys:', Object.keys(draf.juriState));
+
+      // Cek apakah ada entry canonical (judul baru) yang berbeda key
+      // Jika ya, gabungkan skorJudulPerJuri dan skorPerJuri dari kedua entry
+      const canonicalKey = resolveJudulAlias ? resolveJudulAlias(judulKey) : judulKey;
+      let mergedDraf = draf;
+      if (canonicalKey !== judulKey && allLookup[canonicalKey]) {
+        const canonical = allLookup[canonicalKey];
+        mergedDraf = {
+          ...draf,
+          skorJudulPerJuri: { ...(canonical.skorJudulPerJuri || {}), ...(draf.skorJudulPerJuri || {}) },
+          skorPerJuri:      { ...(canonical.skorPerJuri || {}),      ...(draf.skorPerJuri || {}) },
+          judulState:       { ...(canonical.judulState || {}),       ...(draf.judulState || {}) },
+          juriState:        { ...(canonical.juriState || {}),        ...(draf.juriState || {}) },
+        };
       }
       
       // Rata-rata skor indikator
-      const sp      = draf.skorPerJuri    || {};
-      const sjp     = draf.skorJudulPerJuri || {};
+      const sp      = mergedDraf.skorPerJuri    || {};
+      const sjp     = mergedDraf.skorJudulPerJuri || {};
       const indArr  = Object.values(sp).filter(s => s > 0);
       const judArr  = Object.values(sjp).filter(s => s > 0);
       const avgInd  = indArr.length  > 0 ? indArr.reduce((a,b)=>a+b,0)  / indArr.length  : 0;
@@ -1299,24 +1305,21 @@
       let judulJuriCompleted = 0;
       JURI_LIST_JUDUL.forEach(juriName => {
         const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
-        const skor = draf.skorJudulPerJuri?.[juriName] || draf.skorJudulPerJuri?.[sanitizedName] || 0;
+        const skor = mergedDraf.skorJudulPerJuri?.[juriName] || mergedDraf.skorJudulPerJuri?.[sanitizedName] || 0;
         if (Number(skor) > 0) {
           judulJuriCompleted++;
         }
       });
-      console.log('  judulJuriCompleted:', judulJuriCompleted);
       
       // For juri_sid: count juries yang sudah simpan final (skorPerJuri > 0)
       let indJuriCompleted = 0;
       JURI_LIST.forEach(juriName => {
         const sanitizedName = juriName.replace(/[\.,#$\[\]\/]/g, '_');
-        // Cek dari skorPerJuri (simpan final) - lebih reliable dari cek radio
-        const skor = draf.skorPerJuri?.[juriName] || draf.skorPerJuri?.[sanitizedName] || 0;
+        const skor = mergedDraf.skorPerJuri?.[juriName] || mergedDraf.skorPerJuri?.[sanitizedName] || 0;
         if (Number(skor) > 0) {
           indJuriCompleted++;
         }
       });
-      console.log('  indJuriCompleted:', indJuriCompleted);
       
       return {
         judul: judulDisplay,

@@ -1075,10 +1075,28 @@
       return;
     }
 
+    // Buat lookup semua data untuk merge entry alias
+    const allLookup = {};
+    inovasiList.forEach(([k, d]) => { allLookup[k] = d; });
+
     // Hitung total gabungan per inovasi
     const rows = inovasiList.map(([judulKey, d]) => {
+      // Merge data dari entry canonical jika judulKey adalah alias
+      const canonicalKey = typeof resolveJudulAlias === 'function' ? resolveJudulAlias(judulKey) : judulKey;
+      let mergedD = d;
+      if (canonicalKey !== judulKey && allLookup[canonicalKey]) {
+        const canonical = allLookup[canonicalKey];
+        mergedD = {
+          ...d,
+          judulState: { ...(canonical.judulState || {}), ...(d.judulState || {}) },
+          juriState:  { ...(canonical.juriState  || {}), ...(d.juriState  || {}) },
+          skorJudulPerJuri: { ...(canonical.skorJudulPerJuri || {}), ...(d.skorJudulPerJuri || {}) },
+          skorPerJuri:      { ...(canonical.skorPerJuri || {}),      ...(d.skorPerJuri || {}) },
+        };
+      }
+
       const judulArr = JURI_JUDUL_LIST.map(j => {
-        const data = findJuriData(d.judulState, j);
+        const data = findJuriData(mergedD.judulState, j);
         if (!data) return null;
         let t = 0;
         kriteriaJudul.forEach(k => { const v = data[k.no]||""; if(v) t += Number(v)*k.bobot; });
@@ -1086,7 +1104,7 @@
       }).filter(v => v !== null && v > 0);
 
       const sidArr = JURI_SID_LIST.map(j => {
-        const data = findJuriData(d.juriState, j);
+        const data = findJuriData(mergedD.juriState, j);
         if (!data) return null;
         let t = 0;
         sidIndicators.filter(i=>!i.type).forEach(i => { const v=data.radio?.[i.originalNo]||""; if(v) t+=Number(v)*i.bobot; });
@@ -1098,13 +1116,13 @@
       const total    = avgJudul + avgSID;
       
       // PERBAIKAN: Cari metadata di KEDUA list (Judul dan SID)
-      let meta = findMetaInovasi(judulKey, d);
+      let meta = findMetaInovasi(judulKey, mergedD);
 
       let status = 'kosong';
       if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
       else if (judulArr.length > 0 || sidArr.length > 0) status = 'partial';
 
-      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: d.savedAt||"", allData: d, judulDisplay: meta._judulDisplay || judulKey };
+      return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: mergedD.savedAt||d.savedAt||"", allData: mergedD, judulDisplay: meta._judulDisplay || judulKey };
     }).sort((a,b) => b.total - a.total);
 
     let html = `
