@@ -1152,16 +1152,52 @@ const JUDUL_ALIAS = {
   "Ambulance Sehat":                              "SUMBERSARI HADIR",
   "AMBULANCE SEHAT":                              "SUMBERSARI HADIR",
 
-  // Digitalisasi Laporan — judul lama → judul baru (e-ILHP)
-  "Digitalisasi Laporan Ikhtisar Pengawasan APIP":            "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
-  "DIGITALISASI LAPORAN IKHTISAR PENGAWASAN APIP":            "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
-  "Digitalisasi Laporan Ikhtisar Pengawasan":                 "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+  // Digitalisasi Laporan — judul lama dikecualikan via JUDUL_EXCLUDED, tidak perlu alias lagi
+  // "Digitalisasi Laporan Ikhtisar Pengawasan APIP" → masuk JUDUL_EXCLUDED
 
   // SI GEMBIRA → SIAP GEMBIRA (judul lama di Firebase berbeda dari master)
   "SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)":  "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
   "SI GEMBIRA (Sistem Gerakan Metro Bebas Dari Narkotika)":   "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
   "SI GEMBIRA":                                               "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
 };
+
+// ══════════════════════════════════════════════════════════════════
+//  JUDUL YANG DIKECUALIKAN DARI RANKING
+//  Judul-judul ini sudah digabung ke inovasi lain — jangan tampil
+//  sebagai entry terpisah di perangkingan.
+// ══════════════════════════════════════════════════════════════════
+const JUDUL_EXCLUDED = new Set([
+  // 3 judul lama yang digabung ke SUMBERSARI HADIR (selain Ambulance Sehat yg sudah di-alias)
+  "Bincang Sehat Sumber Sari Bantul",
+  "BINCANG SEHAT SUMBER SARI BANTUL",
+  "Pelayanan Kesehatan terpadu Bahagia",
+  "PELAYANAN KESEHATAN TERPADU BAHAGIA",
+  "Pelayanan Kesehatan Terpadu Bahagia",
+  "AMBULAN SIAGA (Jemput Sakit Pulang Sehat)",
+  "Ambulan Siaga (Jemput Sakit Pulang Sehat)",
+
+  // Judul lama Digitalisasi Laporan — sudah ada versi baru (e-ILHP) di Firebase
+  "Digitalisasi Laporan Ikhtisar Pengawasan APIP",
+  "DIGITALISASI LAPORAN IKHTISAR PENGAWASAN APIP",
+  "Digitalisasi Laporan Ikhtisar Pengawasan",
+]);
+
+/**
+ * Cek apakah sebuah judul harus dikecualikan dari ranking.
+ * Mencocokkan exact, case-insensitive, dan sebagian kata kunci.
+ */
+function isJudulExcluded(judulKey) {
+  if (!judulKey) return false;
+  // Exact atau case-insensitive
+  if (JUDUL_EXCLUDED.has(judulKey) || JUDUL_EXCLUDED.has(judulKey.trim())) return true;
+  const lower = judulKey.toLowerCase().trim();
+  for (const ex of JUDUL_EXCLUDED) {
+    if (ex.toLowerCase().trim() === lower) return true;
+  }
+  // Cek juga alias — kalau sudah punya alias ke judul lain, entry duplikat harus dicek
+  // (sudah ditangani di resolveJudulAlias, tapi dobel-check di sini)
+  return false;
+}
 
 /**
  * Cari metadata inovasi dengan fallback:

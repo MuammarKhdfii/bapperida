@@ -1182,6 +1182,12 @@
       // Skip jika value bukan object atau tidak punya struktur inovasi
       if (typeof value !== 'object' || value === null) return false;
       
+      // Skip judul yang sudah digabung ke inovasi lain (tidak boleh muncul di ranking)
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(key)) {
+        console.log(`  [EXCLUDED] "${key}" - sudah digabung ke inovasi lain`);
+        return false;
+      }
+
       // Skip jika key adalah property object standar
       if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
            'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',

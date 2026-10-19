@@ -512,6 +512,7 @@
   function filterInovasiValid(all) {
     return Object.entries(all).filter(([key, value]) => {
       if (typeof value !== 'object' || value === null) return false;
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(key)) return false;
       if (['activeJuri','bentukInovasi','createdAt','judulState','juriState',
            'namaInovasi','notesState','savedAt','signatureState','skorPerJuri',
            'skorJudulPerJuri','perangkatDaerah','tahun','ringkasan','kategori',

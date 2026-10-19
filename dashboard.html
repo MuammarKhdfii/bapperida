@@ -996,6 +996,9 @@
     const inovasiList = Object.entries(all).filter(([key, value]) => {
       // Skip jika value bukan object atau tidak punya struktur inovasi
       if (typeof value !== 'object' || value === null) return false;
+
+      // Skip judul yang sudah digabung ke inovasi lain
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(key)) return false;
       
       // Skip jika key adalah property object standar
       if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
@@ -1269,6 +1272,7 @@
       // PERBAIKAN: Filter hanya entries yang merupakan data inovasi valid
       const inovasiList = Object.entries(all).filter(([key, value]) => {
         if (typeof value !== 'object' || value === null) return false;
+        if (typeof isJudulExcluded === 'function' && isJudulExcluded(key)) return false;
         if (['activeJuri', 'bentukInovasi', 'createdAt', 'judulState', 'juriState', 
              'namaInovasi', 'notesState', 'savedAt', 'signatureState', 'skorPerJuri',
              'skorJudulPerJuri', 'perangkatDaerah', 'tahun', 'ringkasan', 'kategori',
@@ -1799,6 +1803,7 @@
     
     const inovasiList = Object.entries(all).filter(([key, value]) => {
       if (typeof value !== 'object' || value === null) return false;
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(key)) return false;
       if (['activeJuri','bentukInovasi','createdAt','judulState','juriState',
            'namaInovasi','notesState','savedAt','signatureState','skorPerJuri',
            'skorJudulPerJuri','perangkatDaerah','tahun','ringkasan','kategori',
