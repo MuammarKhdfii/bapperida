@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Dashboard Admin SID — BAPPERIDA 2026</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
@@ -452,6 +455,11 @@
   // ── Route Guard: hanya admin ──
   const SESSION = requireAuth("admin");
   if (!SESSION) throw new Error("Unauthorized");
+
+  // ── Back button guard ──
+  window.addEventListener('pageshow', function() {
+    if (!getSession()) window.location.replace("login.html");
+  });
   renderSessionNav("sessionNav");
 
   const JURI_SID_LIST = [

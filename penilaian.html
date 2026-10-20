@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Form Penilaian Inovasi — BAPPERIDA 2026</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
@@ -830,5 +833,11 @@ async function handleDraftClick() {
 <script src="auth.js"></script>
 <script src="realtime-sync.js"></script>
 <script src="penilaian.js"></script>
+<script>
+  // ── Back button guard ──
+  window.addEventListener('pageshow', function() {
+    if (!getSession()) window.location.replace("login.html");
+  });
+</script>
 </body>
 </html>

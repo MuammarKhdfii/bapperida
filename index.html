@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Sistem Penilaian Inovasi Daerah 2026 — BAPPERIDA Kota Metro</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="landing.css">
@@ -424,6 +427,13 @@
     if (s.role === "admin") { window.location.replace("dashboard.html"); return; }
     // juri_judul & juri_sid tetap di index.html untuk pilih inovasi
   })();
+
+  // ── Back button guard: cek session setiap kali halaman ditampilkan ──
+  window.addEventListener('pageshow', function(e) {
+    if (!getSession()) {
+      window.location.replace("login.html");
+    }
+  });
 
   // ── Load innovation data based on role ──
   const SESSION = getSession();

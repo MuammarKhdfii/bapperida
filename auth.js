@@ -139,7 +139,7 @@ function logout() {
     return false;
   }
   clearSession();
-  window.location.href = "login.html";
+  window.location.replace("login.html");
   return true;
 }
 
@@ -200,7 +200,7 @@ function renderSessionNav(containerId = "sessionNav") {
       e.stopPropagation();
       if (confirm("Anda yakin ingin keluar?")) {
         clearSession();
-        window.location.href = "login.html";
+        window.location.replace("login.html");
       }
       return false;
     };

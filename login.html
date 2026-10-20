@@ -595,6 +595,27 @@
     window.location.replace(cfg[existingSession.role] || "login.html");
   }
 
+  // ── Paksa browser tidak cache halaman login ──
+  // Supaya back button dari halaman utama selalu render ulang (bukan dari cache)
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+      // Halaman di-restore dari bfcache — cek session ulang
+      const s = getSession();
+      if (s) {
+        const cfg = { admin:"dashboard.html", juri_judul:"penilaian.html", juri_sid:"penilaian.html" };
+        window.location.replace(cfg[s.role] || "login.html");
+      } else {
+        // Sudah logout — reset form, jangan biarkan data lama terisi
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('loginError').classList.remove('show');
+        document.getElementById('loginBtn').disabled = false;
+        document.getElementById('loginBtn').innerHTML = 'Masuk';
+        document.getElementById('loginBtn').style.background = '';
+      }
+    }
+  });
+
   function togglePw() {
     const inp = document.getElementById("password");
     const btn = document.getElementById("pwToggle");
