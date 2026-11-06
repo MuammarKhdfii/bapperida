@@ -3,8 +3,18 @@
 //  Firebase Realtime Listener untuk sync antar juri
 // ══════════════════════════════════════════════════════
 
+// Debounce helper — cegah refreshUI dipanggil terlalu sering
+function _debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
 const realtimeSync = {
   listeners: {},
+  _debouncedRefreshUI: null,
   
   /**
    * Subscribe to real-time updates for all innovations
@@ -15,47 +25,52 @@ const realtimeSync = {
       console.log('⚠️ Firebase not available for real-time sync');
       return;
     }
-    
+
     console.log('👂 Subscribing to real-time updates...');
-    
+
+    // Buat debounced refreshUI — max 1x per 3 detik agar tidak freeze
+    if (!this._debouncedRefreshUI) {
+      this._debouncedRefreshUI = _debounce(() => this.refreshUI(), 3000);
+    }
+
     // Listen to entire penilaian node
     const ref = database.ref('penilaian');
-    
+
     ref.on('child_changed', (snapshot) => {
       const sanitizedKey = snapshot.key;
       const originalKey = desanitizeFirebaseKey(sanitizedKey);
       const data = snapshot.val();
-      
-      console.log('🔄 Real-time update detected:', originalKey);
-      
-      // Skip jika data bukan object inovasi valid (harus punya judulState atau juriState)
+
+      // Skip jika data bukan object inovasi valid
       if (!data || typeof data !== 'object') return;
       if (!data.judulState && !data.juriState) return;
-      
+
       // Update localStorage
       this.updateLocalStorage(originalKey, data);
-      
+
       // Show notification
       this.showUpdateNotification(originalKey, data);
-      
-      // Refresh UI if on relevant page
-      this.refreshUI();
+
+      // Refresh UI dengan debounce — tidak langsung untuk cegah freeze
+      this._debouncedRefreshUI();
     });
-    
+
     ref.on('child_added', (snapshot) => {
       const sanitizedKey = snapshot.key;
       const originalKey = desanitizeFirebaseKey(sanitizedKey);
       const data = snapshot.val();
-      
-      console.log('✨ New assessment detected:', originalKey);
-      
+
+      // Skip saat initial load (data sudah ada di localStorage)
+      if (!data || typeof data !== 'object') return;
+      if (!data.judulState && !data.juriState) return;
+
       // Update localStorage
       this.updateLocalStorage(originalKey, data);
-      
-      // Refresh UI
-      this.refreshUI();
+
+      // Refresh dengan debounce
+      this._debouncedRefreshUI();
     });
-    
+
     console.log('✅ Real-time sync activated');
   },
   

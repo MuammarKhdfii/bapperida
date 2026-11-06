@@ -257,13 +257,14 @@ const firebaseReadyPromise = new Promise(resolve => {
 // Auto-init when script loads
 function _doInitAndResolve() {
   initFirebase();
-  // Jika Firebase enabled, tunggu koneksi terverifikasi (max 3 detik)
+  // Jika Firebase enabled, tunggu koneksi terverifikasi (max 1.5 detik, bukan 3)
+  // UI sudah bisa render dari localStorage sementara menunggu
   if (ENABLE_FIREBASE && firebaseInitialized && database) {
     const connRef = database.ref('.info/connected');
     const timeout = setTimeout(() => {
       console.warn('⏱️ Firebase connection check timeout — proceeding with available data');
       _firebaseReadyResolve('timeout');
-    }, 3000);
+    }, 1500); // Dikurangi dari 3000ms → 1500ms
     connRef.once('value', snap => {
       clearTimeout(timeout);
       console.log('🔗 Firebase connection status:', snap.val() ? 'CONNECTED' : 'OFFLINE');

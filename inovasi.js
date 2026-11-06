@@ -1248,71 +1248,65 @@ if (document.readyState === 'loading') {
  * @param {Array}  list     - daftarInovasi yang dipakai (default: daftarInovasiJudulLengkap)
  * @returns {{ judul, perangkatDaerah, bentuk, waktu, ringkasan } | {}}
  */
+/**
+ * Cache untuk hasil findMetaInovasiByJudul — cegah O(n²) per render ranking
+ */
+const _metaCache = new Map();
+
 function findMetaInovasiByJudul(judulKey, list) {
   const arr = list || daftarInovasiJudulLengkap;
   if (!judulKey) return {};
 
-  // Helper: normalisasi string (hapus tanda baca ganda, trim spasi berlebih)
-  const normalize = s => s.toLowerCase().trim()
-    .replace(/\s+/g, ' ')
-    .replace(/[""'']/g, '"')
-    .replace(/[–—]/g, '-');
+  // Gunakan cache jika sudah pernah dicari
+  const cacheKey = judulKey + (list ? '__sid' : '__judul');
+  if (_metaCache.has(cacheKey)) return _metaCache.get(cacheKey);
+
+  const normalize = s => s.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[""'']/g, '"').replace(/[–—]/g, '-');
 
   // 1. Exact match
   let meta = arr.find(i => i.judul === judulKey);
-  if (meta) return meta;
+  if (meta) { _metaCache.set(cacheKey, meta); return meta; }
 
-  // 2. Alias mapping (judul lama → judul baru)
+  // 2. Alias mapping
   const mapped = JUDUL_ALIAS[judulKey] || JUDUL_ALIAS[judulKey.trim()];
   if (mapped) {
     meta = arr.find(i => i.judul === mapped);
-    if (meta) return meta;
+    if (!meta) meta = daftarInovasiSID.find(i => i.judul === mapped);
+    if (meta) { _metaCache.set(cacheKey, meta); return meta; }
   }
 
-  // 3. Case-insensitive + normalize whitespace
+  // 3. Case-insensitive + normalize
   const lower = normalize(judulKey);
   meta = arr.find(i => normalize(i.judul) === lower);
-  if (meta) return meta;
-
-  // 4. Coba di daftarInovasiSID juga (kalau list yang dilewat adalah JudulLengkap)
-  if (arr === daftarInovasiJudulLengkap || !list) {
+  if (!meta && (arr === daftarInovasiJudulLengkap || !list)) {
     meta = daftarInovasiSID.find(i => normalize(i.judul) === lower);
-    if (meta) return meta;
   }
+  if (meta) { _metaCache.set(cacheKey, meta); return meta; }
 
-  // 5. Substring match — salah satu mengandung yang lain (min 10 karakter)
+  // 4. Substring match (min 10 karakter)
   if (lower.length >= 10) {
-    meta = arr.find(i => {
-      const a = normalize(i.judul);
-      return a.includes(lower) || lower.includes(a);
-    });
-    if (meta) return meta;
-
-    // Coba di SID juga
-    if (arr === daftarInovasiJudulLengkap || !list) {
-      meta = daftarInovasiSID.find(i => {
-        const a = normalize(i.judul);
-        return a.includes(lower) || lower.includes(a);
-      });
-      if (meta) return meta;
+    meta = arr.find(i => { const a = normalize(i.judul); return a.includes(lower) || lower.includes(a); });
+    if (!meta && (arr === daftarInovasiJudulLengkap || !list)) {
+      meta = daftarInovasiSID.find(i => { const a = normalize(i.judul); return a.includes(lower) || lower.includes(a); });
     }
+    if (meta) { _metaCache.set(cacheKey, meta); return meta; }
   }
 
-  // 6. Word-based match: minimal 60% kata kunci cocok
+  // 5. Word-based match 60% (hanya jika substring gagal)
   const words = lower.split(/\s+/).filter(w => w.length > 3);
   if (words.length >= 2) {
-    const allArr = (arr === daftarInovasiJudulLengkap || !list)
-      ? [...arr, ...daftarInovasiSID]
-      : arr;
+    const allArr = (arr === daftarInovasiJudulLengkap || !list) ? [...arr, ...daftarInovasiSID] : arr;
     meta = allArr.find(i => {
       const iWords = normalize(i.judul).split(/\s+/);
       const matchCount = words.filter(w => iWords.some(iw => iw.includes(w) || w.includes(iw))).length;
       return matchCount / words.length >= 0.6;
     });
-    if (meta) return meta;
+    if (meta) { _metaCache.set(cacheKey, meta); return meta; }
   }
 
-  return {};
+  const empty = {};
+  _metaCache.set(cacheKey, empty);
+  return empty;
 }
 
 /**
