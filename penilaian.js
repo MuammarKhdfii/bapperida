@@ -1,14 +1,14 @@
-﻿﻿﻿﻿﻿﻿﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+﻿﻿// ══════════════════════════════════════════
 //  penilaian.js — 1 Form: Judul + Indikator
 //  Route guard: juri_judul | juri_sid
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 
-// â”€â”€ Helper: Sanitize nama juri untuk Firebase key â”€â”€
+// ── Helper: Sanitize nama juri untuk Firebase key ──
 function sanitizeJuriName(name) {
   return name.replace(/[\.,#$\[\]\/]/g, '_');
 }
 
-// â”€â”€ Helper: Coba load state dengan nama asli atau sanitized â”€â”€
+// ── Helper: Coba load state dengan nama asli atau sanitized ──
 function getJuriState(allDraf, namaInovasi, juriName, stateKey) {
   const data = allDraf[namaInovasi];
   if (!data || !data[stateKey]) return null;
@@ -27,15 +27,15 @@ function getJuriState(allDraf, namaInovasi, juriName, stateKey) {
   return null;
 }
 
-// â”€â”€ Route Guard — harus dipanggil pertama â”€â”€
+// ── Route Guard — harus dipanggil pertama ──
 const SESSION = requireAuth(["juri_judul", "juri_sid"]);
 if (!SESSION) throw new Error("Unauthorized"); // stop execution if redirect happened
 
-// â”€â”€ Load innovation data based on role â”€â”€
+// ── Load innovation data based on role ──
 daftarInovasi = getDaftarInovasiByRole(SESSION.role);
-// console.log(`[penilaian.js] Loaded ${daftarInovasi.length} innovations for role: ${SESSION.role}`);
+console.log(`[penilaian.js] Loaded ${daftarInovasi.length} innovations for role: ${SESSION.role}`);
 
-// â”€â”€ Tentukan form berdasarkan role â”€â”€
+// ── Tentukan form berdasarkan role ──
 const ROLE        = SESSION.role;            // "juri_judul" | "juri_sid"
 const SHOW_JUDUL  = ROLE === "juri_judul";
 const SHOW_SID    = ROLE === "juri_sid";
@@ -66,7 +66,7 @@ if (SHOW_SID) {
   if (fabDraft) fabDraft.style.display = 'flex';
 }
 
-// â”€â”€ State untuk juri yang sedang login â”€â”€
+// ── State untuk juri yang sedang login ──
 // judulState / juriState hanya untuk user ini
 const judulState   = { [SESSION.nama]: {} };
 const juriState    = { [SESSION.nama]: { radio:{}, monev:{}, monevKet:{}, videoUrl:{}, videoKet:{} } };
@@ -74,11 +74,11 @@ const notesState   = { [SESSION.nama]: { catatan: "", rekomendasi: "" } };
 const signatureState = { [SESSION.nama]: "" };
 // State form Rancang Bangun Inovasi (khusus juri_sid)
 const rancangState = { [SESSION.nama]: {} };
-// keys: "rancangBangun" | "tujuan" | "manfaat" | "hasilInovasi"  â†’ nilai: "3" | "7" | "10"
+// keys: "rancangBangun" | "tujuan" | "manfaat" | "hasilInovasi"  → nilai: "3" | "7" | "10"
 
 let namaInovasi = "";
 
-// â”€â”€ Fungsi Logout Juri (harus didefinisikan di atas untuk onclick di HTML) â”€â”€
+// ── Fungsi Logout Juri (harus didefinisikan di atas untuk onclick di HTML) ──
 window.logoutJuri = function() {
   try {
     // Simpan data jika fungsi saveAll tersedia
@@ -92,7 +92,7 @@ window.logoutJuri = function() {
   logout();
 };
 
-// â”€â”€ Init â”€â”€
+// ── Init ──
 initScrollTop("scrollTopBtn");
 namaInovasi = localStorage.getItem("iid2026_selected") || "";
 
@@ -116,9 +116,9 @@ if (namaInovasi) {
     gdriveContainer.innerHTML = meta.googleDriveLinks.map((link, idx) => `
       <div class="gdrive-link-item">
         <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="gdrive-link" title="${link.description}">
-          <span class="gdrive-link-icon">ðŸ“„</span>
+          <span class="gdrive-link-icon">📄</span>
           <span class="gdrive-link-text">${link.name}</span>
-          <span class="gdrive-link-arrow">â†’</span>
+          <span class="gdrive-link-arrow">→</span>
         </a>
         <div class="gdrive-tooltip">${link.description}</div>
       </div>
@@ -136,7 +136,7 @@ if (namaInovasi) {
   document.getElementById("heroJudulInovasi").textContent = "Form Penilaian";
   document.getElementById("heroPDInovasi").textContent    = "Kembali ke beranda untuk memilih inovasi";
   // Jika namaInovasi kosong, redirect ke index.html
-  console.warn('âš ï¸ namaInovasi kosong! Redirect ke index.html...');
+  console.warn('⚠️ namaInovasi kosong! Redirect ke index.html...');
   window.location.href = 'index.html';
 }
 
@@ -164,10 +164,10 @@ if (namaInovasi) {
     const rancangData = getJuriState(allDraf, namaInovasi, SESSION.nama, 'rancangState');
     if (rancangData) rancangState[SESSION.nama] = rancangData;
 
-    // console.log('Restored state for:', SESSION.nama);
-    // console.log('- judulState:', !!judulData);
-    // console.log('- juriState radio keys:', Object.keys(juriState[SESSION.nama]?.radio || {}).length);
-    // console.log('- rancangState:', !!rancangData, JSON.stringify(rancangState[SESSION.nama]));
+    console.log('Restored state for:', SESSION.nama);
+    console.log('- judulState:', !!judulData);
+    console.log('- juriState radio keys:', Object.keys(juriState[SESSION.nama]?.radio || {}).length);
+    console.log('- rancangState:', !!rancangData, JSON.stringify(rancangState[SESSION.nama]));
   }
 
   // Sembunyikan session login grid, tampilkan form langsung
@@ -188,7 +188,7 @@ if (namaInovasi) {
   initSignatureCanvas();
 })().catch(err => console.error('[restoreState] Error:', err));
 
-// â”€â”€ Load Notes State â”€â”€
+// ── Load Notes State ──
 function loadNotesState() {
   const notesCatatan = document.getElementById("notesCatatan");
   const notesRekomendasi = document.getElementById("notesRekomendasi");
@@ -214,7 +214,7 @@ function saveNotesState() {
   };
 }
 
-// â”€â”€ Render kartu pilih juri â”€â”€
+// ── Render kartu pilih juri ──
 function renderSessionGrid() {
   const grid = document.getElementById("sessionJuriGrid");
   grid.innerHTML = SEMUA_JURI.map((j, idx) => {
@@ -227,8 +227,8 @@ function renderSessionGrid() {
           <div class="sjc-nama">${j.nama}</div>
           <div class="sjc-role">${j.role}</div>
           <div class="sjc-tags">
-            ${j.tipe.includes("judul")     ? '<span class="sjc-tag tag-judul">ðŸ† Judul</span>'     : ""}
-            ${j.tipe.includes("indikator") ? '<span class="sjc-tag tag-ind">ðŸ“Š Indikator</span>'  : ""}
+            ${j.tipe.includes("judul")     ? '<span class="sjc-tag tag-judul">🏆 Judul</span>'     : ""}
+            ${j.tipe.includes("indikator") ? '<span class="sjc-tag tag-ind">📊 Indikator</span>'  : ""}
           </div>
         </div>
         <div class="sjc-status">
@@ -253,7 +253,7 @@ function getStatusJuri(jObj) {
   return { terisi, total, pct: total > 0 ? Math.round((terisi/total)*100) : 0 };
 }
 
-// â”€â”€ Login juri â”€â”€
+// ── Login juri ──
 function loginJuri(idx) {
   activeJuri = SEMUA_JURI[idx];
   document.getElementById("sessionLogin").style.display  = "none";
@@ -272,7 +272,7 @@ function loginJuri(idx) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// â”€â”€ Render Kriteria Judul â”€â”€
+// ── Render Kriteria Judul ──
 function renderJudul() {
   const c = document.getElementById("judulContainer");
   c.innerHTML = "";
@@ -319,8 +319,8 @@ function loadJudulStateLocal() {
   });
 }
 
-// â”€â”€ Render Indikator SID â”€â”€
-// â”€â”€ Form Penilaian Proposal Inovasi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Render Indikator SID ──
+// ── Form Penilaian Proposal Inovasi ──────────────────────────────────────
 const RANCANG_KRITERIA = [
   {
     key: "rancangBangun",
@@ -428,73 +428,69 @@ function calcSkorRancang() {
   return skor;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function _buildIndicatorCard(item, idx) {
-  if (item.type === "monev") {
-    const card = document.createElement("article");
-    card.className = "indicator indicator-special-input"; card.dataset.no = item.originalNo;
-    card.innerHTML = `
-      <div class="indicator-head"><div class="indicator-title"><span class="indicator-number">${item.displayNo}.</span>${esc(item.nama)}</div><span class="badge-type badge-monev">ðŸ“‹ Monev</span></div>
-      <div class="special-input-block">
-        <div class="special-input-field"><label for="monev-${item.originalNo}">Jumlah Dokumen Monev</label><input id="monev-${item.originalNo}" type="number" min="0" step="1" value="0"><span class="input-hint">Jumlah dokumen Monev tersedia</span></div>
-        <div class="special-input-field"><label for="monevket-${item.originalNo}">Keterangan</label><textarea id="monevket-${item.originalNo}" rows="2" placeholder="Keterangan (opsional)â€¦"></textarea></div>
-      </div>
-      <div class="ket"><b>Keterangan:</b> ${esc(item.keterangan)}</div>`;
-    card.querySelector(`#monev-${item.originalNo}`).addEventListener("input", saveIndikatorStateLocal);
-    card.querySelector(`#monevket-${item.originalNo}`).addEventListener("input", saveIndikatorStateLocal);
-    return card;
-  }
-  if (item.type === "video") {
-    const card = document.createElement("article");
-    card.className = "indicator indicator-special-input"; card.dataset.no = item.originalNo;
-    card.innerHTML = `
-      <div class="indicator-head"><div class="indicator-title"><span class="indicator-number">${item.displayNo}.</span>${esc(item.nama)}</div><span class="badge-type badge-video">🎥 Video</span></div>
-      <div class="special-input-block">
-        <div class="special-input-field"><label for="video-url-${item.originalNo}">Link / URL Video</label><input id="video-url-${item.originalNo}" type="url" placeholder="https://â€¦"><span class="input-hint">YouTube, Google Drive, dll.</span></div>
-        <div class="special-input-field"><label for="video-ket-${item.originalNo}">Judul Video</label><input id="video-ket-${item.originalNo}" type="text" placeholder="Judul videoâ€¦"></div>
-        <div id="video-preview-${item.originalNo}" class="video-preview" style="display:none"><a id="video-link-${item.originalNo}" href="#" target="_blank" rel="noopener" class="video-link-preview">🔗 Buka video</a></div>
-      </div>
-      <div class="ket"><b>Keterangan:</b> ${esc(item.keterangan)}</div>`;
-    const urlInput = card.querySelector(`#video-url-${item.originalNo}`);
-    urlInput.addEventListener("input", () => {
-      const val = urlInput.value.trim();
-      const l = card.querySelector(`#video-link-${item.originalNo}`);
-      const p = card.querySelector(`#video-preview-${item.originalNo}`);
-      if (l) l.href = val; if (p) p.style.display = val.startsWith("http") ? "block" : "none";
-      saveIndikatorStateLocal();
-    });
-    card.querySelector(`#video-ket-${item.originalNo}`).addEventListener("input", saveIndikatorStateLocal);
-    return card;
-  }
-  const card = document.createElement("article");
-  card.className = "indicator";
-  card.innerHTML = `
-    <div class="indicator-head"><div class="indicator-title"><span class="indicator-number">${item.displayNo}.</span>${esc(item.nama)}</div><div class="meta">Bobot: ${item.bobot}</div></div>
-    <div class="options">
-      ${item.parameter.map((p, i) => `
-        <div class="option">
-          <input type="radio" id="i${item.originalNo}p${i+1}" name="ind-${item.originalNo}" value="${i+1}">
-          <label for="i${item.originalNo}p${i+1}"><div class="option-title">Parameter ${i+1} — Nilai ${i+1}</div><div class="option-text">${esc(p)}</div></label>
-        </div>`).join("")}
-    </div>
-    <div class="result">Skor: <b id="res-${item.originalNo}">0.00</b></div>
-    <div class="ket"><b>Keterangan:</b> ${esc(item.keterangan)}</div>`;
-  card.querySelectorAll("input[type=radio]").forEach(el =>
-    el.addEventListener("change", () => { saveIndikatorStateLocal(); calculate(); }));
-  return card;
-}
-
+// ─────────────────────────────────────────────────────────────────────────────
 function renderIndikator() {
   const c = document.getElementById("indicatorContainer");
   c.innerHTML = "";
-
-  // Render secara bertahap dengan DocumentFragment agar tidak freeze UI
-  const fragment = document.createDocumentFragment();
   sidIndicators.forEach((item, idx) => {
-    fragment.appendChild(_buildIndicatorCard(item, idx));
+    if (item.type === "monev") {
+      const card = document.createElement("article");
+      card.className = "indicator indicator-special-input"; card.dataset.no = item.originalNo;
+      card.innerHTML = `
+        <div class="indicator-head"><div class="indicator-title"><span class="indicator-number">${item.displayNo}.</span>${esc(item.nama)}</div><span class="badge-type badge-monev">📋 Monev</span></div>
+        <div class="special-input-block">
+          <div class="special-input-field"><label for="monev-${item.originalNo}">Jumlah Dokumen Monev</label><input id="monev-${item.originalNo}" type="number" min="0" step="1" value="0"><span class="input-hint">Jumlah dokumen Monev tersedia</span></div>
+          <div class="special-input-field"><label for="monevket-${item.originalNo}">Keterangan</label><textarea id="monevket-${item.originalNo}" rows="2" placeholder="Keterangan (opsional)…"></textarea></div>
+        </div>
+        <div class="ket"><b>Keterangan:</b> ${esc(item.keterangan)}</div>`;
+      c.appendChild(card);
+      card.querySelector(`#monev-${item.originalNo}`).addEventListener("input", saveIndikatorStateLocal);
+      card.querySelector(`#monevket-${item.originalNo}`).addEventListener("input", saveIndikatorStateLocal);
+      return;
+    }
+    if (item.type === "video") {
+      const card = document.createElement("article");
+      card.className = "indicator indicator-special-input"; card.dataset.no = item.originalNo;
+      card.innerHTML = `
+        <div class="indicator-head"><div class="indicator-title"><span class="indicator-number">${item.displayNo}.</span>${esc(item.nama)}</div><span class="badge-type badge-video">🎥 Video</span></div>
+        <div class="special-input-block">
+          <div class="special-input-field"><label for="video-url-${item.originalNo}">Link / URL Video</label><input id="video-url-${item.originalNo}" type="url" placeholder="https://…"><span class="input-hint">YouTube, Google Drive, dll.</span></div>
+          <div class="special-input-field"><label for="video-ket-${item.originalNo}">Judul Video</label><input id="video-ket-${item.originalNo}" type="text" placeholder="Judul video…"></div>
+          <div id="video-preview-${item.originalNo}" class="video-preview" style="display:none"><a id="video-link-${item.originalNo}" href="#" target="_blank" rel="noopener" class="video-link-preview">🔗 Buka video</a></div>
+        </div>
+        <div class="ket"><b>Keterangan:</b> ${esc(item.keterangan)}</div>`;
+      c.appendChild(card);
+      const urlInput = card.querySelector(`#video-url-${item.originalNo}`);
+      urlInput.addEventListener("input", () => {
+        const val = urlInput.value.trim();
+        const l = card.querySelector(`#video-link-${item.originalNo}`);
+        const p = card.querySelector(`#video-preview-${item.originalNo}`);
+        if (l) l.href = val; if (p) p.style.display = val.startsWith("http") ? "block" : "none";
+        saveIndikatorStateLocal();
+      });
+      card.querySelector(`#video-ket-${item.originalNo}`).addEventListener("input", saveIndikatorStateLocal);
+      return;
+    }
+    const card = document.createElement("article");
+    card.className = "indicator"; card.style.animationDelay = (idx * 0.03) + "s";
+    card.innerHTML = `
+      <div class="indicator-head"><div class="indicator-title"><span class="indicator-number">${item.displayNo}.</span>${esc(item.nama)}</div><div class="meta">Bobot: ${item.bobot}</div></div>
+      <div class="options">
+        ${item.parameter.map((p, i) => `
+          <div class="option">
+            <input type="radio" id="i${item.originalNo}p${i+1}" name="ind-${item.originalNo}" value="${i+1}">
+            <label for="i${item.originalNo}p${i+1}"><div class="option-title">Parameter ${i+1} — Nilai ${i+1}</div><div class="option-text">${esc(p)}</div></label>
+          </div>`).join("")}
+      </div>
+      <div class="result">Skor: <b id="res-${item.originalNo}">0.00</b></div>
+      <div class="ket"><b>Keterangan:</b> ${esc(item.keterangan)}</div>`;
+    c.appendChild(card);
+    card.querySelectorAll("input[type=radio]").forEach(el =>
+      el.addEventListener("change", () => { saveIndikatorStateLocal(); calculate(); }));
   });
-  c.appendChild(fragment);
   loadIndikatorStateLocal();
+  // Gunakan DocumentFragment agar append sekali ke DOM (lebih cepat)
+  // (sudah menggunakan c.appendChild per card — ini sudah cukup efisien)
 }
 
 function saveIndikatorStateLocal() {
@@ -540,7 +536,7 @@ function render() {
   }
 }
 
-// â”€â”€ Calculate â”€â”€
+// ── Calculate ──
 function calculate() {
   const showJudul = SHOW_JUDUL;
   const showInd   = SHOW_SID;
@@ -636,14 +632,14 @@ function calculate() {
   const st  = document.getElementById("sumTotal");   if (st)  st.textContent  = `${total.toFixed(2)} / ${maxTotal.toFixed(0)}`;
 }
 
-// â”€â”€ Simpan â”€â”€
+// ── Simpan ──
 async function saveAll(showAnim = false) {
-  // console.log('=== saveAll START ===');
+  console.log('=== saveAll START ===');
   
   // Guard: jangan simpan jika namaInovasi kosong
   if (!namaInovasi) {
-    console.error('âŒ saveAll dibatalkan: namaInovasi kosong!');
-    alert('âŒ Tidak dapat menyimpan: inovasi belum dipilih!\n\nKembali ke beranda dan pilih inovasi terlebih dahulu.');
+    console.error('❌ saveAll dibatalkan: namaInovasi kosong!');
+    alert('❌ Tidak dapat menyimpan: inovasi belum dipilih!\n\nKembali ke beranda dan pilih inovasi terlebih dahulu.');
     return;
   }
   
@@ -673,8 +669,8 @@ async function saveAll(showAnim = false) {
     });
   }
 
-  // console.log('Skor Judul:', skorJudul);
-  // console.log('Skor Indikator:', skorInd);
+  console.log('Skor Judul:', skorJudul);
+  console.log('Skor Indikator:', skorInd);
 
   const all = await loadAllDraf();
   
@@ -707,8 +703,8 @@ async function saveAll(showAnim = false) {
   // Sanitize nama juri untuk Firebase (hapus karakter ilegal: . , # $ [ ] /)
   const sanitizedJuriName = SESSION.nama.replace(/[\.,#$\[\]\/]/g, '_');
   
-  // console.log('Original jury name:', SESSION.nama);
-  // console.log('Sanitized jury name:', sanitizedJuriName);
+  console.log('Original jury name:', SESSION.nama);
+  console.log('Sanitized jury name:', sanitizedJuriName);
   
   // Update state untuk juri ini dengan nama yang sudah disanitize
   all[namaInovasi].judulState[sanitizedJuriName] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
@@ -750,12 +746,12 @@ async function saveAll(showAnim = false) {
     hasSignature: !!(signatureState[SESSION.nama])
   };
 
-  // console.log('Saving data:', all[namaInovasi]);
+  console.log('Saving data:', all[namaInovasi]);
   
   await saveAllDraf(all);
   setLastInovasi(namaInovasi);
 
-  // console.log('=== saveAll COMPLETE ===');
+  console.log('=== saveAll COMPLETE ===');
 
   if (!showAnim) return;
 
@@ -764,18 +760,18 @@ async function saveAll(showAnim = false) {
   const fab     = document.getElementById("fabSave");
   if (fab && fabIcon) {
     fab.classList.add("saved"); 
-    fabIcon.textContent = "❌…";
+    fabIcon.textContent = "✅";
     setTimeout(() => { 
       fab.classList.remove("saved"); 
-      fabIcon.textContent = "ðŸ’¾"; 
+      fabIcon.textContent = "💾"; 
     }, 2000);
   }
 }
 
 async function doSaveWithValidation() {
-  // console.log('=== doSaveWithValidation START ===');
-  // console.log('namaInovasi:', namaInovasi);
-  // console.log('SESSION:', SESSION);
+  console.log('=== doSaveWithValidation START ===');
+  console.log('namaInovasi:', namaInovasi);
+  console.log('SESSION:', SESSION);
   
   if (!namaInovasi) { 
     alert("Inovasi belum dipilih."); 
@@ -797,14 +793,14 @@ async function doSaveWithValidation() {
     ? RANCANG_KRITERIA.filter(kr => !document.querySelector(`input[name="rancang-${kr.key}"]:checked`))
     : [];
 
-  // console.log('Belum judul:', belumJudul.length);
-  // console.log('Belum ind:', belumInd.length);
+  console.log('Belum judul:', belumJudul.length);
+  console.log('Belum ind:', belumInd.length);
 
   if (belumJudul.length > 0 || belumInd.length > 0 || belumRancang.length > 0) {
-    let msg = "âŒ Penilaian belum lengkap!\n\nBelum diisi:\n";
-    if (belumJudul.length)   msg += belumJudul.map(k => `• Judul — ${k.nama}`).join("\n") + "\n";
-    if (belumRancang.length) msg += belumRancang.map(kr => `• Proposal — ${kr.label}`).join("\n") + "\n";
-    if (belumInd.length)     msg += belumInd.map(i => `• Indikator ${i.displayNo} — ${i.nama}`).join("\n");
+    let msg = "❌ Penilaian belum lengkap!\n\nBelum diisi:\n";
+    if (belumJudul.length)   msg += belumJudul.map(k => `• Judul – ${k.nama}`).join("\n") + "\n";
+    if (belumRancang.length) msg += belumRancang.map(kr => `• Proposal – ${kr.label}`).join("\n") + "\n";
+    if (belumInd.length)     msg += belumInd.map(i => `• Indikator ${i.displayNo} – ${i.nama}`).join("\n");
     alert(msg);
     // Highlight
     document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
@@ -814,7 +810,7 @@ async function doSaveWithValidation() {
     return;
   }
 
-  // console.log('=== Validation passed, saving... ===');
+  console.log('=== Validation passed, saving... ===');
   document.querySelectorAll(".indicator-required-warn").forEach(el => el.classList.remove("indicator-required-warn"));
   
   // Save
@@ -831,16 +827,16 @@ async function doSaveWithValidation() {
     }
   }
   
-  // console.log('=== Save complete ===');
+  console.log('=== Save complete ===');
   
   // Show success message
-  alert('❌… Penilaian berhasil disimpan!\n\nKlik OK untuk kembali ke halaman utama.');
+  alert('✅ Penilaian berhasil disimpan!\n\nKlik OK untuk kembali ke halaman utama.');
   
   // Redirect ke index.html dengan kategori yang sesuai
   const meta = daftarInovasi.find(i => i.judul === namaInovasi) || {};
   const kategori = getKategoriInovasi(meta.perangkatDaerah);
   
-  // console.log('Redirecting to:', `index.html#tab-${kategori}`);
+  console.log('Redirecting to:', `index.html#tab-${kategori}`);
   
   window.location.href = `index.html#tab-${kategori}`;
 }
@@ -853,11 +849,11 @@ function getKategoriInovasi(pd) {
   if (!pd) return "opd";
   const p = pd.toLowerCase();
   
-  // console.log('Checking kategori for:', pd);
+  console.log('Checking kategori for:', pd);
   
   // Kesehatan
   if (p.includes("puskesmas") || p.includes("rsud") || p.includes("kesehatan")) {
-    // console.log('-> kesehatan');
+    console.log('-> kesehatan');
     return "kesehatan";
   }
   
@@ -866,16 +862,16 @@ function getKategoriInovasi(pd) {
       p.includes("sd negeri") || p.includes("smp negeri") || p.includes("sma negeri") ||
       p.includes("sd aisyah") || p.includes("sd muhammadiyah") || p.includes("sdit") ||
       p.includes("uptd pendidikan") || p.includes("sekolah")) {
-    // console.log('-> pendidikan');
+    console.log('-> pendidikan');
     return "pendidikan";
   }
   
   // Default: OPD
-  // console.log('-> opd (default)');
+  console.log('-> opd (default)');
   return "opd";
 }
 
-// â”€â”€ Event listeners â”€â”€
+// ── Event listeners ──
 // Reset button
 const resetBtnEl = document.getElementById("resetBtn");
 if (resetBtnEl) {
@@ -895,18 +891,18 @@ if (expandAllBtnEl) {
     document.querySelectorAll(".indicator:not(.indicator-special-input) .options, .indicator .ket, .indicator .result, .kriteria-desc").forEach(el => {
       el.style.display = collapsed ? "" : "none";
     });
-    this.textContent  = collapsed ? "ðŸ”½ Buka Semua" : "ðŸ”¼ Tutup Semua";
+    this.textContent  = collapsed ? "🔽 Buka Semua" : "🔼 Tutup Semua";
     this.dataset.state = collapsed ? "" : "collapsed";
   });
 }
 
 window.addEventListener("beforeunload", () => saveAll(false));
 
-// â”€â”€ Print â”€â”€
+// ── Print ──
 const printBtnEl = document.getElementById("printBtn");
 if (printBtnEl) {
   printBtnEl.addEventListener("click", async () => {
-    // console.log('=== PRINT BUTTON CLICKED ===');
+    console.log('=== PRINT BUTTON CLICKED ===');
     
     // Save current state first
     saveJudulStateLocal(); 
@@ -917,13 +913,13 @@ if (printBtnEl) {
     const allDraf = await loadAllDraf();
     const savedData = allDraf[namaInovasi];
     
-    // console.log('Current innovation:', namaInovasi);
-    // console.log('Saved data exists:', !!savedData);
-    // console.log('judulState for current user:', judulState[SESSION.nama]);
+    console.log('Current innovation:', namaInovasi);
+    console.log('Saved data exists:', !!savedData);
+    console.log('judulState for current user:', judulState[SESSION.nama]);
     
     // If saved data exists, use it (for edit mode)
     if (savedData && savedData.judulState && savedData.judulState[SESSION.nama]) {
-      // console.log('Loading saved judulState from localStorage');
+      console.log('Loading saved judulState from localStorage');
       Object.assign(judulState[SESSION.nama], savedData.judulState[SESSION.nama]);
     }
     
@@ -935,7 +931,7 @@ if (printBtnEl) {
     // Tentukan apakah juri judul atau juri SID
     const isJuriSID = ROLE === "juri_sid";
     
-    // console.log('Juri type:', isJuriSID ? 'SID' : 'JUDUL');
+    console.log('Juri type:', isJuriSID ? 'SID' : 'JUDUL');
 
     // Update heading dan label sesuai tipe juri
     const sectionHeading = document.getElementById("pSectionHeading");
@@ -960,17 +956,17 @@ if (printBtnEl) {
     
     if (isJuriSID) {
       // JURI SID: Tampilkan 20 indikator
-      // console.log('Building print table for SID indicators');
+      console.log('Building print table for SID indicators');
       
       // Load saved data
       if (savedData && savedData.juriState && savedData.juriState[SESSION.nama]) {
-        // console.log('Loading saved juriState from localStorage');
+        console.log('Loading saved juriState from localStorage');
         Object.assign(juriState[SESSION.nama], savedData.juriState[SESSION.nama]);
       }
       
       // Filter hanya indikator yang punya parameter (bukan monev/video)
       const regularIndicators = sidIndicators.filter(i => !i.type && i.parameter && i.parameter.length > 0);
-      // console.log('Regular indicators count:', regularIndicators.length);
+      console.log('Regular indicators count:', regularIndicators.length);
       
       // Hitung max score
       const maxSID = regularIndicators.reduce((sum, i) => sum + (3 * i.bobot), 0);
@@ -981,7 +977,7 @@ if (printBtnEl) {
         const s = v ? Number(v) * ind.bobot : 0;
         totalSkor += s;
         
-        // console.log(`Indikator ${ind.displayNo}: value=${v}, score=${s.toFixed(2)}`);
+        console.log(`Indikator ${ind.displayNo}: value=${v}, score=${s.toFixed(2)}`);
         
         const tr = document.createElement("tr");
         tr.className = s > 0 ? "pt-filled" : "pt-empty";
@@ -997,11 +993,11 @@ if (printBtnEl) {
       
     } else {
       // JURI JUDUL: Tampilkan 6 kriteria
-      // console.log('Building print table with', kriteriaJudul.length, 'criteria');
+      console.log('Building print table with', kriteriaJudul.length, 'criteria');
       
       // Load saved data
       if (savedData && savedData.judulState && savedData.judulState[SESSION.nama]) {
-        // console.log('Loading saved judulState from localStorage');
+        console.log('Loading saved judulState from localStorage');
         Object.assign(judulState[SESSION.nama], savedData.judulState[SESSION.nama]);
       }
       
@@ -1012,7 +1008,7 @@ if (printBtnEl) {
         const s = v ? Number(v) * k.bobot : 0; 
         totalSkor += s;
         
-        // console.log(`Kriteria ${k.no}: value=${v}, score=${s.toFixed(2)}`);
+        console.log(`Kriteria ${k.no}: value=${v}, score=${s.toFixed(2)}`);
         
         const tr = document.createElement("tr"); 
         tr.className = s > 0 ? "pt-filled" : "pt-empty";
@@ -1027,7 +1023,7 @@ if (printBtnEl) {
       });
     }
     
-    // console.log('Total score:', totalSkor.toFixed(2));
+    console.log('Total score:', totalSkor.toFixed(2));
     
     document.getElementById("pTotalJudul").textContent = totalSkor.toFixed(2);
     
@@ -1049,17 +1045,17 @@ if (printBtnEl) {
     document.getElementById("pRekomendasi").textContent = rekomendasi;
 
     // Tambahkan tanda tangan digital ke print area
-    // console.log('=== PRINT: Checking signature ===');
-    // console.log('Current user:', SESSION.nama);
-    // console.log('Signature state:', signatureState[SESSION.nama] ? 'EXISTS' : 'NOT FOUND');
-    // console.log('Signature length:', signatureState[SESSION.nama]?.length || 0);
+    console.log('=== PRINT: Checking signature ===');
+    console.log('Current user:', SESSION.nama);
+    console.log('Signature state:', signatureState[SESSION.nama] ? 'EXISTS' : 'NOT FOUND');
+    console.log('Signature length:', signatureState[SESSION.nama]?.length || 0);
     
     const signatureImageContainer = document.getElementById("pSignatureImage");
     if (signatureImageContainer && signatureState[SESSION.nama]) {
-      // console.log('Injecting signature to print area');
+      console.log('Injecting signature to print area');
       signatureImageContainer.innerHTML = `<img src="${signatureState[SESSION.nama]}" alt="Tanda tangan ${SESSION.nama}" class="print-signature-img">`;
     } else if (signatureImageContainer) {
-      // console.log('No signature found, clearing container');
+      console.log('No signature found, clearing container');
       signatureImageContainer.innerHTML = "";
     } else {
       console.error('pSignatureImage container not found!');
@@ -1070,12 +1066,12 @@ if (printBtnEl) {
   });
 }
 
-// â”€â”€ Init â”€â”€
+// ── Init ──
 renderSessionGrid();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 //  SIGNATURE CANVAS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════
 
 function initSignatureCanvas() {
   const canvas = document.getElementById('signatureCanvas');
@@ -1247,5 +1243,3 @@ function initSignatureCanvas() {
     }
   }
 }
-
-
