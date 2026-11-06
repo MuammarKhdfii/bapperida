@@ -60,11 +60,9 @@ if (!SHOW_SID) {
   document.querySelectorAll(".section-rancang-wrapper").forEach(el => el.style.display = "none");
 }
 
-// Tampilkan tombol Simpan Draft hanya untuk juri_sid
-if (SHOW_SID) {
-  const fabDraft = document.getElementById('fabDraft');
-  if (fabDraft) fabDraft.style.display = 'flex';
-}
+// Tampilkan tombol Simpan Draft untuk semua role
+const fabDraftEl = document.getElementById('fabDraft');
+if (fabDraftEl) fabDraftEl.style.display = 'flex';
 
 // ── State untuk juri yang sedang login ──
 // judulState / juriState hanya untuk user ini

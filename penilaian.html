@@ -730,45 +730,17 @@
   </main>
 </div>
 
-<!-- FAB Simpan Draft (khusus juri_sid) -->
-<button id="fabDraft" class="fab-save" title="Simpan Draft - Simpan penilaian sementara tanpa harus lengkap" 
+<!-- FAB Simpan Draft (untuk semua role) -->
+<button id="fabDraft" class="fab-save" title="Simpan Draft - Simpan penilaian sementara" 
   onclick="handleDraftClick()"
-  style="bottom: 96px; background: linear-gradient(135deg, #0ea5e9, #0284c7); display:none;">
+  style="background: linear-gradient(135deg, #2563eb, #1e40af); display:none;">
   <span class="fab-icon" id="fabDraftIcon">📝</span>
   <span class="fab-label">Simpan Draft</span>
 </button>
 
-<!-- FAB Simpan -->
-<button id="fabSave" class="fab-save" title="Simpan Penilaian" onclick="handleSaveClick()">
-  <span class="fab-icon" id="fabIcon">💾</span>
-  <span class="fab-label">Simpan</span>
-</button>
-
 <script>
-// Simple, direct save handler
-function handleSaveClick() {
-  console.log('=== SAVE BUTTON CLICKED ===');
-  
-  try {
-    // Check if validation function exists
-    if (typeof window.doSaveWithValidation === 'function') {
-      console.log('Calling doSaveWithValidation');
-      window.doSaveWithValidation();
-    } else {
-      console.error('doSaveWithValidation not found!');
-      alert('Error: Fungsi simpan tidak ditemukan. Silakan refresh halaman (Ctrl+Shift+R)');
-    }
-  } catch (error) {
-    console.error('Error in handleSaveClick:', error);
-    alert('Error saat menyimpan: ' + error.message);
-  }
-}
-
 // Simpan Draft - simpan tanpa validasi kelengkapan
 async function handleDraftClick() {
-  console.log('=== SAVE DRAFT CLICKED ===');
-  
-  // Cek namaInovasi dari localStorage (lebih reliable)
   const selectedInovasi = localStorage.getItem('iid2026_selected') || '';
   if (!selectedInovasi) {
     alert('Pilih inovasi terlebih dahulu.');
@@ -782,6 +754,7 @@ async function handleDraftClick() {
     if (fabDraftIcon) fabDraftIcon.textContent = '⏳';
 
     // Simpan state lokal dulu
+    if (typeof saveJudulStateLocal === 'function') saveJudulStateLocal();
     if (typeof saveIndikatorStateLocal === 'function') saveIndikatorStateLocal();
     if (typeof saveRancangStateLocal === 'function') saveRancangStateLocal();
     if (typeof saveNotesState === 'function') saveNotesState();
@@ -796,20 +769,20 @@ async function handleDraftClick() {
     
     // Tampilkan notifikasi
     const notif = document.createElement('div');
-    notif.style.cssText = 'position:fixed;top:80px;right:20px;background:#10b981;color:white;padding:12px 20px;border-radius:10px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);';
-    notif.textContent = '📝 Draft tersimpan! Anda bisa melanjutkan nanti.';
+    notif.style.cssText = 'position:fixed;top:80px;right:20px;background:#10b981;color:white;padding:14px 22px;border-radius:12px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);';
+    notif.textContent = '📝 Draft tersimpan! Anda bisa melanjutkan nanti melalui "Edit Penilaian".';
     document.body.appendChild(notif);
     setTimeout(() => {
       notif.style.opacity = '0';
       notif.style.transition = 'opacity .3s';
       setTimeout(() => { notif.remove(); }, 300);
-    }, 3000);
+    }, 3500);
 
     setTimeout(() => {
       if (fabDraftIcon) fabDraftIcon.textContent = '📝';
       if (fabDraft) {
         fabDraft.disabled = false;
-        fabDraft.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)';
+        fabDraft.style.background = 'linear-gradient(135deg, #2563eb, #1e40af)';
       }
     }, 2000);
   } catch (error) {

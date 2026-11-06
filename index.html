@@ -488,11 +488,14 @@
         const juriData = draft.juriState?.[currentUser] || draft.juriState?.[sanitizedName];
         
         if (currentRole === 'juri_judul') {
-          // Check apakah semua 6 kriteria judul sudah diisi
+          // Cek apakah sudah pernah simpan draft (minimal 1 kriteria diisi)
           if (judulData && typeof judulData === 'object') {
             const filledCount = Object.keys(judulData).filter(k => judulData[k]).length;
-            currentUserComplete = filledCount >= 6;
+            currentUserComplete = filledCount >= 1; // Draft: minimal 1 kriteria diisi
           }
+          // Cek juga dari skor tersimpan
+          const skorJudul = draft.skorJudulPerJuri?.[currentUser] || draft.skorJudulPerJuri?.[sanitizedName] || 0;
+          if (Number(skorJudul) > 0) currentUserComplete = true;
         } else if (currentRole === 'juri_sid') {
           // Check apakah minimal sudah pernah menyimpan atau membuka form penilaian SID
           const skorSID = draft.skorPerJuri?.[currentUser] || draft.skorPerJuri?.[sanitizedName] || 0;
@@ -1230,16 +1233,13 @@
           Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
         if (!hasSkor) return false;
       } else if (currentRole === 'juri_sid') {
-        // Tampilkan hanya jika punya skorPerJuri > 0 (sudah ada penilaian final dari minimal 1 juri SID)
-        // DAN minimal 1 juri sudah menandai penilaianSelesai = true
+        // Tampilkan hanya jika punya skorPerJuri > 0
         const hasSkor = value.skorPerJuri && 
           Object.values(value.skorPerJuri).some(s => Number(s) > 0);
-        const adaPenilaianSelesai = value.penilaianSelesai &&
-          Object.values(value.penilaianSelesai).some(v => v === true);
         // Pastikan TIDAK ada skorJudulPerJuri > 0 (bukan inovasi judul)
         const isBukanJudul = !value.skorJudulPerJuri || 
           !Object.values(value.skorJudulPerJuri).some(s => Number(s) > 0);
-        if (!hasSkor || !adaPenilaianSelesai || !isBukanJudul) return false;
+        if (!hasSkor || !isBukanJudul) return false;
       }
 
       return true;
