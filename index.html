@@ -450,10 +450,14 @@
       btnHapus.innerHTML = '🗑️ Hapus Data Judul';
       btnHapus.title = 'Hapus semua data penilaian Judul Inovasi';
       btnHapus.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+      btnHapus.style.color = 'white';
+      btnHapus.style.border = 'none';
     } else if (SESSION?.role === 'juri_sid') {
       btnHapus.innerHTML = '🗑️ Hapus Data SID';
       btnHapus.title = 'Hapus semua data penilaian Indikator SID';
       btnHapus.style.background = 'linear-gradient(135deg, #dc2626, #991b1b)';
+      btnHapus.style.color = 'white';
+      btnHapus.style.border = 'none';
     }
   }
 
