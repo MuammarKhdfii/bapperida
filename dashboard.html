@@ -1162,7 +1162,6 @@
             <th>Nama Inovasi</th>
             <th>OPD</th>
             <th>Skor Judul</th>
-            <th>Skor SID</th>
             <th>Total</th>
             <th>Status</th>
             <th style="width: 100px;">Aksi</th>
@@ -1206,14 +1205,18 @@
             ${r.avgJudul>0?r.avgJudul.toFixed(2):"-"} 
             <small class="juri-progress-badge" title="${judulTooltip}" onclick="showJuriNames('${escapedJudul}', 'judul')" style="font-weight:600;color:#7c3aed;cursor:help;text-decoration:underline dotted;">(${r.judulJuri}/3)</small>
           </td>
-          <td class="skor-cell">
-            ${r.avgSID>0?r.avgSID.toFixed(2):"-"} 
-            <small class="juri-progress-badge" title="${sidTooltip}" onclick="showJuriNames('${escapedJudul}', 'sid')" style="font-weight:600;color:#2563eb;cursor:help;text-decoration:underline dotted;">(${r.sidJuri}/3)</small>
-          </td>
           <td class="total-cell">${r.total>0?r.total.toFixed(2):"-"}</td>
           <td><span class="${badgeCls}">${badgeTxt}</span></td>
           <td style="text-align: center;">
-            <button onclick="deleteInovasi('${escapedJudul}')" class="btn-delete" title="Hapus data inovasi ini" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"></button>
+            <button onclick="deleteInovasi('${escapedJudul}')" class="btn-delete" title="Hapus data inovasi ini" style="background: #ef4444; color: white; border: none; padding: 7px 10px; border-radius: 8px; cursor: pointer; display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                <path d="M10 11v6"></path>
+                <path d="M14 11v6"></path>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+              </svg>
+            </button>
           </td>
         </tr>`;
     });
@@ -1223,16 +1226,8 @@
 
     //  Rekap per juri 
     const allJuri = [
-      // Juri Judul
+      // Juri Judul saja
       ...JURI_JUDUL_LIST.map(j => ({ nama: j, isJudul: true, isSID: false })),
-      // Juri SID (kecuali yang sudah ada di Judul)
-      ...JURI_SID_LIST
-        .filter(j => !JURI_JUDUL_LIST.includes(j))
-        .map(j => ({ nama: j, isJudul: false, isSID: true })),
-      // Eva Rolia khusus untuk SID (pisah dari Judul)
-      ...(JURI_JUDUL_LIST.includes("Dr. Ir. Eva Rolia, M.T., M.K.M.") && JURI_SID_LIST.includes("Dr. Ir. Eva Rolia, M.T., M.K.M.")
-        ? [{ nama: "Dr. Ir. Eva Rolia, M.T., M.K.M.", isJudul: false, isSID: true, label: "SID" }]
-        : [])
     ];
     
     let juriHtml = "";
