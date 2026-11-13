@@ -979,7 +979,7 @@ const daftarInovasiSID = [
   },
   {
     judul: "KEGIATAN JUBER (Jumat Berkah)",
-    perangkatDaerah: "TK Negeri",
+    perangkatDaerah: "TK Negeri 2 Metro Pusat",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
     ringkasan: "Kegiatan rutin Jumat yang mengajarkan nilai-nilai kebaikan dan keberkahan pada anak usia dini."

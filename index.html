@@ -1397,7 +1397,8 @@
         .replace(/^Puskesmas\s+/i, 'UPTD. Puskesmas ')
         .replace(/^SDN\s+/i, 'SD Negeri ')
         .replace(/^SMPN\s+/i, 'SMP Negeri ')
-        .replace(/^SMAN\s+/i, 'SMA Negeri ');
+        .replace(/^SMAN\s+/i, 'SMA Negeri ')
+        .replace(/^TK Negeri$/i, 'TK Negeri 2 Metro Pusat');
     };
     const pdDisplay = normalizeOPD(item.perangkatDaerah);
 
