@@ -1,4 +1,4 @@
-// ══════════════════════════════════════════
+﻿﻿// ══════════════════════════════════════════
 //  DATA INOVASI DAERAH KOTA METRO 2026
 // ══════════════════════════════════════════
 
@@ -1093,35 +1093,35 @@ const daftarInovasiSID = [
   },
   {
     judul: "CEMARA",
-    perangkatDaerah: "PKM Karangrejo",
+    perangkatDaerah: "UPTD. Puskesmas Karangrejo",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
     ringkasan: "Program layanan kesehatan inovatif di Puskesmas Karangrejo."
   },
   {
     judul: "Saputangan",
-    perangkatDaerah: "PKM Yosomulyo",
+    perangkatDaerah: "UPTD. Puskesmas Yosomulyo",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
     ringkasan: "Program kesehatan masyarakat di wilayah Yosomulyo."
   },
   {
     judul: "MAMA CETING",
-    perangkatDaerah: "PKM Tejoagung",
+    perangkatDaerah: "UPTD. Puskesmas Tejoagung",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
     ringkasan: "Program layanan kesehatan ibu dan anak di Puskesmas Tejoagung."
   },
   {
     judul: "KLUNTING",
-    perangkatDaerah: "PKM Mulyojati",
+    perangkatDaerah: "UPTD. Puskesmas Mulyojati",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
     ringkasan: "Inovasi pelayanan kesehatan di Puskesmas Mulyojati."
   },
   {
     judul: "Gemar Beraksi",
-    perangkatDaerah: "Puskesmas Yosomulyo",
+    perangkatDaerah: "UPTD. Puskesmas Yosomulyo",
     bentuk: "Pelayanan Publik",
     waktu: "2026",
     ringkasan: "Gerakan masyarakat aktif untuk kesehatan di wilayah Yosomulyo."

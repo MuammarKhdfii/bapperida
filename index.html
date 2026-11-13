@@ -1177,7 +1177,9 @@
     const p = pd.toLowerCase();
     
     // Kesehatan
-    if (p.includes("puskesmas") || p.includes("rsud") || p.includes("kesehatan")) {
+    if (p.includes("puskesmas") || p.includes("rsud") || p.includes("kesehatan") ||
+        p.includes("pkm ") || p.includes("pkm\t") || /\bpkm\b/.test(p) ||
+        p.includes("rumah sakit") || p.includes("klinik") || p.includes("posyandu")) {
       return "kesehatan";
     }
     
@@ -1185,7 +1187,12 @@
     if (p.includes("dinas pendidikan") || p.includes("pendidikan dan kebudayaan") ||
         p.includes("sd negeri") || p.includes("smp negeri") || p.includes("sma negeri") ||
         p.includes("sd aisyah") || p.includes("sd muhammadiyah") || p.includes("sdit") ||
-        p.includes("uptd pendidikan") || p.includes("sekolah")) {
+        p.includes("uptd pendidikan") || p.includes("sekolah") ||
+        p.includes("sdn ") || p.includes("sdn\t") || /\bsdn\b/.test(p) ||
+        p.includes("smpn") || p.includes("sman") || p.includes("smkn") ||
+        p.includes("sd ") || p.includes("smp ") || p.includes("sma ") ||
+        p.includes("madrasah") || p.includes("mtsn") || p.includes("man ") ||
+        p.includes("paud") || p.includes("tk negeri") || p.includes("tk ")) {
       return "pendidikan";
     }
     
@@ -1365,7 +1372,7 @@
       return {
         judul: judulDisplay,
         perangkatDaerah: meta.perangkatDaerah || "—",
-        kategori: getKategori(meta.perangkatDaerah),
+        kategori: getKategori(meta.perangkatDaerah || draf.perangkatDaerah || ""),
         avgInd:  parseFloat(avgInd.toFixed(2)),
         avgJud:  parseFloat(avgJud.toFixed(2)),
         total,
@@ -1382,6 +1389,18 @@
   }
 
   function renderRankingCard(item, rank) {
+    // Normalize nama OPD — ganti singkatan lama dengan nama resmi
+    const normalizeOPD = (pd) => {
+      if (!pd) return pd;
+      return pd
+        .replace(/^PKM\s+/i, 'UPTD. Puskesmas ')
+        .replace(/^Puskesmas\s+/i, 'UPTD. Puskesmas ')
+        .replace(/^SDN\s+/i, 'SD Negeri ')
+        .replace(/^SMPN\s+/i, 'SMP Negeri ')
+        .replace(/^SMAN\s+/i, 'SMA Negeri ');
+    };
+    const pdDisplay = normalizeOPD(item.perangkatDaerah);
+
     const medal = rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":`<span class="rk-rank-num">#${rank}</span>`;
     const rkClass = rank<=3 ? `rank-top rank-${rank}` : rank<=10 ? "rank-normal" : "rank-below";
     const date = item.savedAt
@@ -1407,7 +1426,7 @@
             </div>
           </div>
           <div class="rk-meta">
-            <span class="rk-pd">🏛️ ${esc(item.perangkatDaerah)}</span>
+            <span class="rk-pd">🏛️ ${esc(pdDisplay)}</span>
             ${date ? `<span class="rk-date">📅 ${date}</span>` : ""}
           </div>
           <div class="rk-juri-row">

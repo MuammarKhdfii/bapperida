@@ -850,8 +850,9 @@ function getKategoriInovasi(pd) {
   console.log('Checking kategori for:', pd);
   
   // Kesehatan
-  if (p.includes("puskesmas") || p.includes("rsud") || p.includes("kesehatan")) {
-    console.log('-> kesehatan');
+  if (p.includes("puskesmas") || p.includes("rsud") || p.includes("kesehatan") ||
+      p.includes("pkm ") || p.includes("pkm\t") || /\bpkm\b/.test(p) ||
+      p.includes("rumah sakit") || p.includes("klinik") || p.includes("posyandu")) {
     return "kesehatan";
   }
   
@@ -859,8 +860,12 @@ function getKategoriInovasi(pd) {
   if (p.includes("dinas pendidikan") || p.includes("pendidikan dan kebudayaan") ||
       p.includes("sd negeri") || p.includes("smp negeri") || p.includes("sma negeri") ||
       p.includes("sd aisyah") || p.includes("sd muhammadiyah") || p.includes("sdit") ||
-      p.includes("uptd pendidikan") || p.includes("sekolah")) {
-    console.log('-> pendidikan');
+      p.includes("uptd pendidikan") || p.includes("sekolah") ||
+      p.includes("sdn ") || p.includes("sdn\t") || /\bsdn\b/.test(p) ||
+      p.includes("smpn") || p.includes("sman") || p.includes("smkn") ||
+      p.includes("sd ") || p.includes("smp ") || p.includes("sma ") ||
+      p.includes("madrasah") || p.includes("mtsn") || p.includes("man ") ||
+      p.includes("paud") || p.includes("tk negeri") || p.includes("tk ")) {
     return "pendidikan";
   }
   
