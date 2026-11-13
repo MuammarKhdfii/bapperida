@@ -64,6 +64,14 @@ if (!SHOW_SID) {
 const fabDraftEl = document.getElementById('fabDraft');
 if (fabDraftEl) fabDraftEl.style.display = 'flex';
 
+// Sembunyikan tanda tangan untuk juri_sid
+if (SHOW_SID) {
+  const sigSection = document.getElementById('signatureSection');
+  if (sigSection) sigSection.style.display = 'none';
+  const printSig = document.getElementById('printSignatureBlock');
+  if (printSig) printSig.style.display = 'none';
+}
+
 // ── State untuk juri yang sedang login ──
 // judulState / juriState hanya untuk user ini
 const judulState   = { [SESSION.nama]: {} };
@@ -183,7 +191,7 @@ if (namaInovasi) {
   render();
   calculate();
   loadNotesState();
-  initSignatureCanvas();
+  if (!SHOW_SID) initSignatureCanvas(); // Tanda tangan hanya untuk juri_judul
 })().catch(err => console.error('[restoreState] Error:', err));
 
 // ── Load Notes State ──
