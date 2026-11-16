@@ -738,15 +738,112 @@
   <span class="fab-label">Simpan Draft</span>
 </button>
 
+<!-- Modal Konfirmasi Simpan -->
+<div id="modalKonfirmasiSimpan" style="
+  display:none; position:fixed; inset:0; z-index:99999;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+  align-items:center; justify-content:center; padding:20px;">
+  <div style="
+    background:white; border-radius:24px; max-width:460px; width:100%;
+    box-shadow:0 30px 80px rgba(0,0,0,0.4);
+    animation:slideUp .3s cubic-bezier(.34,1.56,.64,1) both;
+    overflow:hidden; position:relative;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#2563eb,#1e40af);padding:24px 28px 20px;color:white;">
+      <div style="font-size:36px;margin-bottom:8px;">📋</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:4px;">Konfirmasi Penyimpanan</div>
+      <div style="font-size:13px;opacity:.85;">Pastikan penilaian Anda sudah benar sebelum disimpan</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:24px 28px;">
+      <p style="font-size:15px;color:#374151;font-weight:600;margin:0 0 20px;line-height:1.6;">
+        Apakah penilaian Anda sudah lengkap dan benar semua?
+      </p>
+      <!-- Tombol pilihan -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button id="btnKonfirmasiYa" onclick="konfirmasiSimpan(true)" style="
+          width:100%; padding:14px 20px;
+          background:linear-gradient(135deg,#2563eb,#1e40af);
+          color:white; border:none; border-radius:12px;
+          font-size:15px; font-weight:800; font-family:inherit;
+          cursor:pointer; display:flex; align-items:center; gap:12px;
+          transition:all .2s ease; box-shadow:0 4px 14px rgba(37,99,235,.3);">
+          <span style="font-size:22px;">✅</span>
+          <div style="text-align:left;">
+            <div>Benar semua, simpan sekarang</div>
+            <div style="font-size:12px;opacity:.8;font-weight:600;">Penilaian akan disimpan</div>
+          </div>
+        </button>
+        <button id="btnKonfirmasiTidak" onclick="konfirmasiSimpan(false)" style="
+          width:100%; padding:14px 20px;
+          background:#f3f4f6; color:#374151;
+          border:2px solid #e5e7eb; border-radius:12px;
+          font-size:15px; font-weight:800; font-family:inherit;
+          cursor:pointer; display:flex; align-items:center; gap:12px;
+          transition:all .2s ease;">
+          <span style="font-size:22px;">🔍</span>
+          <div style="text-align:left;">
+            <div>Cek kembali dulu</div>
+            <div style="font-size:12px;color:#6b7280;font-weight:600;">Kembali ke form penilaian</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// Simpan Draft - simpan tanpa validasi kelengkapan
+// Tampilkan modal konfirmasi
+function showKonfirmasiSimpan() {
+  const modal = document.getElementById('modalKonfirmasiSimpan');
+  if (modal) {
+    modal.style.display = 'flex';
+    // Hover effect
+    const btnYa = document.getElementById('btnKonfirmasiYa');
+    if (btnYa) {
+      btnYa.onmouseover = () => btnYa.style.transform = 'translateY(-2px)';
+      btnYa.onmouseout  = () => btnYa.style.transform = '';
+    }
+  }
+}
+
+function tutupKonfirmasiSimpan() {
+  const modal = document.getElementById('modalKonfirmasiSimpan');
+  if (modal) modal.style.display = 'none';
+}
+
+// Callback dari pilihan modal
+let _draftResolve = null;
+function konfirmasiSimpan(lanjut) {
+  tutupKonfirmasiSimpan();
+  if (_draftResolve) {
+    _draftResolve(lanjut);
+    _draftResolve = null;
+  }
+}
+
+// Tutup modal saat klik overlay
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('modalKonfirmasiSimpan');
+  if (e.target === modal) tutupKonfirmasiSimpan();
+});
+
+// Simpan Draft - dengan konfirmasi dulu
 async function handleDraftClick() {
   const selectedInovasi = localStorage.getItem('iid2026_selected') || '';
   if (!selectedInovasi) {
     alert('Pilih inovasi terlebih dahulu.');
     return;
   }
-  
+
+  // Tampilkan popup konfirmasi
+  const lanjut = await new Promise(resolve => {
+    _draftResolve = resolve;
+    showKonfirmasiSimpan();
+  });
+
+  if (!lanjut) return; // User pilih "Cek kembali"
+
   try {
     const fabDraft = document.getElementById('fabDraft');
     const fabDraftIcon = document.getElementById('fabDraftIcon');

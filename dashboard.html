@@ -1148,8 +1148,8 @@
       let meta = findMetaInovasi(judulKey, mergedD);
 
       let status = 'kosong';
-      if (judulArr.length === JURI_JUDUL_LIST.length && sidArr.length >= 2) status = 'lengkap';
-      else if (judulArr.length > 0 || sidArr.length > 0) status = 'partial';
+      if (judulArr.length === JURI_JUDUL_LIST.length) status = 'lengkap';
+      else if (judulArr.length > 0) status = 'partial';
 
       return { judulKey, meta, avgJudul, avgSID, total, judulJuri: judulArr.length, sidJuri: sidArr.length, status, savedAt: mergedD.savedAt||d.savedAt||"", allData: mergedD, judulDisplay: meta._judulDisplay || judulKey };
     }).sort((a,b) => b.total - a.total);

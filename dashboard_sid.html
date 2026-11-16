@@ -654,7 +654,7 @@
     rows.forEach((r, i) => {
       const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
       const badgeCls = r.status==='lengkap'?'badge-lengkap':r.status==='partial'?'badge-partial':'badge-kosong';
-      const badgeTxt = r.status==='lengkap'?'✅ Lengkap':r.status==='partial'?'⏳ Sebagian':'—';
+      const badgeTxt = r.status==='lengkap'?'Lengkap':r.status==='partial'?'Sebagian':'—';
       const ej = r.judulKey.replace(/'/g, "\\'");
 
       const s1 = r.skorPerJuri[JURI_SID_LIST[0]];
