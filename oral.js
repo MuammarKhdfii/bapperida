@@ -265,6 +265,7 @@ function renderOralForm() {
         <div class="oral-bobot-badge oral-bobot-${colorName}">Bobot ${param.bobot}%</div>
         <div class="oral-card-check hidden" id="oral-card-check-${param.no}">✓ Dipilih</div>
       </div>
+      <div class="oral-fokus">${esc(param.fokus)}</div>
       <div class="oral-options-grid" id="oral-opts-${param.no}">
         ${optButtons}
       </div>
