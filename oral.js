@@ -312,13 +312,29 @@ function renderOralForm() {
 
     container.appendChild(card);
 
-    // Bind radio change
+    // Bind radio change — "change" untuk keyboard, "click" pada label untuk mouse/touch
     card.querySelectorAll("input[type=radio]").forEach(el => {
       el.addEventListener("change", () => {
+        oralState[param.no] = el.value;  // tulis langsung
         saveStateLocal();
         calculate();
         updateCardHighlight(param.no, el.value);
         updateRubrikHighlight(param.no, el.value);
+      });
+    });
+    card.querySelectorAll("label.oral-opt-btn").forEach(lbl => {
+      lbl.addEventListener("click", () => {
+        const radio = document.getElementById(lbl.htmlFor);
+        if (!radio) return;
+        const val = radio.value;
+        // Pastikan radio checked sebelum state diperbarui
+        requestAnimationFrame(() => {
+          oralState[param.no] = val;
+          saveStateLocal();
+          calculate();
+          updateCardHighlight(param.no, val);
+          updateRubrikHighlight(param.no, val);
+        });
       });
     });
 
@@ -456,6 +472,9 @@ function calculate() {
     katEl.className    = "oral-kat-badge " + cls;
   }
 
+  // Highlight kartu interpretasi sesuai nilai akhir
+  highlightInterpretasi(totalSkorTerbobot);
+
   // Progress bar
   const pb = document.getElementById("progressBar");
   if (pb) {
@@ -529,10 +548,10 @@ function updateDonutChart(skor) {
 
   // Color by kategori
   let color = "#ef4444"; // <60
-  if (skor >= 90)      color = "#10b981";
-  else if (skor >= 80) color = "#3b82f6";
-  else if (skor >= 70) color = "#eab308";
-  else if (skor >= 60) color = "#f97316";
+  if (skor >= 90)      color = "#1C768F";
+  else if (skor >= 80) color = "#0d5a70";
+  else if (skor >= 70) color = "#FA991C";
+  else if (skor >= 60) color = "#d97d10";
   circle.setAttribute("stroke", color);
 }
 
@@ -686,7 +705,7 @@ async function saveOral(showAnim = false) {
   if (fab && fabIcon) {
     fab.classList.add("saved");
     fabIcon.textContent = "✅";
-    setTimeout(() => { fab.classList.remove("saved"); fabIcon.textContent = "💾"; }, 2200);
+    setTimeout(() => { fab.classList.remove("saved"); fabIcon.textContent = "📝"; }, 2200);
   }
 }
 
@@ -707,7 +726,7 @@ function openFinalModal() {
     const row = document.createElement("div");
     row.className = "mfg-row";
 
-    const valColors = ["", "#ef4444", "#f97316", "#eab308", "#10b981", "#22c55e"];
+    const valColors = ["", "#032539", "#5a7a8a", "#FA991C", "#1C768F", "#0d5a70"];
     const color = v ? valColors[Number(v)] : "#94a3b8";
 
     row.innerHTML = `
@@ -796,15 +815,15 @@ window.handleDraftOral = async function() {
   await saveOral(false);
 
   if (fabIcon) fabIcon.textContent = "✅";
-  if (fab)     fab.style.background = "linear-gradient(135deg,#10b981,#059669)";
+  if (fab)     fab.classList.add("saved");
 
   showToast("📝 Draft tersimpan!", "success");
 
   setTimeout(() => {
-    if (fabIcon) fabIcon.textContent = "💾";
+    if (fabIcon) fabIcon.textContent = "📝";
     if (fab) {
       fab.disabled = false;
-      fab.style.background = "linear-gradient(135deg,#2563eb,#1e40af)";
+      fab.classList.remove("saved");
     }
   }, 2000);
 };
