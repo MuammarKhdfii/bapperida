@@ -369,6 +369,64 @@
         <div class="lc-arrow">→</div>
       </div>
     </div>
+    <!-- Kartu Penilaian Oral Presentation -->
+    <div class="landing-enter-wrap" id="cardOralWrap">
+      <div class="landing-enter-card" id="cardOral"
+        onclick="goOral()"
+        style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4f46e5 100%);border:none;cursor:pointer;">
+        <div class="lc-glow" style="background:radial-gradient(ellipse at 30% 50%,rgba(165,180,252,.35),transparent 65%);"></div>
+        <div class="lec-icon">🎤</div>
+        <div class="lec-content">
+          <h2 class="lec-title" style="color:white;">Penilaian Oral Presentation</h2>
+          <p class="lec-desc" style="color:rgba(255,255,255,.85);">
+            <strong style="color:#a5b4fc;">10 parameter</strong> berbobot ·
+            Skala 1–5 · Rumus: (Nilai ÷ 5) × Bobot · Semua juri dapat menilai.
+          </p>
+        </div>
+        <div class="lc-arrow" style="color:white;">→</div>
+      </div>
+    </div>
+    <script>
+    // goOral dipanggil dari onclick — definisikan segera via window agar tersedia saat diklik
+    // Implementasi penuh ada di script utama (bawah halaman), tapi kita wrap agar aman
+    window.goOral = function() {
+      if (typeof _goOralImpl === 'function') _goOralImpl();
+      else console.error('[goOral] belum siap, coba lagi sebentar');
+    };
+    window.cancelOralMode = function() {
+      if (typeof _cancelOralImpl === 'function') _cancelOralImpl();
+    };
+    </script>
+
+    <!-- Banner mode oral (muncul saat mode oral aktif) -->
+    <div id="oralModeBanner" style="
+      display:none;
+      align-items:center;
+      gap:14px;
+      background:linear-gradient(135deg,#312e81,#4f46e5);
+      color:white;
+      border-radius:12px;
+      padding:14px 18px;
+      margin-bottom:16px;
+      animation:fadeIn .3s ease;
+    ">
+      <span style="font-size:28px;flex-shrink:0;">🎤</span>
+      <div style="flex:1;min-width:0;">
+        <strong style="display:block;font-size:15px;margin-bottom:3px;">Mode Oral Presentation Aktif</strong>
+        <span style="font-size:13px;opacity:.9;">Semua inovasi (termasuk yang terkunci) kini bisa dipilih. Pilih inovasi dari dropdown di atas, lalu klik tombol <b>Penilaian Oral Presentation</b> sekali lagi.</span>
+      </div>
+      <button onclick="cancelOralMode()" style="
+        background:rgba(255,255,255,.18);
+        color:white;
+        border:1px solid rgba(255,255,255,.4);
+        border-radius:8px;
+        padding:7px 14px;
+        cursor:pointer;
+        font-size:13px;
+        white-space:nowrap;
+        flex-shrink:0;
+      ">✕ Batal</button>
+    </div>
 
     <!-- Dashboard Ranking -->
     <section class="landing-ranking" id="rankingSection">
@@ -872,6 +930,138 @@
   };
   
   // ══════════════════════════════════════════
+  //  MODE ORAL PRESENTATION
+  //  Saat aktif: semua inovasi bisa dipilih (tidak ada kunci)
+  // ══════════════════════════════════════════
+
+  let _oralMode = false;
+
+  async function setOralMode(active) {
+    _oralMode = active;
+    const selEl      = document.getElementById("globalInovasi");
+    const bannerEl   = document.getElementById("oralModeBanner");
+    const cardOralEl = document.getElementById("cardOral");
+    const titleEl    = cardOralEl?.querySelector(".lec-title");
+
+    if (active) {
+      await populateInovasiDropdownForOral();
+      if (bannerEl)   bannerEl.style.display = "flex";
+      if (titleEl)    titleEl.textContent    = "🎤 Pilih inovasi lalu klik di sini →";
+      if (cardOralEl) { cardOralEl.style.outline = "3px solid #a5b4fc"; cardOralEl.style.outlineOffset = "3px"; }
+      // Scroll ke dropdown agar user langsung lihat
+      document.getElementById("globalInovasi")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      await populateInovasiDropdown();
+      const last = getLastInovasi();
+      if (last && selEl) { selEl.value = last; }
+      if (bannerEl)   bannerEl.style.display = "none";
+      if (titleEl)    titleEl.textContent    = "Penilaian Oral Presentation";
+      if (cardOralEl) { cardOralEl.style.outline = ""; cardOralEl.style.outlineOffset = ""; }
+    }
+  }
+
+  // Dropdown tanpa kunci — hanya inovasi top ranking (10 OPD, 6 Pendidikan, 6 Kesehatan)
+  async function populateInovasiDropdownForOral() {
+    const selEl       = document.getElementById("globalInovasi");
+    const allDraf     = await loadAllDraf();
+    const session     = getSession();
+    const currentUser = session?.nama || "";
+    const sanitized   = currentUser.replace(/[\.,#$\[\]\/]/g, '_');
+
+    // Ambil data ranking yang sudah diurutkan & dikategorikan
+    let rankingAll = [];
+    try {
+      rankingAll = await loadRankingData();
+    } catch(e) {
+      console.error('[populateInovasiDropdownForOral] loadRankingData error:', e);
+    }
+
+    // Pisahkan per kategori, ambil top N
+    const topOPD        = rankingAll.filter(i => i.kategori === 'opd').slice(0, 10);
+    const topPendidikan = rankingAll.filter(i => i.kategori === 'pendidikan').slice(0, 6);
+    const topKesehatan  = rankingAll.filter(i => i.kategori === 'kesehatan').slice(0, 6);
+
+    selEl.innerHTML = '<option value="">— Pilih Inovasi untuk Oral Presentation —</option>';
+
+    const groups = [
+      { label: `🏛️ OPD — Top 10`,             items: topOPD },
+      { label: `🎓 UPTD Pendidikan — Top 6`,   items: topPendidikan },
+      { label: `🏥 UPTD Kesehatan — Top 6`,    items: topKesehatan },
+    ];
+
+    groups.forEach(({ label, items }) => {
+      if (items.length === 0) return;
+      const group = document.createElement('optgroup');
+      group.label = label;
+
+      items.forEach((inovasi, idx) => {
+        const option = document.createElement('option');
+        option.value = inovasi.judul;
+        const draft  = allDraf[inovasi.judul];
+
+        const oralScored = (draft?.oralSkorPerJuri?.[sanitized]  > 0)
+                        || (draft?.oralSkorPerJuri?.[currentUser] > 0);
+        const isLocked   = !!(draft?.judulState?.[currentUser] || draft?.judulState?.[sanitized]
+                           || draft?.juriState?.[currentUser]  || draft?.juriState?.[sanitized]);
+
+        const rank = idx + 1;
+        let label = `${rank}. ${inovasi.judul}`;
+        if (oralScored) {
+          label = `✅ ${rank}. ${inovasi.judul}`;
+          option.style.color      = '#059669';
+          option.style.fontWeight = '600';
+        } else if (isLocked) {
+          label = `🔒→🎤 ${rank}. ${inovasi.judul}`;
+          option.style.color      = '#7c3aed';
+          option.style.fontWeight = '500';
+        }
+        option.textContent = label;
+        // Semua enabled — tidak ada .disabled
+        group.appendChild(option);
+      });
+
+      selEl.appendChild(group);
+    });
+
+    // Jika tidak ada data ranking sama sekali, fallback ke daftarInovasi biasa
+    if (topOPD.length === 0 && topPendidikan.length === 0 && topKesehatan.length === 0) {
+      selEl.innerHTML = '<option value="">— Belum ada data ranking —</option>';
+      console.warn('[populateInovasiDropdownForOral] Tidak ada data ranking, cek Firebase/localStorage');
+    }
+  }
+
+  // Navigasi ke halaman oral presentation (2 langkah)
+  window._goOralImpl = async function() {
+    const selEl   = document.getElementById("globalInovasi");
+    const warning = document.getElementById("warningNoInovasi");
+
+    // Langkah 1: aktifkan oral mode agar kunci dibuka
+    if (!_oralMode) {
+      await setOralMode(true);
+      if (selEl) selEl.focus();
+      return;
+    }
+
+    // Langkah 2: cek pilihan lalu redirect
+    const judul = selEl ? selEl.value : "";
+    if (!judul) {
+      if (warning) warning.style.display = "flex";
+      if (selEl)   selEl.focus();
+      return;
+    }
+
+    if (warning) warning.style.display = "none";
+    localStorage.setItem("iid2026_selected", judul);
+    _oralMode = false;
+    document.getElementById("cardOral").classList.add("card-clicked");
+    setTimeout(() => { window.location.href = "oral.html"; }, 350);
+  };
+
+  window._cancelOralImpl = async function() {
+    await setOralMode(false);
+  };
+
+  // ══════════════════════════════════════════
   //  INITIALIZE - Populate dropdown & restore last selection
   // ══════════════════════════════════════════
   
@@ -907,7 +1097,11 @@
   window.onGlobalInovasiChange = async function() {
     const judul = sel.value;
     localStorage.setItem("iid2026_selected", judul);
-    await updateStatusCards(judul);
+
+    // Jika sedang oral mode, jangan reset dropdown — biarkan user lanjut pilih
+    if (!_oralMode) {
+      await updateStatusCards(judul);
+    }
     
     // Reset card penilaian ke kondisi aktif dulu sebelum cek
     const cardPenilaian = document.getElementById('cardPenilaian');
@@ -927,6 +1121,9 @@
       warningBox.style.display = "none";
     }
     
+    // Jika sedang oral mode, skip cek assessment (card penilaian tidak perlu diupdate)
+    if (_oralMode) return;
+
     // Check apakah inovasi sudah dinilai lengkap
     await checkIfAssessmentComplete(judul);
   }
@@ -1131,9 +1328,15 @@
   }
 
   async function goPenilaian() {
+    // Jika sedang oral mode, batalkan oral mode dulu
+    if (_oralMode) {
+      await setOralMode(false);
+      return;
+    }
+
     const judul = sel.value;
     const warningBox = document.getElementById("warningNoInovasi");
-    
+
     if (!judul) {
       // Tampilkan warning box
       warningBox.style.display = "block";
@@ -1168,7 +1371,6 @@
     setTimeout(() => { window.location.href = "penilaian.html"; }, 350);
   }
 
-  // ══════════════════════════════════════════
   // ══════════════════════════════════════════
   //  DASHBOARD RANKING
   // ══════════════════════════════════════════
