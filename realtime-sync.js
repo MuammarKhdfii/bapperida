@@ -43,7 +43,7 @@ const realtimeSync = {
 
       // Skip jika data bukan object inovasi valid
       if (!data || typeof data !== 'object') return;
-      if (!data.judulState && !data.juriState) return;
+      if (!data.judulState && !data.juriState && !data.oralSkorPerJuri) return;
 
       // Update localStorage
       this.updateLocalStorage(originalKey, data);
@@ -62,7 +62,7 @@ const realtimeSync = {
 
       // Skip saat initial load (data sudah ada di localStorage)
       if (!data || typeof data !== 'object') return;
-      if (!data.judulState && !data.juriState) return;
+      if (!data.judulState && !data.juriState && !data.oralSkorPerJuri) return;
 
       // Update localStorage
       this.updateLocalStorage(originalKey, data);
