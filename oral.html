@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Penilaian Oral Presentation — BAPPERIDA 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="penilaian.css">
+  <style>
+    /* ══ Hero ══ */
+    .hero-oral {
+      background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 40%, #4f46e5 75%, #818cf8 100%) !important;
+      padding: 56px 0 !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-oral::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 55% 70% at 85% 15%, rgba(165,180,252,.3) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 55% at 5% 85%, rgba(99,102,241,.25) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-oral::after {
+      content: "";
+      position: absolute; bottom: -2px; left: 0; right: 0; height: 42px;
+      background: linear-gradient(to bottom, transparent, var(--bg, #f1f5f9));
+      pointer-events: none;
+    }
+    .hero-oral .hero-text,
+    .hero-oral .session-nav-header,
+    .hero-oral .hero-inner { position: relative; z-index: 1; }
+    .hero-oral .badge {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.3);
+      backdrop-filter: blur(8px);
+      color: white; font-weight: 800;
+      letter-spacing: .08em; padding: 6px 16px;
+      border-radius: 999px; font-size: 11px;
+    }
+    .hero-oral h1 {
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: 900; letter-spacing: -.02em;
+      line-height: 1.2; margin: 10px 0 4px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.18);
+    }
+    .hero-oral p { font-size: 15px; opacity: .88; }
+
+    /* ══ Section header ══ */
+    .penilaian-section-header.section-oral {
+      background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+      color: white;
+    }
+    .section-oral .psh-score { background: rgba(255,255,255,.2); }
+
+    /* ══ Floating Label Identitas ══ */
+    .identitas-card {
+      background: white;
+      border: 2px solid #c7d2fe;
+      border-radius: 18px;
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 4px 16px rgba(99,102,241,.1);
+    }
+    .identitas-card h3 {
+      font-size: 16px; font-weight: 900; color: #1e1b4b;
+      margin: 0 0 18px; display: flex; align-items: center; gap: 8px;
+    }
+    .identitas-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .float-field {
+      position: relative;
+      display: flex; flex-direction: column;
+    }
+    .float-field.full { grid-column: 1 / -1; }
+    .float-icon {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; pointer-events: none; z-index: 2;
+      transition: top .18s, font-size .18s;
+    }
+    .float-field input {
+      border: 2px solid #e0e7ff; border-radius: 10px;
+      padding: 22px 14px 8px 40px;
+      font-size: 14px; font-family: inherit;
+      color: #1e293b; background: #f8fafc;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .float-field input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+    }
+    .float-label {
+      position: absolute;
+      left: 40px; top: 50%; transform: translateY(-50%);
+      font-size: 13px; font-weight: 700; color: #94a3b8;
+      pointer-events: none; transition: all .18s ease;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .float-field input:focus ~ .float-label,
+    .float-field input:not(:placeholder-shown) ~ .float-label {
+      top: 10px; transform: translateY(0);
+      font-size: 10px; color: #6366f1; letter-spacing: .04em;
+    }
+    .float-field input:focus ~ .float-icon,
+    .float-field input:not(:placeholder-shown) ~ .float-icon {
+      top: 11px; transform: none; font-size: 13px;
+    }
+
+    /* ══ Progress visual ══ */
+    .oral-progress-wrap {
+      margin: 0 0 20px; position: relative;
+    }
+    .oral-progress-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .oral-progress-counter {
+      font-size: 13px; font-weight: 700; color: #4f46e5;
+    }
+    .oral-progress-pct {
+      font-size: 13px; font-weight: 900; color: #4f46e5;
+    }
+    .oral-progress-track {
+      height: 14px; background: #e2e8f0;
+      border-radius: 999px; overflow: hidden;
+      position: relative;
+    }
+    .oral-progress-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, #f59e0b, #d97706, #3b82f6);
+      background-size: 200% 100%;
+      transition: width .5s ease;
+      position: relative;
+      display: flex; align-items: center; justify-content: flex-end;
+    }
+    .oral-progress-fill.complete {
+      background: linear-gradient(90deg, #10b981, #16a34a);
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .oral-progress-fill::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.35) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+      border-radius: inherit;
+    }
+    .oral-progress-pct-label {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      font-size: 10px; font-weight: 900; color: white;
+      text-shadow: 0 1px 3px rgba(0,0,0,.3); pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ══ Score board with donut ══ */
+    .oral-scoreboard {
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,.07);
+      border: 1px solid rgba(0,0,0,.05);
+      margin: 20px 0;
+    }
+    .oral-score-card {
+      padding: 20px; background: white;
+      border-right: 1px solid rgba(0,0,0,.06);
+      text-align: center;
+    }
+    .oral-score-card:last-child { border-right: none; }
+    .oral-score-card span { display: block; font-size: 12px; color: #6b7280; font-weight: 600; margin-bottom: 6px; }
+    .oral-score-card strong { font-size: 32px; font-weight: 900; color: #1e1b4b; letter-spacing: -.02em; }
+    .oral-score-card small  { display: block; font-size: 11px; color: #9ca3af; margin-top: 2px; }
+    .oral-score-card.total  {
+      background: linear-gradient(135deg, #1e1b4b, #4338ca);
+      border: none;
+      position: relative;
+    }
+    .oral-score-card.total span, .oral-score-card.total small { color: rgba(255,255,255,.8); }
+    .oral-score-card.total strong { color: white; font-size: 36px; }
+    /* Donut wrapper */
+    .oral-donut-wrap {
+      position: relative; display: inline-flex;
+      align-items: center; justify-content: center;
+      width: 90px; height: 90px; margin: 0 auto 4px;
+    }
+    .oral-donut-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .oral-donut-val {
+      font-size: 18px; font-weight: 900; color: white;
+      position: relative; z-index: 1; line-height: 1.1;
+    }
+    .oral-donut-sub {
+      font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7);
+      display: block; margin-top: 1px;
+    }
+
+    /* ══ Kategori badge ══ */
+    .oral-kat-badge {
+      display: inline-block; padding: 6px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 800; letter-spacing: .02em;
+    }
+    .kat-sangat-kuat { background: #d1fae5; color: #065f46; }
+    .kat-kuat        { background: #dcfce7; color: #166534; }
+    .kat-memadai     { background: #fef9c3; color: #713f12; }
+    .kat-perlu       { background: #ffedd5; color: #9a3412; }
+    .kat-belum       { background: #fee2e2; color: #991b1b; }
+
+    /* ══ Layout Wrapper (main + sidebar) ══ */
+    .oral-layout {
+      display: flex; gap: 20px; align-items: flex-start;
+    }
+    .oral-main { flex: 1; min-width: 0; }
+
+    /* ══ Sticky Sidebar Desktop ══ */
+    .quick-nav-sidebar {
+      display: none;
+      position: sticky; top: 80px;
+      width: 48px; flex-shrink: 0;
+      flex-direction: column; gap: 6px;
+      z-index: 100;
+    }
+    @media (min-width: 1100px) {
+      .quick-nav-sidebar { display: flex; }
+    }
+    .quick-nav-pill {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800;
+      cursor: pointer; transition: all .2s;
+      border: 2px solid transparent; text-decoration: none;
+      user-select: none;
+    }
+    .quick-nav-pill.filled { background: #10b981; color: white; border-color: #059669; }
+    .quick-nav-pill.empty  { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+    .quick-nav-pill:hover  { transform: scale(1.15); }
+
+    /* ══ Bottom Nav Pills Mobile ══ */
+    .bottom-nav-pills {
+      display: none;
+      position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%);
+      gap: 6px; padding: 8px 12px;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(8px);
+      border-radius: 999px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+      z-index: 100;
+      overflow-x: auto; max-width: calc(100vw - 40px);
+    }
+    @media (max-width: 760px) {
+      .bottom-nav-pills { display: flex; }
+    }
+    .bnp-pill {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      cursor: pointer; transition: all .2s;
+      border: 2px solid transparent; text-decoration: none;
+    }
+    .bnp-pill.filled { background: #10b981; color: white; border-color: #059669; }
+    .bnp-pill.empty  { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+
+    /* ══ Toast ══ */
+    .toast-notification {
+      position: fixed; top: 80px; right: 20px; z-index: 9999;
+      background: #10b981; color: white;
+      padding: 14px 20px; border-radius: 12px;
+      font-weight: 700; font-size: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.18);
+      animation: toastIn .3s ease both;
+      max-width: 320px;
+    }
+    .toast-notification.toast-info  { background: #3b82f6; }
+    .toast-notification.toast-error { background: #ef4444; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(100%); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(100%); }
+    }
+
+    /* ══ Kartu Parameter — desain baru ══ */
+    .oral-card {
+      background: white;
+      border-radius: 18px;
+      margin: 0 0 18px;
+      overflow: hidden;
+      transition: box-shadow .2s, border-color .2s;
+      animation: fadeSlideUp .4s ease both;
+    }
+    .oral-card-unfilled {
+      border: 2px dashed #cbd5e1;
+    }
+    .oral-card-filled-1 { border: 3px solid #ef4444; }
+    .oral-card-filled-2 { border: 3px solid #f97316; }
+    .oral-card-filled-3 { border: 3px solid #eab308; }
+    .oral-card-filled-4 { border: 3px solid #10b981; }
+    .oral-card-filled-5 { border: 3px solid #22c55e; }
+
+    /* Header kartu */
+    .oral-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      background: white; position: relative;
+      transition: background .3s;
+    }
+    .oral-card-header.hdr-val-1 { background: linear-gradient(135deg, #fee2e2, #fecaca); border-bottom-color: #fca5a5; }
+    .oral-card-header.hdr-val-2 { background: linear-gradient(135deg, #ffedd5, #fed7aa); border-bottom-color: #fdba74; }
+    .oral-card-header.hdr-val-3 { background: linear-gradient(135deg, #fef9c3, #fef08a); border-bottom-color: #fde047; }
+    .oral-card-header.hdr-val-4 { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-bottom-color: #6ee7b7; }
+    .oral-card-header.hdr-val-5 { background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-bottom-color: #86efac; }
+
+    .oral-card-num {
+      font-size: 32px; font-weight: 900; min-width: 44px; line-height: 1;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .oral-card-info { flex: 1; min-width: 0; }
+    .oral-card-nama {
+      font-size: 14px; font-weight: 800; color: #1e1b4b;
+      line-height: 1.4;
+    }
+
+    /* Bobot badges — warna per parameter */
+    .oral-bobot-badge {
+      flex-shrink: 0;
+      color: white; font-size: 11px; font-weight: 800;
+      padding: 4px 12px; border-radius: 999px;
+      white-space: nowrap;
+    }
+    .oral-bobot-indigo  { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+    .oral-bobot-emerald { background: linear-gradient(135deg, #059669, #10b981); }
+    .oral-bobot-amber   { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    .oral-bobot-violet  { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+    .oral-bobot-sky     { background: linear-gradient(135deg, #0284c7, #38bdf8); }
+    .oral-bobot-rose    { background: linear-gradient(135deg, #e11d48, #fb7185); }
+    .oral-bobot-teal    { background: linear-gradient(135deg, #0d9488, #2dd4bf); }
+    .oral-bobot-purple  { background: linear-gradient(135deg, #6d28d9, #a78bfa); }
+    .oral-bobot-orange  { background: linear-gradient(135deg, #ea580c, #fb923c); }
+    .oral-bobot-cyan    { background: linear-gradient(135deg, #0891b2, #22d3ee); }
+
+    .oral-card-check {
+      flex-shrink: 0;
+      background: #10b981; color: white;
+      font-size: 11px; font-weight: 800;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .oral-card-check.hidden { display: none; }
+
+    /* Fokus collapsible */
+    .oral-fokus-wrap { padding: 0 20px; }
+    .oral-fokus-toggle {
+      background: none; border: none; font-family: inherit;
+      font-size: 12px; font-weight: 700; color: #4f46e5;
+      cursor: pointer; padding: 10px 0 6px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .oral-fokus-toggle:hover { color: #3730a3; }
+    .oral-fokus-content { overflow: hidden; }
+    .oral-fokus {
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      border: 1.5px solid #c7d2fe;
+      border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; color: #3730a3; line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    /* Options grid — visual buttons */
+    .oral-options-grid {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 12px 20px 10px;
+    }
+    .oral-opt-btn {
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 150px; flex: 1;
+      padding: 12px 8px; border-radius: 12px;
+      cursor: pointer; transition: all .2s;
+      border: 2px solid transparent; text-align: center;
+      position: relative; user-select: none;
+    }
+    .oral-opt-btn input.oral-radio-hidden {
+      position: absolute; opacity: 0; width: 0; height: 0;
+      pointer-events: none;
+    }
+    .oral-opt-num {
+      font-size: 32px; font-weight: 900; line-height: 1;
+    }
+    .oral-opt-desc {
+      font-size: 11px; color: #374151; text-align: center;
+      margin-top: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .oral-opt-check {
+      position: absolute; top: 6px; right: 8px;
+      font-size: 11px; font-weight: 800;
+      display: none;
+    }
+    /* Colors per value */
+    .oral-opt-1 { background: #fee2e2; border-color: #fca5a5; }
+    .oral-opt-2 { background: #ffedd5; border-color: #fdba74; }
+    .oral-opt-3 { background: #fef9c3; border-color: #fde047; }
+    .oral-opt-4 { background: #d1fae5; border-color: #6ee7b7; }
+    .oral-opt-5 { background: #dcfce7; border-color: #86efac; }
+    .oral-opt-1.selected { background: #fecaca; border-color: #ef4444; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(239,68,68,.2); }
+    .oral-opt-2.selected { background: #fed7aa; border-color: #f97316; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(249,115,22,.2); }
+    .oral-opt-3.selected { background: #fef08a; border-color: #eab308; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(234,179,8,.2); }
+    .oral-opt-4.selected { background: #a7f3d0; border-color: #10b981; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(16,185,129,.2); }
+    .oral-opt-5.selected { background: #bbf7d0; border-color: #22c55e; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(34,197,94,.2); }
+    .oral-opt-btn.selected .oral-opt-check { display: block; }
+
+    /* Rubrik panel */
+    .oral-rubrik-wrap { padding: 0 20px 10px; }
+    .oral-rubrik-toggle {
+      background: none; border: none; font-family: inherit;
+      font-size: 12px; font-weight: 700; color: #6366f1;
+      cursor: pointer; padding: 4px 0 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .oral-rubrik-toggle:hover { color: #4f46e5; }
+    .oral-rubrik-panel {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 12px; margin-top: 2px;
+      display: none;
+    }
+    .oral-rubrik-item {
+      padding: 8px 10px;
+      border-left: 3px solid #e2e8f0;
+      margin-bottom: 8px; border-radius: 0 8px 8px 0;
+      transition: all .2s;
+    }
+    .oral-rubrik-item:last-child { margin-bottom: 0; }
+    .oral-rubrik-lv { font-size: 11px; font-weight: 800; display: block; margin-bottom: 2px; color: #4f46e5; }
+    .oral-rubrik-desc { font-size: 12px; color: #334155; line-height: 1.5; }
+    .oral-rubrik-item.active-1 { border-left-color: #ef4444; background: #fff1f2; }
+    .oral-rubrik-item.active-2 { border-left-color: #f97316; background: #fff7ed; }
+    .oral-rubrik-item.active-3 { border-left-color: #eab308; background: #fefce8; }
+    .oral-rubrik-item.active-4 { border-left-color: #10b981; background: #f0fdf4; }
+    .oral-rubrik-item.active-5 { border-left-color: #22c55e; background: #f0fdf4; }
+
+    /* Result area */
+    .oral-result {
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      border-radius: 0 0 16px 16px;
+      padding: 10px 20px 14px;
+      font-size: 14px; color: #3730a3; font-weight: 600;
+    }
+    .oral-result b { font-size: 20px; font-weight: 900; margin: 0 4px; color: #1e1b4b; }
+    .oral-result small { color: #6366f1; font-size: 12px; }
+    .oral-skor-bar { height: 6px; background: #e2e8f0; border-radius: 999px; margin-top: 8px; overflow: hidden; }
+    .oral-skor-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width .4s ease; }
+
+    /* ══ Interpretasi Nilai Akhir ══ */
+    .interpretasi-card {
+      background: white;
+      border: 1.5px solid #e0e7ff;
+      border-radius: 20px;
+      padding: 24px;
+      margin: 24px 0;
+      box-shadow: 0 4px 20px rgba(99,102,241,.08);
+    }
+    .interpretasi-card h3 {
+      font-size: 15px; font-weight: 900; color: #1e1b4b;
+      margin: 0 0 18px;
+      display: flex; align-items: center; gap: 8px;
+      padding-bottom: 14px;
+      border-bottom: 1.5px solid #e0e7ff;
+    }
+    /* Grid 5 kartu horizontal */
+    .interpretasi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .kat-box {
+      border-radius: 14px;
+      padding: 14px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: transform .18s, box-shadow .18s;
+      cursor: default;
+    }
+    .kat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.12); }
+
+    .kat-box.kb-sangat-kuat  { background: #d1fae5; border-color: #6ee7b7; }
+    .kat-box.kb-kuat         { background: #dcfce7; border-color: #86efac; }
+    .kat-box.kb-memadai      { background: #fefce8; border-color: #fde047; }
+    .kat-box.kb-perlu        { background: #fff7ed; border-color: #fdba74; }
+    .kat-box.kb-belum        { background: #fef2f2; border-color: #fca5a5; }
+
+    .kat-box-rentang {
+      font-size: 11px; font-weight: 800; letter-spacing: .02em;
+      padding: 3px 10px; border-radius: 999px;
+      white-space: nowrap;
+    }
+    .kb-sangat-kuat .kat-box-rentang { background: #059669; color: white; }
+    .kb-kuat        .kat-box-rentang { background: #16a34a; color: white; }
+    .kb-memadai     .kat-box-rentang { background: #ca8a04; color: white; }
+    .kb-perlu       .kat-box-rentang { background: #ea580c; color: white; }
+    .kb-belum       .kat-box-rentang { background: #dc2626; color: white; }
+
+    .kat-box-nama {
+      font-size: 13px; font-weight: 900; line-height: 1.3;
+    }
+    .kb-sangat-kuat .kat-box-nama { color: #065f46; }
+    .kb-kuat        .kat-box-nama { color: #14532d; }
+    .kb-memadai     .kat-box-nama { color: #713f12; }
+    .kb-perlu       .kat-box-nama { color: #7c2d12; }
+    .kb-belum       .kat-box-nama { color: #7f1d1d; }
+
+    .kat-box-makna {
+      font-size: 11px; line-height: 1.5; color: #374151;
+    }
+    .kat-box-icon { font-size: 24px; }
+
+    /* Aktif highlight saat nilai akhir masuk rentang */
+    .kat-box.kat-active {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 10px 28px rgba(0,0,0,.15);
+      border-width: 2.5px;
+    }
+
+    @media (max-width: 900px) {
+      .interpretasi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    }
+    @media (max-width: 540px) {
+      .interpretasi-grid { grid-template-columns: 1fr; }
+      .kat-box { flex-direction: row; text-align: left; gap: 12px; }
+      .kat-box-icon { flex-shrink: 0; }
+    }
+
+    /* ══ Notes ══ */
+    .oral-notes-card {
+      background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+      border: 2px solid #a78bfa; border-radius: 16px; padding: 24px;
+      box-shadow: 0 4px 16px rgba(109,40,217,.1);
+    }
+
+    /* ══ FAB ══ */
+    .fab-save {
+      position: fixed; bottom: 28px; right: 24px; z-index: 9000;
+      display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white; border: none; border-radius: 999px;
+      padding: 14px 24px; font-size: 15px; font-weight: 800;
+      font-family: inherit; cursor: pointer;
+      box-shadow: 0 8px 28px rgba(0,0,0,.2);
+      transition: all .25s cubic-bezier(.4,0,.2,1);
+    }
+    .fab-save:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 14px 36px rgba(0,0,0,.25); }
+    .fab-save.saved { background: linear-gradient(135deg, #10b981, #059669); }
+
+    /* ══ Spinner button ══ */
+    .btn-spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: white; border-radius: 50%;
+      animation: spin .7s linear infinite; vertical-align: middle;
+      margin-left: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══ Modal Final ══ */
+    #modalFinalOral {
+      display: none; position: fixed; inset: 0; z-index: 99999;
+      background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-final-inner {
+      background: white; border-radius: 24px; max-width: 560px; width: 100%;
+      box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-final-head {
+      background: linear-gradient(135deg, #1e1b4b, #4338ca);
+      padding: 24px 28px 20px; color: white;
+      position: sticky; top: 0; z-index: 1;
+    }
+    .modal-final-head .mfh-icon { font-size: 36px; margin-bottom: 8px; }
+    .modal-final-head .mfh-title { font-size: 17px; font-weight: 900; }
+    .modal-final-head .mfh-sub   { font-size: 13px; opacity: .85; margin-top: 4px; }
+    .modal-final-body { padding: 20px 28px 24px; }
+    .modal-final-grid {
+      display: grid; grid-template-columns: 1fr;
+      gap: 6px; margin-bottom: 20px;
+    }
+    .mfg-row {
+      display: grid; grid-template-columns: 32px 1fr 60px 70px;
+      gap: 8px; align-items: center;
+      padding: 7px 10px; border-radius: 8px; font-size: 12px;
+    }
+    .mfg-row:nth-child(even) { background: #f8fafc; }
+    .mfg-no   { font-weight: 900; color: #4f46e5; text-align: center; }
+    .mfg-nama { font-weight: 600; color: #334155; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mfg-nilai { text-align: center; font-weight: 800; }
+    .mfg-skor  { text-align: right; font-weight: 800; color: #1e1b4b; font-size: 13px; }
+    .modal-final-total {
+      background: linear-gradient(135deg, #1e1b4b, #4338ca);
+      color: white; border-radius: 12px; padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .mft-label { font-size: 13px; font-weight: 700; opacity: .9; }
+    .mft-val   { font-size: 28px; font-weight: 900; }
+    .modal-final-actions { display: flex; flex-direction: column; gap: 10px; }
+
+    /* ══ Print area ══ */
+    .print-area { display: none; }
+    @media print {
+      #mainContent, .fab-save, #scrollTopBtn, .bottom-nav-pills, .quick-nav-sidebar { display: none !important; }
+      .print-area { display: block !important; }
+      body { margin: 0; padding: 0; font-size: 11pt; color: black; }
+      .print-header { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+      .print-logo-img { width: 60px; height: 60px; object-fit: contain; }
+      .print-org-name { font-size: 13pt; font-weight: 900; }
+      .print-title-block { flex: 1; text-align: center; }
+      .print-title { font-size: 16pt; font-weight: 900; margin: 0; }
+      .print-subtitle { font-size: 11pt; font-weight: 700; margin: 2px 0 0; color: #334155; }
+      .print-divider { border: none; border-top: 2px solid #334155; margin: 8px 0; }
+      .print-identitas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+      .print-id-item { border: 1px solid #94a3b8; padding: 6px 10px; border-radius: 4px; }
+      .print-id-label { font-size: 9pt; font-weight: 700; color: #64748b; display: block; }
+      .print-id-value { font-size: 11pt; font-weight: 800; }
+      .print-section-heading { font-size: 12pt; font-weight: 900; background: #1e1b4b; color: white; padding: 6px 12px; margin: 10px 0 6px; border-radius: 4px; }
+      .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9.5pt; }
+      .print-table th { background: #334155; color: white; padding: 6px 8px; text-align: left; font-weight: 700; }
+      .print-table td { padding: 5px 8px; border: 1px solid #cbd5e1; vertical-align: top; }
+      .print-table tr.pt-filled td { background: #f8fafc; }
+      .pt-no { width: 28px; text-align: center; }
+      .pt-bobot { width: 50px; text-align: center; }
+      .pt-param { width: 44px; text-align: center; }
+      .pt-nilai { width: 54px; text-align: right; }
+      .pt-ket   { font-size: 8.5pt; color: #475569; }
+      .print-total-row td { font-weight: 900; background: #f1f5f9; border-top: 2px solid #334155; padding: 7px 8px; }
+      .print-nilai-akhir { font-size: 14pt; font-weight: 900; }
+      .print-kategori { display: inline-block; padding: 2px 10px; border: 1.5px solid #334155; border-radius: 999px; font-weight: 800; font-size: 10pt; margin-left: 10px; }
+      .print-notes-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+      .print-notes-col { border: 1px solid #94a3b8; padding: 10px; border-radius: 4px; min-height: 60px; }
+      .print-notes-header { font-size: 9pt; font-weight: 800; color: #334155; margin-bottom: 6px; }
+      .print-notes-content { font-size: 9.5pt; color: #1e293b; }
+      .print-signature { display: flex; justify-content: flex-end; gap: 40px; margin-top: 20px; }
+      .print-sign-block { text-align: center; min-width: 160px; }
+      .print-sign-label { font-size: 10pt; font-weight: 700; margin-bottom: 4px; }
+      .print-sign-space { height: 60px; border-bottom: 1px solid #334155; margin-bottom: 6px; }
+      .print-sign-name  { font-size: 10pt; font-weight: 800; }
+      .print-sign-role  { font-size: 9pt; color: #64748b; }
+      .print-footer { text-align: center; font-size: 8pt; color: #94a3b8; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 6px; }
+    }
+
+    /* ══ Responsive ══ */
+    @media(max-width: 760px) {
+      .oral-scoreboard { grid-template-columns: 1fr 1fr; }
+      .identitas-grid  { grid-template-columns: 1fr; }
+      .float-field.full { grid-column: unset; }
+      .oral-score-card strong { font-size: 24px; }
+      .oral-score-card.total strong { font-size: 28px; }
+      .oral-options-grid { gap: 6px; }
+      .oral-opt-btn { min-width: 120px; padding: 10px 6px; }
+      .oral-opt-num { font-size: 26px; }
+      .modal-final-inner { max-width: 100%; }
+      .mfg-row { grid-template-columns: 28px 1fr 48px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ PRINT AREA ══ -->
+<div class="print-area" id="printArea">
+  <div class="print-header">
+    <img src="logo-metro.png" alt="Logo Kota Metro" class="print-logo-img">
+    <div class="print-org"><div class="print-org-name">BAPPERIDA KOTA METRO</div></div>
+    <div class="print-title-block">
+      <h1 class="print-title">BORANG PENILAIAN ORAL PRESENTATION</h1>
+      <h2 class="print-subtitle">Riset dan Inovasi Perangkat Daerah — Kota Metro 2026</h2>
+    </div>
+  </div>
+  <hr class="print-divider">
+  <div class="print-identitas">
+    <div class="print-id-item">
+      <span class="print-id-label">NAMA INISIATOR / PRESENTER</span>
+      <span class="print-id-value" id="pNamaPresenter">—</span>
+    </div>
+    <div class="print-id-item">
+      <span class="print-id-label">JUDUL RISET / INOVASI</span>
+      <span class="print-id-value" id="pJudulInovasi">—</span>
+    </div>
+    <div class="print-id-item">
+      <span class="print-id-label">ASAL PERANGKAT DAERAH</span>
+      <span class="print-id-value" id="pAsalPD">—</span>
+    </div>
+  </div>
+  <div class="print-section-heading">LEMBAR PENILAIAN — 10 PARAMETER</div>
+  <table class="print-table">
+    <thead>
+      <tr>
+        <th class="pt-no">No</th>
+        <th>Parameter Penilaian</th>
+        <th class="pt-bobot">Bobot</th>
+        <th class="pt-param">Nilai (1–5)</th>
+        <th class="pt-nilai">Skor Terbobot</th>
+        <th class="pt-ket">Deskripsi Rubrik yang Dipilih</th>
+      </tr>
+    </thead>
+    <tbody id="pTableOral"></tbody>
+    <tfoot>
+      <tr class="print-total-row">
+        <td colspan="4" style="font-weight:900;">TOTAL SKOR TERBOBOT / NILAI AKHIR</td>
+        <td class="print-nilai-akhir" id="pTotalOral">0.00</td>
+        <td>
+          <span>Kategori:</span>
+          <span class="print-kategori" id="pKategori">—</span>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="print-notes-row">
+    <div class="print-notes-col">
+      <div class="print-notes-header">📌 CATATAN PENILAIAN</div>
+      <div class="print-notes-content" id="pCatatan">—</div>
+    </div>
+    <div class="print-notes-col">
+      <div class="print-notes-header">💡 REKOMENDASI PERBAIKAN</div>
+      <div class="print-notes-content" id="pRekomendasi">—</div>
+    </div>
+  </div>
+  <div class="print-signature">
+    <div class="print-sign-block">
+      <div class="print-sign-label">Metro, <span id="pTanggal">—</span> 2026</div>
+      <div class="print-sign-label" style="margin-top:8px">Penilai,</div>
+      <div class="print-sign-space"></div>
+      <div class="print-sign-name" id="pNamaJuri">( ______________________________ )</div>
+    </div>
+  </div>
+  <div class="print-footer">Dicetak oleh Sistem Penilaian Inovasi Daerah 2026 — BAPPERIDA Kota Metro</div>
+</div>
+
+<!-- ══ KONTEN UTAMA ══ -->
+<div id="mainContent">
+
+  <!-- Hero -->
+  <header class="hero hero-oral">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">PENILAIAN ORAL PRESENTATION 2026</div>
+        <h1 id="heroJudulInovasi">Form Penilaian Oral</h1>
+        <p id="heroPDInovasi">Memuat data inovasi…</p>
+      </div>
+      <div id="sessionNav" class="session-nav-header"></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Session bar -->
+    <div class="session-bar" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);border-radius:14px;padding:14px 20px;margin:20px 0;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div>
+          <div class="session-bar-nama" id="sessionNamaJuri">—</div>
+          <div class="session-bar-role" id="sessionRoleJuri">—</div>
+        </div>
+      </div>
+      <button class="session-logout-btn" onclick="logout()">↩ Keluar</button>
+    </div>
+
+    <!-- Inovasi info card -->
+    <div class="inovasi-card" style="margin:16px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(0,0,0,.07);box-shadow:0 6px 24px rgba(0,0,0,.07);">
+      <div class="inovasi-card-header" style="background:linear-gradient(135deg,#1e1b4b,#4338ca);color:white;padding:18px 20px;">
+        <div class="inovasi-card-icon">🎤</div>
+        <div class="inovasi-card-meta">
+          <div class="inovasi-card-judul" id="icJudul">—</div>
+          <div class="inovasi-card-badges">
+            <span class="inovasi-badge badge-pd"     id="icPD">—</span>
+            <span class="inovasi-badge badge-bentuk" id="icBentuk">—</span>
+            <span class="inovasi-badge badge-tahun"  id="icTahun">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Identitas Peserta (Bagian A) — Floating Labels -->
+    <div class="identitas-card">
+      <h3>📋 A. Identitas Peserta</h3>
+      <div class="identitas-grid">
+        <div class="float-field full">
+          <input type="text" id="inputPresenter" placeholder=" " autocomplete="off">
+          <span class="float-icon">👤</span>
+          <span class="float-label">NAMA INISIATOR / PRESENTER</span>
+        </div>
+        <div class="float-field full">
+          <input type="text" id="inputJudul" placeholder=" " autocomplete="off">
+          <span class="float-icon">📄</span>
+          <span class="float-label">JUDUL RISET / INOVASI</span>
+        </div>
+        <div class="float-field full">
+          <input type="text" id="inputPD" placeholder=" " autocomplete="off">
+          <span class="float-icon">🏛️</span>
+          <span class="float-label">ASAL PERANGKAT DAERAH</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score board with Donut -->
+    <div class="oral-scoreboard">
+      <div class="oral-score-card total">
+        <span>Nilai Akhir</span>
+        <div class="oral-donut-wrap">
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle id="donutBg"   cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="10"/>
+            <circle id="donutFill" cx="60" cy="60" r="45" fill="none" stroke="#ffffff" stroke-width="10"
+              stroke-dasharray="282.74" stroke-dashoffset="282.74"
+              stroke-linecap="round"
+              transform="rotate(-90 60 60)"
+              style="transition: stroke-dashoffset .6s ease, stroke .4s ease;"/>
+          </svg>
+          <div>
+            <span class="oral-donut-val" id="scoreTotal">0.00</span>
+            <span class="oral-donut-sub">/ 100</span>
+          </div>
+        </div>
+        <small>&nbsp;</small>
+      </div>
+      <div class="oral-score-card">
+        <span>Kelengkapan</span>
+        <strong id="scoreTerisi">0 / 10</strong>
+        <small>parameter terisi</small>
+      </div>
+      <div class="oral-score-card">
+        <span>Progress</span>
+        <strong id="scorePct">0%</strong>
+        <small>pengisian</small>
+      </div>
+      <div class="oral-score-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+        <span>Kategori</span>
+        <span class="oral-kat-badge kat-belum" id="scoreKategori">Belum Memadai</span>
+      </div>
+    </div>
+
+    <!-- Progress bar animasi -->
+    <div class="oral-progress-wrap">
+      <div class="oral-progress-header">
+        <span class="oral-progress-counter" id="progressCounter">0 dari 10 parameter terisi</span>
+        <span class="oral-progress-pct" id="progressLabel">0%</span>
+      </div>
+      <div class="oral-progress-track">
+        <div class="oral-progress-fill" id="progressBar" style="width:0%">
+          <span class="oral-progress-pct-label" id="progressPctLabel"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <section class="toolbar">
+      <div>
+        <h2>B. Lembar Penilaian</h2>
+        <p>Pilih satu nilai 1–5 untuk setiap parameter. Skor terbobot = (Nilai ÷ 5) × Bobot.</p>
+      </div>
+      <div class="actions">
+        <button id="expandAllBtn" class="btn btn-text-only">🔽 Buka Semua</button>
+        <button class="btn btn-print" onclick="printOral()">🖨️ Cetak</button>
+        <button class="btn secondary"
+          style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;border-color:#dc2626;"
+          onclick="resetOral()">↺ Reset</button>
+      </div>
+    </section>
+
+    <!-- Section header penilaian -->
+    <div class="penilaian-section-header section-oral" style="margin-top:8px;">
+      <div class="psh-icon">🎤</div>
+      <div>
+        <div class="psh-title">Penilaian Oral Presentation</div>
+        <div class="psh-sub">10 parameter · Skala 1–5 · Rumus: (Nilai ÷ 5) × Bobot</div>
+      </div>
+      <div class="psh-score">
+        <span id="scoreTotal2">0.00</span>
+        <small>/ 100</small>
+      </div>
+    </div>
+
+    <!-- Layout wrapper -->
+    <div class="oral-layout">
+      <!-- 10 Kartu parameter -->
+      <div class="oral-main" id="oralContainer"></div>
+
+      <!-- Sidebar navigasi cepat desktop -->
+      <nav class="quick-nav-sidebar" id="quickNavSidebar" aria-label="Navigasi parameter"></nav>
+    </div>
+
+    <!-- Interpretasi Nilai Akhir -->
+    <div class="interpretasi-card">
+      <h3>📊 Interpretasi Nilai Akhir</h3>
+      <div class="interpretasi-grid" id="interpretasiGrid">
+
+        <div class="kat-box kb-sangat-kuat" data-min="90" data-max="100">
+          <div class="kat-box-icon">🏆</div>
+          <span class="kat-box-rentang">90 – 100</span>
+          <div class="kat-box-nama">Sangat Kuat</div>
+          <div class="kat-box-makna">Bukti dan kinerja presentasi sangat meyakinkan; manfaat dan kesiapan inovasi tergambar kuat.</div>
+        </div>
+
+        <div class="kat-box kb-kuat" data-min="80" data-max="90">
+          <div class="kat-box-icon">💪</div>
+          <span class="kat-box-rentang">80 – &lt;90</span>
+          <div class="kat-box-nama">Kuat</div>
+          <div class="kat-box-makna">Sebagian besar aspek terpenuhi dengan bukti yang baik; terdapat penyempurnaan terbatas.</div>
+        </div>
+
+        <div class="kat-box kb-memadai" data-min="70" data-max="80">
+          <div class="kat-box-icon">✅</div>
+          <span class="kat-box-rentang">70 – &lt;80</span>
+          <div class="kat-box-nama">Memadai</div>
+          <div class="kat-box-makna">Potensi terlihat, tetapi beberapa aspek penting memerlukan penguatan.</div>
+        </div>
+
+        <div class="kat-box kb-perlu" data-min="60" data-max="70">
+          <div class="kat-box-icon">⚠️</div>
+          <span class="kat-box-rentang">60 – &lt;70</span>
+          <div class="kat-box-nama">Perlu Penguatan</div>
+          <div class="kat-box-makna">Kesenjangan substansi, bukti, kelayakan, atau penyajian masih cukup nyata.</div>
+        </div>
+
+        <div class="kat-box kb-belum" data-min="0" data-max="60">
+          <div class="kat-box-icon">🔴</div>
+          <span class="kat-box-rentang">&lt;60</span>
+          <div class="kat-box-nama">Belum Memadai</div>
+          <div class="kat-box-makna">Bukti dan penjelasan belum cukup untuk mendukung penilaian positif atas inovasi.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <section class="summary" style="margin-top:20px;border-radius:18px;padding:24px;background:white;box-shadow:0 6px 24px rgba(0,0,0,.07);border:1px solid rgba(0,0,0,.06);">
+      <h2 style="font-size:18px;font-weight:900;color:#1f2937;margin:0 0 16px;">Ringkasan Nilai</h2>
+      <div class="summary-grid" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-radius:12px;padding:16px;border:1.5px solid #c4b5fd;">
+        <div><span style="font-size:12px;color:#6b7280;font-weight:600;">Total Skor Terbobot / Nilai Akhir</span>
+          <b id="sumTotal" style="font-size:28px;font-weight:900;color:#1e1b4b;display:block;">0.00 / 100</b></div>
+      </div>
+      <div class="oral-progress-wrap" style="margin-top:16px;">
+        <div class="oral-progress-header">
+          <span>Persentase kelengkapan</span>
+          <b id="summaryPct">0%</b>
+        </div>
+        <div class="oral-progress-track">
+          <div class="oral-progress-fill" id="progressBar2" style="width:0%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Catatan & Rekomendasi -->
+    <section class="notes-section" style="margin-top:20px;border-radius:18px;padding:24px;background:white;box-shadow:0 6px 24px rgba(0,0,0,.07);border:1px solid rgba(0,0,0,.06);">
+      <h2 style="font-size:18px;font-weight:900;color:#1f2937;margin:0 0 6px;">📝 Catatan dan Rekomendasi</h2>
+      <p style="font-size:13px;color:#6b7280;margin:0 0 16px;">Tambahkan catatan atau rekomendasi untuk perbaikan (opsional)</p>
+      <div class="oral-notes-card">
+        <div class="notes-field" style="margin-bottom:20px;">
+          <label for="notesCatatan" class="notes-label">
+            <span class="notes-icon">📌</span>
+            <span>Catatan Penilaian</span>
+          </label>
+          <textarea id="notesCatatan" class="notes-textarea" rows="4"
+            placeholder="Tuliskan catatan mengenai penilaian Anda…"></textarea>
+        </div>
+        <div class="notes-field">
+          <label for="notesRekomendasi" class="notes-label">
+            <span class="notes-icon">💡</span>
+            <span>Rekomendasi Perbaikan</span>
+          </label>
+          <textarea id="notesRekomendasi" class="notes-textarea" rows="4"
+            placeholder="Berikan rekomendasi atau saran untuk meningkatkan kualitas presentasi…"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tombol Simpan Final -->
+    <div style="margin:24px 0 32px;display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;">
+      <a href="index.html" class="btn btn-step-back">🏠 Beranda</a>
+      <button id="btnSaveOral" class="btn btn-save-all" onclick="doSaveOral()" style="padding:13px 28px;font-size:15px;font-weight:900;">
+        💾 Simpan Penilaian
+      </button>
+    </div>
+
+  </main>
+</div><!-- /#mainContent -->
+
+<!-- Bottom Nav Pills Mobile -->
+<nav class="bottom-nav-pills" id="bottomNavPills" aria-label="Navigasi parameter mobile"></nav>
+
+<!-- FAB Simpan Draft -->
+<button id="fabSaveOral" class="fab-save" onclick="handleDraftOral()" title="Simpan Draft">
+  <span id="fabSaveOralIcon">📝</span>
+  <span>Simpan Draft</span>
+</button>
+
+<!-- Modal Konfirmasi Draft -->
+<div id="modalKonfirmasiOral" style="
+  display:none; position:fixed; inset:0; z-index:99999;
+  background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
+  align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white;border-radius:24px;max-width:420px;width:100%;
+    box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#1e1b4b,#4338ca);padding:24px 28px 20px;color:white;">
+      <div style="font-size:36px;margin-bottom:8px;">📝</div>
+      <div style="font-size:17px;font-weight:900;margin-bottom:4px;">Simpan Draft</div>
+      <div style="font-size:13px;opacity:.85;">Penilaian tersimpan sementara, bisa dilanjutkan nanti.</div>
+    </div>
+    <div style="padding:24px 28px;">
+      <p style="font-size:14px;color:#374151;margin:0 0 20px;">Simpan progres penilaian saat ini sebagai draft?</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="konfirmasiDraftOral(true)" style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#4f46e5,#4338ca);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+          ✅ Ya, simpan draft
+        </button>
+        <button onclick="konfirmasiDraftOral(false)" style="width:100%;padding:13px 20px;background:#f3f4f6;color:#374151;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+          🔍 Cek kembali dulu
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Final -->
+<div id="modalFinalOral">
+  <div class="modal-final-inner">
+    <div class="modal-final-head">
+      <div class="mfh-icon">✅</div>
+      <div class="mfh-title">Konfirmasi Simpan Final</div>
+      <div class="mfh-sub">Periksa ringkasan nilai sebelum menyimpan.</div>
+    </div>
+    <div class="modal-final-body">
+      <div class="modal-final-grid" id="modalFinalGrid"></div>
+      <div class="modal-final-total">
+        <span class="mft-label">Total Nilai Akhir</span>
+        <span class="mft-val" id="modalFinalTotal">0.00</span>
+      </div>
+      <div class="modal-final-actions">
+        <button onclick="konfirmasiFinalOral(true)" id="btnFinalKonfirmasi"
+          style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+          ✅ Konfirmasi &amp; Simpan
+        </button>
+        <button onclick="konfirmasiFinalOral(false)"
+          style="width:100%;padding:13px 20px;background:#f3f4f6;color:#374151;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+          ← Cek Kembali
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="scrollTopBtn" class="scroll-top-btn">↑</button>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script src="data.js" defer></script>
+<script src="inovasi.js" defer></script>
+<script src="shared.js" defer></script>
+<script src="auth.js" defer></script>
+<script src="realtime-sync.js" defer></script>
+<script src="oral.js" defer></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const sess = typeof getSession === "function" ? getSession() : null;
+    if (sess) {
+      const el1 = document.getElementById("sessionNamaJuri");
+      const el2 = document.getElementById("sessionRoleJuri");
+      if (el1) el1.textContent = sess.nama;
+      if (el2) el2.textContent = sess.label || sess.role;
+    }
+  });
+
+  // Mirror scoreTotal → scoreTotal2
+  const _observer = new MutationObserver(() => {
+    const v = document.getElementById("scoreTotal")?.textContent;
+    const t = document.getElementById("scoreTotal2");
+    if (t && v) t.textContent = v;
+  });
+  const _st = document.getElementById("scoreTotal");
+  if (_st) _observer.observe(_st, { childList: true, characterData: true, subtree: true });
+
+  window.addEventListener("pageshow", function() {
+    if (typeof getSession === "function" && !getSession()) window.location.replace("login.html");
+  });
+</script>
+</body>
+</html>
