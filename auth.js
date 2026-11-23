@@ -61,21 +61,21 @@ const ROLE_CONFIG = {
     label     : "Super Admin",
     color     : "#7c3aed",
     icon      : "",
-    allowPages: ["dashboard.html", "dashboard_sid.html", "index.html"]
+    allowPages: ["dashboard.html", "dashboard_sid.html", "index.html", "oral.html", "ranking_sid.html", "ranking_oral.html", "ranking_gabungan.html"]
   },
   juri_judul: {
     redirect  : "index.html",      // juri ke beranda dulu → pilih inovasi
     label     : "Juri Judul Inovasi",
     color     : "#134e5e",
     icon      : "",
-    allowPages: ["index.html", "penilaian.html"]
+    allowPages: ["index.html", "penilaian.html", "oral.html"]
   },
   juri_sid: {
     redirect  : "index.html",      // juri ke beranda dulu → pilih inovasi
     label     : "Juri Penilaian SID",
     color     : "#1e3a8a",
     icon      : "",
-    allowPages: ["index.html", "penilaian.html"]
+    allowPages: ["index.html", "penilaian.html", "oral.html"]
   }
 };
 

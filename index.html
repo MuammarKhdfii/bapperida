@@ -458,6 +458,58 @@
       <div id="landingRankingContainer" class="landing-ranking-list"></div>
     </section>
 
+    <!-- ══════════════════════════════════════════════════════
+         Dashboard Ranking 2: SID 70% + Oral 30%
+    ══════════════════════════════════════════════════════ -->
+    <section class="landing-ranking" id="rankingOralSection" style="margin-top:40px;">
+      <div class="ranking-section-header">
+        <div>
+          <h2 class="ranking-section-title">🎤 Dashboard Perangkingan — SID + Oral</h2>
+          <p class="ranking-section-sub">Total skor = <b>SID × 70%</b> + <b>Oral × 30%</b> dari semua juri</p>
+        </div>
+        <div class="ranking-section-actions">
+          <button onclick="renderOralRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
+        </div>
+      </div>
+      <div class="ranking-tabs" id="oralRankingTabs">
+        <button class="ranking-tab active" onclick="switchOralTab(this,'semua')">📋 Semua</button>
+        <button class="ranking-tab" onclick="switchOralTab(this,'opd')">🏛️ OPD</button>
+        <button class="ranking-tab" onclick="switchOralTab(this,'pendidikan')">🎓 UPTD Pendidikan</button>
+        <button class="ranking-tab" onclick="switchOralTab(this,'kesehatan')">🏥 UPTD Kesehatan</button>
+      </div>
+      <div id="oralRankingContainer" class="landing-ranking-list"></div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         Dashboard Ranking 3: Rekap per Juri (SID 70% + Oral 30%)
+    ══════════════════════════════════════════════════════ -->
+    <section class="landing-ranking" id="rankingJuriSection" style="margin-top:40px;">
+      <div class="ranking-section-header">
+        <div>
+          <h2 class="ranking-section-title">📋 Rekap Penilaian per Juri</h2>
+          <p class="ranking-section-sub">Total skor = <b>SID × 70%</b> + <b>Oral × 30%</b> — berdasarkan penilaian <b id="juriAktifLabel">juri yang login</b></p>
+        </div>
+        <div class="ranking-section-actions">
+          <button onclick="renderJuriRanking()" class="rk-action-btn rk-btn-refresh">🔄 Refresh</button>
+        </div>
+      </div>
+      <!-- Selector juri -->
+      <div id="juriSelectorWrap" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:14px 18px;background:white;border-radius:14px;border:2px solid rgba(124,58,237,.1);box-shadow:0 4px 12px rgba(0,0,0,.04);">
+        <label style="font-size:13px;font-weight:800;color:#374151;white-space:nowrap;">👤 Pilih Juri:</label>
+        <select id="juriSelect" onchange="onJuriChange()" style="flex:1;min-width:200px;padding:9px 14px;border:2px solid #e9d5ff;border-radius:10px;font-size:13px;font-weight:700;color:#4c1d95;background:white;outline:none;cursor:pointer;">
+          <option value="">— Pilih juri —</option>
+        </select>
+        <span id="juriSelectInfo" style="font-size:12px;color:#6b7280;"></span>
+      </div>
+      <div class="ranking-tabs" id="juriRankingTabs">
+        <button class="ranking-tab active" onclick="switchJuriTab(this,'semua')">📋 Semua</button>
+        <button class="ranking-tab" onclick="switchJuriTab(this,'opd')">🏛️ OPD</button>
+        <button class="ranking-tab" onclick="switchJuriTab(this,'pendidikan')">🎓 UPTD Pendidikan</button>
+        <button class="ranking-tab" onclick="switchJuriTab(this,'kesehatan')">🏥 UPTD Kesehatan</button>
+      </div>
+      <div id="juriRankingContainer" class="landing-ranking-list"></div>
+    </section>
+
     <div class="landing-secondary"></div>
 
   </main>
@@ -866,6 +918,7 @@
     assessedCurrentPage  = 1;
 
     assessedSection.style.display = 'block';
+    assessedSection.dataset.hadContent = 'true';
     renderAssessedPage(1);
   }
   
@@ -948,6 +1001,9 @@
       if (bannerEl)   bannerEl.style.display = "flex";
       if (titleEl)    titleEl.textContent    = "🎤 Pilih inovasi lalu klik di sini →";
       if (cardOralEl) { cardOralEl.style.outline = "3px solid #a5b4fc"; cardOralEl.style.outlineOffset = "3px"; }
+      // Sembunyikan daftar inovasi yang sudah dinilai saat mode oral
+      const assessedEl = document.getElementById("assessedInovasiSection");
+      if (assessedEl) assessedEl.style.display = "none";
       // Scroll ke dropdown agar user langsung lihat
       document.getElementById("globalInovasi")?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else {
@@ -957,6 +1013,9 @@
       if (bannerEl)   bannerEl.style.display = "none";
       if (titleEl)    titleEl.textContent    = "Penilaian Oral Presentation";
       if (cardOralEl) { cardOralEl.style.outline = ""; cardOralEl.style.outlineOffset = ""; }
+      // Tampilkan kembali daftar inovasi yang sudah dinilai
+      const assessedEl = document.getElementById("assessedInovasiSection");
+      if (assessedEl && assessedEl.dataset.hadContent === "true") assessedEl.style.display = "";
     }
   }
 
@@ -1988,16 +2047,399 @@
     await renderLandingRanking();
   };
 
+  // ══════════════════════════════════════════════════════
+  //  DASHBOARD RANKING 2: SID 70% + ORAL 30%
+  // ══════════════════════════════════════════════════════
+
+  const BOBOT_SID  = 0.70;
+  const BOBOT_ORAL = 0.30;
+
+  let oralCurrentTab  = "semua";
+  let oralCurrentPage = 1;
+  let _oralData       = [];
+
+  function getOralScoresFromDraf(d) {
+    // Kembalikan { namaJuri: skor } dari oralSkorPerJuri
+    const out = {};
+    if (!d.oralSkorPerJuri) return out;
+    Object.entries(d.oralSkorPerJuri).forEach(([key, skor]) => {
+      if (Number(skor) > 0) {
+        const nama = d.oralUserMetadata?.[key]?.namaOriginal || key;
+        out[nama] = Number(skor);
+      }
+    });
+    return out;
+  }
+
+  async function loadOralRankingData() {
+    const all = await loadAllDraf();
+    const SKIP = new Set(['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+      'namaInovasi','notesState','savedAt','signatureState','skorPerJuri','skorJudulPerJuri',
+      'perangkatDaerah','tahun','ringkasan','kategori','userMetadata']);
+
+    const entries = Object.entries(all).filter(([k, v]) => {
+      if (typeof v !== 'object' || !v) return false;
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(k)) return false;
+      if (SKIP.has(k)) return false;
+      const hasSID  = v.skorPerJuri && Object.values(v.skorPerJuri).some(s => Number(s) > 0);
+      const hasOral = v.oralSkorPerJuri && Object.values(v.oralSkorPerJuri).some(s => Number(s) > 0);
+      return hasSID || hasOral;
+    });
+
+    const normalizeOPD = (pd) => {
+      if (!pd) return pd;
+      return pd.replace(/^PKM\s+/i,'UPTD. Puskesmas ').replace(/^Puskesmas\s+/i,'UPTD. Puskesmas ')
+               .replace(/^SDN\s+/i,'SD Negeri ').replace(/^SMPN\s+/i,'SMP Negeri ');
+    };
+
+    return entries.map(([judulKey, d]) => {
+      // SID: rata-rata semua juri SID
+      const sp = d.skorPerJuri || {};
+      const sidArr = Object.values(sp).filter(s => Number(s) > 0).map(Number);
+      const avgSID = sidArr.length ? sidArr.reduce((a,b)=>a+b,0)/sidArr.length : 0;
+
+      // Oral: rata-rata semua juri oral
+      const oralScores = getOralScoresFromDraf(d);
+      const oralArr = Object.values(oralScores).filter(s => s > 0);
+      const avgOral = oralArr.length ? oralArr.reduce((a,b)=>a+b,0)/oralArr.length : 0;
+
+      // Total tertimbang
+      const total = parseFloat(((avgSID * BOBOT_SID) + (avgOral * BOBOT_ORAL)).toFixed(2));
+
+      let meta = findMetaInovasiByJudul(judulKey, daftarInovasiSID)
+              || findMetaInovasiByJudul(judulKey, daftarInovasiJudulLengkap) || {};
+      const pd = normalizeOPD(meta.perangkatDaerah || d.perangkatDaerah || "—");
+
+      return {
+        judul: resolveJudulAlias(judulKey),
+        perangkatDaerah: pd,
+        kategori: getKategori(pd),
+        avgSID:  parseFloat(avgSID.toFixed(2)),
+        avgOral: parseFloat(avgOral.toFixed(2)),
+        total,
+        sidJuri:  sidArr.length,
+        oralJuri: oralArr.length,
+        hasBoth: avgSID > 0 && avgOral > 0,
+        savedAt: d.savedAt || ""
+      };
+    }).filter(r => r.total > 0).sort((a,b) => b.total - a.total);
+  }
+
+  function renderOralRankingCard(item, rank) {
+    const medal = rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":`<span class="rk-rank-num">#${rank}</span>`;
+    const rkClass = rank<=3 ? `rank-top rank-${rank}` : rank<=10 ? "rank-normal" : "rank-below";
+    const date = item.savedAt
+      ? new Date(item.savedAt).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})
+      : "";
+    return `
+      <div class="rk-card ${rkClass}">
+        <div class="rk-rank">${medal}</div>
+        <div class="rk-content">
+          <div class="rk-header">
+            <div class="rk-judul">${esc(item.judul)}</div>
+            <div class="rk-avg">
+              <span class="rk-avg-label">Total</span>
+              <span class="rk-avg-val">${item.total.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="rk-meta">
+            <span class="rk-pd">🏛️ ${esc(item.perangkatDaerah)}</span>
+            ${date ? `<span class="rk-date">📅 ${date}</span>` : ""}
+          </div>
+          <div class="rk-juri-row">
+            <div class="rk-juri-cell ${item.avgSID>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">📊 Skor SID</span>
+              <span class="rk-juri-val">${item.avgSID>0?item.avgSID.toFixed(2):"—"}</span>
+            </div>
+            <div class="rk-juri-cell ${item.avgOral>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">🎤 Skor Oral</span>
+              <span class="rk-juri-val">${item.avgOral>0?item.avgOral.toFixed(2):"—"}</span>
+            </div>
+            <div class="rk-juri-cell juri-total">
+              <span class="rk-juri-name">Juri SID/Oral</span>
+              <span class="rk-juri-val">${item.sidJuri}/${item.oralJuri}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderOralRankingPage(page) {
+    const cont = document.getElementById("oralRankingContainer");
+    const totalPages = Math.ceil(_oralData.length / RANKING_PER_PAGE);
+    const start = (page - 1) * RANKING_PER_PAGE;
+    const pageItems = _oralData.slice(start, start + RANKING_PER_PAGE);
+    let html = pageItems.map((item, i) => renderOralRankingCard(item, start + i + 1)).join("");
+    if (totalPages > 1) {
+      html += `<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;flex-wrap:wrap;">`;
+      html += `<button onclick="goOralPage(${page-1})" ${page===1?'disabled':''} style="padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:${page===1?'#f3f4f6':'#fff'};cursor:${page===1?'default':'pointer'};font-size:13px;color:#374151;">‹ Prev</button>`;
+      for (let i=1;i<=totalPages;i++) {
+        html += `<button onclick="goOralPage(${i})" style="padding:7px 13px;border-radius:8px;border:1px solid ${i===page?'#0E8991':'#d1d5db'};background:${i===page?'#0E8991':'#fff'};color:${i===page?'#fff':'#374151'};font-weight:${i===page?'700':'400'};cursor:pointer;font-size:13px;">${i}</button>`;
+      }
+      html += `<button onclick="goOralPage(${page+1})" ${page===totalPages?'disabled':''} style="padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:${page===totalPages?'#f3f4f6':'#fff'};cursor:${page===totalPages?'default':'pointer'};font-size:13px;color:#374151;">Next ›</button>`;
+      html += `<span style="font-size:12px;color:#6b7280;margin-left:4px;">${start+1}–${Math.min(start+RANKING_PER_PAGE,_oralData.length)} dari ${_oralData.length}</span>`;
+      html += `</div>`;
+    }
+    cont.innerHTML = html;
+  }
+
+  window.goOralPage = function(page) {
+    const totalPages = Math.ceil(_oralData.length / RANKING_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    oralCurrentPage = page;
+    renderOralRankingPage(page);
+    document.getElementById('rankingOralSection').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.switchOralTab = function(btn, tab) {
+    document.querySelectorAll("#oralRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    oralCurrentTab = tab;
+    renderOralRanking();
+  };
+
+  window.renderOralRanking = async function() {
+    const all  = await loadOralRankingData();
+    const data = oralCurrentTab === "semua" ? all : all.filter(i => i.kategori === oralCurrentTab);
+    const cont = document.getElementById("oralRankingContainer");
+    if (!data.length) {
+      cont.innerHTML = `<div class="rk-empty"><div class="rk-empty-icon">📭</div><div class="rk-empty-title">Belum ada data penilaian SID + Oral</div><div class="rk-empty-sub">Data akan muncul setelah ada penilaian SID dan/atau oral yang tersimpan.</div></div>`;
+      return;
+    }
+    _oralData = data;
+    oralCurrentPage = 1;
+    renderOralRankingPage(1);
+  };
+
+  // ══════════════════════════════════════════════════════
+  //  DASHBOARD RANKING 3: REKAP PER JURI (SID 70% + ORAL 30%)
+  // ══════════════════════════════════════════════════════
+
+  let juriCurrentTab  = "semua";
+  let juriCurrentPage = 1;
+  let _juriData       = [];
+  let activeJuriName  = "";
+
+  async function collectAllJuri() {
+    const all = await loadAllDraf();
+    const SKIP = new Set(['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+      'namaInovasi','notesState','savedAt','signatureState','skorPerJuri','skorJudulPerJuri',
+      'perangkatDaerah','tahun','ringkasan','kategori','userMetadata']);
+    const juriSet = new Set();
+    // Juri SID
+    JURI_LIST.forEach(j => juriSet.add(j));
+    // Juri dari oral
+    Object.entries(all).forEach(([k, v]) => {
+      if (typeof v !== 'object' || !v || SKIP.has(k)) return;
+      if (v.oralUserMetadata) {
+        Object.values(v.oralUserMetadata).forEach(m => { if (m?.namaOriginal) juriSet.add(m.namaOriginal); });
+      }
+    });
+    return [...juriSet];
+  }
+
+  async function populateJuriSelect() {
+    const juriList = await collectAllJuri();
+    const sel = document.getElementById('juriSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— Pilih juri —</option>';
+    juriList.forEach(j => {
+      const opt = document.createElement('option');
+      opt.value = j; opt.textContent = j;
+      sel.appendChild(opt);
+    });
+    // Default: pilih juri yang sedang login jika ada
+    const namaLogin = SESSION?.nama;
+    const matchLogin = juriList.find(j => j === namaLogin);
+    if (matchLogin) {
+      sel.value = matchLogin;
+      activeJuriName = matchLogin;
+    } else if (juriList.length > 0) {
+      sel.value = juriList[0];
+      activeJuriName = juriList[0];
+    }
+  }
+
+  window.onJuriChange = function() {
+    const sel = document.getElementById('juriSelect');
+    activeJuriName = sel?.value || "";
+    renderJuriRanking();
+  };
+
+  async function loadJuriRankingData(namaJuri) {
+    if (!namaJuri) return [];
+    const all = await loadAllDraf();
+    const SKIP = new Set(['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+      'namaInovasi','notesState','savedAt','signatureState','skorPerJuri','skorJudulPerJuri',
+      'perangkatDaerah','tahun','ringkasan','kategori','userMetadata']);
+    const sanitized = namaJuri.replace(/[\.,#$\[\]\/]/g,'_');
+
+    const normalizeOPD = (pd) => {
+      if (!pd) return pd;
+      return pd.replace(/^PKM\s+/i,'UPTD. Puskesmas ').replace(/^Puskesmas\s+/i,'UPTD. Puskesmas ')
+               .replace(/^SDN\s+/i,'SD Negeri ').replace(/^SMPN\s+/i,'SMP Negeri ');
+    };
+
+    return Object.entries(all).filter(([k, v]) => {
+      if (typeof v !== 'object' || !v || SKIP.has(k)) return false;
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(k)) return false;
+      // Punya nilai SID atau oral dari juri ini
+      const hasSID  = Number(v.skorPerJuri?.[namaJuri] || v.skorPerJuri?.[sanitized] || 0) > 0;
+      const hasOral = Number(v.oralSkorPerJuri?.[namaJuri] || v.oralSkorPerJuri?.[sanitized] || 0) > 0;
+      // Cek juga via oralUserMetadata
+      let hasOralMeta = false;
+      if (!hasOral && v.oralSkorPerJuri) {
+        for (const [key, skor] of Object.entries(v.oralSkorPerJuri)) {
+          if (Number(skor) > 0 && (v.oralUserMetadata?.[key]?.namaOriginal === namaJuri)) {
+            hasOralMeta = true; break;
+          }
+        }
+      }
+      return hasSID || hasOral || hasOralMeta;
+    }).map(([judulKey, d]) => {
+      // Skor SID juri ini
+      const skorSID = Number(d.skorPerJuri?.[namaJuri] || d.skorPerJuri?.[sanitized] || 0);
+      // Skor Oral juri ini
+      let skorOral = Number(d.oralSkorPerJuri?.[namaJuri] || d.oralSkorPerJuri?.[sanitized] || 0);
+      if (!skorOral && d.oralSkorPerJuri) {
+        for (const [key, skor] of Object.entries(d.oralSkorPerJuri)) {
+          if (Number(skor) > 0 && (d.oralUserMetadata?.[key]?.namaOriginal === namaJuri)) {
+            skorOral = Number(skor); break;
+          }
+        }
+      }
+      const total = parseFloat(((skorSID * BOBOT_SID) + (skorOral * BOBOT_ORAL)).toFixed(2));
+      let meta = findMetaInovasiByJudul(judulKey, daftarInovasiSID)
+              || findMetaInovasiByJudul(judulKey, daftarInovasiJudulLengkap) || {};
+      const pd = normalizeOPD(meta.perangkatDaerah || d.perangkatDaerah || "—");
+      return {
+        judul: resolveJudulAlias(judulKey),
+        perangkatDaerah: pd,
+        kategori: getKategori(pd),
+        skorSID, skorOral, total,
+        hasBoth: skorSID > 0 && skorOral > 0,
+        savedAt: d.savedAt || ""
+      };
+    }).filter(r => r.total > 0).sort((a,b) => b.total - a.total);
+  }
+
+  function renderJuriRankingCard(item, rank) {
+    const medal = rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":`<span class="rk-rank-num">#${rank}</span>`;
+    const rkClass = rank<=3 ? `rank-top rank-${rank}` : rank<=10 ? "rank-normal" : "rank-below";
+    const date = item.savedAt
+      ? new Date(item.savedAt).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})
+      : "";
+    return `
+      <div class="rk-card ${rkClass}">
+        <div class="rk-rank">${medal}</div>
+        <div class="rk-content">
+          <div class="rk-header">
+            <div class="rk-judul">${esc(item.judul)}</div>
+            <div class="rk-avg">
+              <span class="rk-avg-label">Total</span>
+              <span class="rk-avg-val">${item.total.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="rk-meta">
+            <span class="rk-pd">🏛️ ${esc(item.perangkatDaerah)}</span>
+            ${date ? `<span class="rk-date">📅 ${date}</span>` : ""}
+          </div>
+          <div class="rk-juri-row">
+            <div class="rk-juri-cell ${item.skorSID>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">📊 Skor SID</span>
+              <span class="rk-juri-val">${item.skorSID>0?item.skorSID.toFixed(2):"—"}</span>
+            </div>
+            <div class="rk-juri-cell ${item.skorOral>0?'has-score':'no-score'}">
+              <span class="rk-juri-name">🎤 Skor Oral</span>
+              <span class="rk-juri-val">${item.skorOral>0?item.skorOral.toFixed(2):"—"}</span>
+            </div>
+            <div class="rk-juri-cell juri-total">
+              <span class="rk-juri-name">Formula</span>
+              <span class="rk-juri-val" style="font-size:10px;line-height:1.3;">SID×70%+Oral×30%</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderJuriRankingPage(page) {
+    const cont = document.getElementById("juriRankingContainer");
+    const totalPages = Math.ceil(_juriData.length / RANKING_PER_PAGE);
+    const start = (page - 1) * RANKING_PER_PAGE;
+    const pageItems = _juriData.slice(start, start + RANKING_PER_PAGE);
+    let html = pageItems.map((item, i) => renderJuriRankingCard(item, start + i + 1)).join("");
+    if (totalPages > 1) {
+      html += `<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;flex-wrap:wrap;">`;
+      html += `<button onclick="goJuriPage(${page-1})" ${page===1?'disabled':''} style="padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:${page===1?'#f3f4f6':'#fff'};cursor:${page===1?'default':'pointer'};font-size:13px;color:#374151;">‹ Prev</button>`;
+      for (let i=1;i<=totalPages;i++) {
+        html += `<button onclick="goJuriPage(${i})" style="padding:7px 13px;border-radius:8px;border:1px solid ${i===page?'#7c3aed':'#d1d5db'};background:${i===page?'#7c3aed':'#fff'};color:${i===page?'#fff':'#374151'};font-weight:${i===page?'700':'400'};cursor:pointer;font-size:13px;">${i}</button>`;
+      }
+      html += `<button onclick="goJuriPage(${page+1})" ${page===totalPages?'disabled':''} style="padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:${page===totalPages?'#f3f4f6':'#fff'};cursor:${page===totalPages?'default':'pointer'};font-size:13px;color:#374151;">Next ›</button>`;
+      html += `<span style="font-size:12px;color:#6b7280;margin-left:4px;">${start+1}–${Math.min(start+RANKING_PER_PAGE,_juriData.length)} dari ${_juriData.length}</span>`;
+      html += `</div>`;
+    }
+    cont.innerHTML = html;
+  }
+
+  window.goJuriPage = function(page) {
+    const totalPages = Math.ceil(_juriData.length / RANKING_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    juriCurrentPage = page;
+    renderJuriRankingPage(page);
+    document.getElementById('rankingJuriSection').scrollIntoView({behavior:'smooth',block:'start'});
+  };
+
+  window.switchJuriTab = function(btn, tab) {
+    document.querySelectorAll("#juriRankingTabs .ranking-tab").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    juriCurrentTab = tab;
+    renderJuriRanking();
+  };
+
+  window.renderJuriRanking = async function() {
+    const namaJuri = activeJuriName;
+    const labelEl  = document.getElementById('juriAktifLabel');
+    const infoEl   = document.getElementById('juriSelectInfo');
+    const cont     = document.getElementById("juriRankingContainer");
+
+    if (!namaJuri) {
+      cont.innerHTML = `<div class="rk-empty"><div class="rk-empty-icon">👤</div><div class="rk-empty-title">Pilih juri terlebih dahulu</div><div class="rk-empty-sub">Gunakan dropdown di atas untuk memilih juri yang ingin dilihat rekapnya.</div></div>`;
+      return;
+    }
+    if (labelEl) labelEl.textContent = namaJuri;
+
+    const all  = await loadJuriRankingData(namaJuri);
+    const data = juriCurrentTab === "semua" ? all : all.filter(i => i.kategori === juriCurrentTab);
+
+    if (infoEl) infoEl.textContent = `${all.length} inovasi dinilai`;
+
+    if (!data.length) {
+      cont.innerHTML = `<div class="rk-empty"><div class="rk-empty-icon">📭</div><div class="rk-empty-title">Belum ada data untuk juri ini</div><div class="rk-empty-sub">${namaJuri} belum menyimpan penilaian SID maupun oral.</div></div>`;
+      return;
+    }
+    _juriData = data;
+    juriCurrentPage = 1;
+    renderJuriRankingPage(1);
+  };
+
   // Render ranking saat halaman dimuat — tampilkan localStorage dulu, Firebase sync di background
   (async function initRanking() {
     // Render langsung dari localStorage tanpa tunggu Firebase
     await renderLandingRanking();
+
+    // Init dashboard 2 & 3 juga
+    await renderOralRanking();
+    await populateJuriSelect();
+    await renderJuriRanking();
 
     // Firebase sync di background
     if (typeof firebaseReadyPromise !== 'undefined') {
       firebaseReadyPromise.then(async (status) => {
         if (status === 'connected') {
           await renderLandingRanking();
+          await renderOralRanking();
+          await populateJuriSelect();
+          await renderJuriRanking();
         }
       });
     }

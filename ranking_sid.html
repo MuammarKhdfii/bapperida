@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Ranking Penilaian SID — BAPPERIDA 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="penilaian.css">
+  <style>
+    /* ── Hero SID ── */
+    .hero-ranking-sid {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%) !important;
+      background-size: 300% 300% !important;
+      animation: gradientShift 8s ease infinite !important;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-ranking-sid::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+      opacity: 0.3;
+    }
+    .hero-ranking-sid::after {
+      content: "";
+      position: absolute; top: -40%; right: -10%;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 65%);
+      border-radius: 50%; pointer-events: none;
+      animation: orbFloat 9s ease-in-out infinite; z-index: 0;
+    }
+    .hero-ranking-sid .hero-text,
+    .hero-ranking-sid .session-nav-header { position: relative; z-index: 1; }
+
+    /* ── Stat Cards ── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px; margin: 40px 0;
+    }
+    .dash-stat {
+      background: linear-gradient(135deg, #fff 0%, #eff6ff 100%);
+      border-radius: 22px; padding: 32px 24px 24px;
+      box-shadow: 0 10px 30px rgba(37,99,235,.08), 0 4px 12px rgba(0,0,0,.04);
+      border: 1px solid rgba(37,99,235,.12);
+      animation: fadeSlideUp .5s ease both;
+      text-align: center; position: relative; overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .dash-stat::before {
+      content: ""; position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #2563eb, #3b82f6, #1e3a8a);
+      z-index: 1;
+    }
+    .dash-stat:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(37,99,235,.18); border-color: rgba(37,99,235,.28); }
+    .dash-stat:nth-child(1){animation-delay:.1s} .dash-stat:nth-child(2){animation-delay:.2s}
+    .dash-stat:nth-child(3){animation-delay:.3s} .dash-stat:nth-child(4){animation-delay:.4s}
+    .dash-stat-icon {
+      font-size: 36px; margin: 0 auto 16px;
+      width: 76px; height: 76px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(37,99,235,.18), inset 0 2px 4px rgba(255,255,255,.5);
+    }
+    .dash-stat-val {
+      font-size: 44px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2;
+      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .dash-stat-lbl { font-size: 11px; color: #64748b; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: .1em; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      background: linear-gradient(135deg, #fff 0%, #eff6ff 100%);
+      border-radius: 18px; border: 1px solid rgba(37,99,235,.12);
+      padding: 22px 24px; box-shadow: 0 6px 22px rgba(37,99,235,.06);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .toolbar .btn { border-radius: 11px; font-size: 13px; transition: transform .15s, box-shadow .15s; }
+    .toolbar .btn:hover { transform: translateY(-2px); }
+
+    /* ── Rekap Section ── */
+    .rekap-section { margin: 48px 0; animation: fadeSlideUp .6s ease both; }
+    .rekap-title {
+      font-size: 20px; font-weight: 900; color: #1e3a8a;
+      padding: 16px 20px; border-left: 5px solid #2563eb;
+      border-radius: 0 12px 12px 0; background-color: #eff6ff !important;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+    }
+
+    /* ── Tab Filter ── */
+    .tab-filter {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .tab-btn {
+      padding: 8px 18px; border-radius: 999px; border: 2px solid #bfdbfe;
+      background: white; color: #2563eb; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all .2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+      color: white; border-color: transparent;
+      box-shadow: 0 4px 12px rgba(37,99,235,.3);
+    }
+
+    /* ── Table ── */
+    .rekap-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      font-size: 14px; background: white; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.03);
+      border: 1px solid rgba(37,99,235,.08);
+    }
+    .rekap-table thead {
+      background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%); color: white;
+    }
+    .rekap-table th {
+      padding: 18px; text-align: left; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .1em; font-weight: 800;
+      border-bottom: 3px solid rgba(255,255,255,.2);
+      position: sticky; top: 0; z-index: 2;
+    }
+    .rekap-table td { padding: 14px 18px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+    .rekap-table tbody tr { transition: all .2s; }
+    .rekap-table tbody tr:nth-child(even) { background: rgba(37,99,235,.025); }
+    .rekap-table tbody tr:hover {
+      background: linear-gradient(90deg, #eff6ff 0%, #fff 100%);
+      box-shadow: inset 4px 0 0 #2563eb;
+    }
+    .rekap-table tr:last-child td { border-bottom: none; }
+    .skor-cell { font-weight: 800; color: #2563eb; font-size: 15px; }
+    .total-cell {
+      font-weight: 900; font-size: 16px; color: #1e3a8a;
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      padding: 8px 14px !important; border-radius: 10px;
+      display: inline-block; box-shadow: 0 2px 6px rgba(37,99,235,.1);
+    }
+    .number-cell { font-weight: 900; color: #9ca3af; width: 56px; text-align: center; font-size: 20px; }
+    .badge-lengkap { background: #16a34a !important; color: white !important; padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 3px 10px rgba(22,163,74,.35) !important; white-space: nowrap; }
+    .badge-partial { background: #d97706 !important; color: white !important; padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 3px 10px rgba(217,119,6,.35) !important; white-space: nowrap; }
+    .badge-kosong  { background: #9ca3af !important; color: white !important; padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+
+    /* ── Top 3 highlight ── */
+    .rekap-table tbody tr:nth-child(1) td { background: linear-gradient(90deg, #fefce8 0%, #fff 80%); }
+    .rekap-table tbody tr:nth-child(2) td { background: linear-gradient(90deg, #f1f5f9 0%, #fff 80%); }
+    .rekap-table tbody tr:nth-child(3) td { background: linear-gradient(90deg, #fff7ed 0%, #fff 80%); }
+
+    /* ── Juri Cards ── */
+    .juri-rekap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .juri-rekap-card {
+      background: linear-gradient(135deg, #fff 0%, #eff6ff 100%);
+      border: 1px solid rgba(37,99,235,.12); border-radius: 18px; padding: 24px;
+      box-shadow: 0 6px 18px rgba(37,99,235,.06);
+      transition: all .35s cubic-bezier(0.4,0,0.2,1);
+      animation: fadeSlideUp .5s ease both; position: relative; overflow: hidden; cursor: pointer;
+    }
+    .juri-rekap-card:hover { transform: translateY(-6px); box-shadow: 0 14px 36px rgba(37,99,235,.16); border-color: rgba(37,99,235,.3); }
+    .juri-rekap-card:nth-child(1)::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(90deg, #2563eb, #3b82f6); border-radius: 16px 16px 0 0; }
+    .juri-rekap-card:nth-child(2)::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(90deg, #7c3aed, #a855f7); border-radius: 16px 16px 0 0; }
+    .juri-rekap-card:nth-child(3)::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; background: linear-gradient(90deg, #0891b2, #06b6d4); border-radius: 16px 16px 0 0; }
+    .juri-rekap-nama { font-size: 15px; font-weight: 900; color: #1e3a8a; margin-bottom: 6px; }
+    .juri-rekap-role { font-size: 12px; color: #2563eb; font-weight: 700; margin-bottom: 16px; padding: 4px 10px; background: #eff6ff; border-radius: 8px; display: inline-block; }
+    .juri-rekap-skor { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: white; border-radius: 10px; padding: 14px; border: 1px solid rgba(37,99,235,.08); }
+    .juri-rekap-skor > span { display: flex; flex-direction: column; gap: 4px; }
+    .juri-rekap-skor b { color: #2563eb; font-size: 20px; font-weight: 900; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center; padding: 100px 20px; color: #9ca3af;
+      background: linear-gradient(135deg, #eff6ff 0%, #fff 100%);
+      border-radius: 20px; border: 2px dashed rgba(37,99,235,.2);
+    }
+    .empty-state-icon { font-size: 80px; margin-bottom: 20px; opacity: .7; animation: orbFloat 4s ease-in-out infinite; }
+
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal-detail { background: white; border-radius: 24px; max-width: 1000px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 80px rgba(0,0,0,.5); animation: slideUp .35s cubic-bezier(0.4,0,0.2,1); }
+    .modal-header { background: linear-gradient(135deg, #2563eb, #1e3a8a); color: white; padding: 28px 32px; border-radius: 24px 24px 0 0; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .modal-header-content { flex: 1; }
+    .modal-title { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+    .modal-subtitle { font-size: 13px; opacity: .9; font-weight: 600; }
+    .modal-actions { display: flex; gap: 10px; align-items: center; }
+    .modal-btn { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.2); color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .modal-btn:hover { background: rgba(255,255,255,.3); transform: translateY(-1px); }
+    .modal-close { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.2); color: white; width: 38px; height: 38px; border-radius: 50%; font-size: 22px; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { background: rgba(255,255,255,.3); transform: rotate(90deg); }
+    .modal-body { padding: 32px; }
+
+    /* ── Pagination ── */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .page-btn { padding: 8px 14px; border: 2px solid #bfdbfe; border-radius: 8px; background: white; color: #2563eb; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .page-btn:hover, .page-btn.active { background: linear-gradient(135deg, #2563eb, #1e3a8a); color: white; border-color: transparent; }
+    .page-info { font-size: 13px; color: #6b7280; font-weight: 600; }
+
+    /* ── Animations ── */
+    @keyframes fadeSlideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes gradientShift { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+    @keyframes orbFloat { 0%,100% { transform:translate(0,0) scale(1); } 50% { transform:translate(-25px,25px) scale(1.05); } }
+
+    /* ── Responsive ── */
+    @media(max-width:768px) {
+      .dash-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .juri-rekap-grid { grid-template-columns: 1fr; }
+      .rekap-table { font-size: 12px; }
+      .rekap-table th, .rekap-table td { padding: 10px 8px; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+    }
+    @media(max-width:480px) { .dash-grid { grid-template-columns: 1fr; } }
+    @media print { .modal-overlay { display:none !important; } }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+
+  <header class="hero hero-ranking-sid">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">🏆 RANKING — BAPPERIDA 2026</div>
+        <h1>Dashboard Ranking Penilaian SID</h1>
+        <p>Perankingan inovasi berdasarkan nilai Indikator SID dari seluruh juri</p>
+      </div>
+      <div id="sessionNav" class="session-nav-header"></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Stat Cards -->
+    <div class="dash-grid" id="dashStats"></div>
+
+    <!-- Toolbar -->
+    <section class="toolbar">
+      <div>
+        <h2>Ranking Penilaian Indikator SID</h2>
+        <p>Diurutkan berdasarkan rata-rata skor SID tertinggi ke terendah.</p>
+      </div>
+      <div class="actions">
+        <button onclick="exportToExcel()" class="btn btn-print" style="background:linear-gradient(135deg,#10b981,#059669);color:white;">📊 Export Excel</button>
+        <button onclick="loadRanking()" class="btn primary">🔄 Refresh</button>
+        <a href="ranking_oral.html" class="btn" style="background:linear-gradient(135deg,#0C313A,#0E8991);color:white;">🏆 Ranking SID+Oral</a>
+        <a href="ranking_gabungan.html" class="btn" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);color:white;">📋 Rekap per Juri</a>
+        <a href="dashboard.html" class="btn secondary">📋 Dashboard Judul</a>
+        <a href="index.html" class="btn secondary">🏠 Beranda</a>
+      </div>
+    </section>
+
+    <!-- Tab Filter Kategori -->
+    <div class="rekap-section">
+      <div class="rekap-title">🏆 Perankingan Inovasi — Penilaian Indikator SID</div>
+      <div class="tab-filter" id="tabFilter">
+        <button class="tab-btn active" data-kat="semua" onclick="filterKategori(this, 'semua')">📋 Semua</button>
+        <button class="tab-btn" data-kat="opd" onclick="filterKategori(this, 'opd')">🏛️ OPD</button>
+        <button class="tab-btn" data-kat="pendidikan" onclick="filterKategori(this, 'pendidikan')">🎓 UPTD Pendidikan</button>
+        <button class="tab-btn" data-kat="kesehatan" onclick="filterKategori(this, 'kesehatan')">🏥 UPTD Kesehatan</button>
+      </div>
+      <div id="rankingTableContainer"></div>
+      <div id="paginationContainer" class="pagination"></div>
+    </div>
+
+    <!-- Rekap per Juri SID -->
+    <div class="rekap-section">
+      <div class="rekap-title">👤 Rekap per Juri SID</div>
+      <div id="rekapJuri" class="juri-rekap-grid"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal Detail Inovasi -->
+<div id="modalDetail" class="modal-overlay">
+  <div class="modal-detail">
+    <div class="modal-header">
+      <div class="modal-header-content">
+        <div class="modal-title" id="modalTitle">Detail Penilaian SID</div>
+        <div class="modal-subtitle" id="modalSubtitle">—</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="window.print()">🖨️ Cetak</button>
+        <button class="modal-close" onclick="closeModal('modalDetail')">×</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+
+<script>
+  // ── Route Guard: hanya admin ──
+  const SESSION = requireAuth("admin");
+  if (!SESSION) throw new Error("Unauthorized");
+  window.addEventListener('pageshow', () => { if (!getSession()) window.location.replace("login.html"); });
+  renderSessionNav("sessionNav");
+
+  const JURI_SID_LIST = [
+    "Prof. Dr. Dra. Sowiyah M.Pd.",
+    "Prof. Dr. Ir. Etik Puji Handayani, M.Si.",
+    "Dr. Ir. Eva Rolia, M.T., M.K.M."
+  ];
+
+  let allRows = [];
+  let activeKat = "semua";
+  let currentPage = 1;
+  const PAGE_SIZE = 15;
+
+  function esc(v) {
+    return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  function findJuriData(stateObj, juriName) {
+    if (!stateObj) return null;
+    if (stateObj[juriName]) return stateObj[juriName];
+    const sanitized = juriName.replace(/[\.,#$\[\]\/]/g, '_');
+    if (stateObj[sanitized]) return stateObj[sanitized];
+    return null;
+  }
+
+  function hitungSkorSID(juriData) {
+    if (!juriData) return 0;
+    let t = 0;
+    sidIndicators.filter(i => !i.type).forEach(i => {
+      const v = juriData.radio?.[i.originalNo] || '';
+      if (v) t += Number(v) * i.bobot;
+    });
+    return t;
+  }
+
+  function getKategori(opd) {
+    if (!opd) return 'opd';
+    const lower = opd.toLowerCase();
+    if (lower.includes('smp') || lower.includes('sd ') || lower.includes('sekolah') ||
+        lower.includes('uptd pend') || lower.includes('sdn ') || lower.includes('smpn ')) return 'pendidikan';
+    if (lower.includes('puskesmas') || lower.includes('uptd kes') || lower.includes('upt kes') ||
+        lower.includes('uptd pusk') || lower.includes('klinik')) return 'kesehatan';
+    return 'opd';
+  }
+
+  function filterInovasiValid(all) {
+    return Object.entries(all).filter(([key, value]) => {
+      if (typeof value !== 'object' || value === null) return false;
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(key)) return false;
+      if (['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+           'namaInovasi','notesState','savedAt','signatureState','skorPerJuri',
+           'skorJudulPerJuri','perangkatDaerah','tahun','ringkasan','kategori',
+           'userMetadata'].includes(key)) return false;
+      const hasSkorSID = value.skorPerJuri &&
+        Object.values(value.skorPerJuri).some(s => Number(s) > 0);
+      return hasSkorSID;
+    });
+  }
+
+  function findMetaInovasi(judulKey, d) {
+    const norm = s => s.toLowerCase().trim().replace(/\s+/g, ' ');
+    const aliasMap = {
+      "Digitalisasi Laporan Ikhtisar Pengawasan APIP": "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+      "Digitalisasi Laporan Ikhtisar Pengawasan":      "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+      "SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)": "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+      "SI GEMBIRA (Sistem Gerakan Metro Bebas Dari Narkotika)":  "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+      "SI GEMBIRA": "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+    };
+    const resolved = aliasMap[judulKey] || aliasMap[judulKey?.trim()] || judulKey;
+    const lower = norm(resolved);
+
+    let meta = daftarInovasiSID.find(i => i.judul === resolved)
+            || daftarInovasiJudulLengkap.find(i => i.judul === resolved);
+    if (!meta) meta = daftarInovasiSID.find(i => norm(i.judul) === lower)
+                   || daftarInovasiJudulLengkap.find(i => norm(i.judul) === lower);
+    if (!meta) meta = daftarInovasiSID.find(i => norm(i.judul).includes(lower) || lower.includes(norm(i.judul)))
+                   || daftarInovasiJudulLengkap.find(i => norm(i.judul).includes(lower) || lower.includes(norm(i.judul)));
+    if (meta) return { ...meta, _judulDisplay: resolved };
+    if (d?.perangkatDaerah) return { perangkatDaerah: d.perangkatDaerah, _judulDisplay: resolved };
+    return { _judulDisplay: resolved };
+  }
+
+  async function loadRanking() {
+    document.getElementById('dashStats').innerHTML = `<div style="padding:20px;color:#6b7280">🔄 Memuat data...</div>`;
+    if (typeof firebaseReadyPromise !== 'undefined') await firebaseReadyPromise;
+
+    const all = await loadAllDraf();
+    const inovasiList = filterInovasiValid(all);
+
+    // Stat Cards
+    const totalSID   = daftarInovasiSID.length;
+    const terdata    = inovasiList.length;
+    const lengkap    = inovasiList.filter(([,d]) =>
+      JURI_SID_LIST.filter(j => {
+        const jd = findJuriData(d.juriState, j);
+        return jd && Object.values(jd.radio || {}).some(v => v);
+      }).length >= 3
+    ).length;
+    const sebagian = inovasiList.filter(([,d]) =>
+      JURI_SID_LIST.filter(j => {
+        const jd = findJuriData(d.juriState, j);
+        return jd && Object.values(jd.radio || {}).some(v => v);
+      }).length >= 1
+    ).length;
+
+    document.getElementById('dashStats').innerHTML = `
+      <div class="dash-stat">
+        <div class="dash-stat-icon">📋</div>
+        <div class="dash-stat-val">${totalSID}</div>
+        <div class="dash-stat-lbl">Total Inovasi SID</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon">📊</div>
+        <div class="dash-stat-val">${terdata}</div>
+        <div class="dash-stat-lbl">Sudah Ada Data</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon">⏳</div>
+        <div class="dash-stat-val">${sebagian}</div>
+        <div class="dash-stat-lbl">Sebagian Dinilai</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-icon">✅</div>
+        <div class="dash-stat-val">${lengkap}</div>
+        <div class="dash-stat-lbl">Dinilai 3 Juri</div>
+      </div>`;
+
+    // Hitung skor semua inovasi
+    allRows = inovasiList.map(([judulKey, d]) => {
+      const skorPerJuri = {};
+      JURI_SID_LIST.forEach(j => {
+        const jd = findJuriData(d.juriState, j);
+        const sanitized = j.replace(/[\.,#$\[\]\/]/g, '_');
+        const tersimpan = d.skorPerJuri?.[j] || d.skorPerJuri?.[sanitized] || 0;
+        skorPerJuri[j] = tersimpan > 0 ? tersimpan : hitungSkorSID(jd);
+      });
+      const arr = Object.values(skorPerJuri).filter(s => s > 0);
+      const avgSID = arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      const juriCount = arr.length;
+      const meta = findMetaInovasi(judulKey, d);
+      const status = juriCount >= 3 ? 'lengkap' : juriCount >= 1 ? 'partial' : 'kosong';
+      const kategori = getKategori(meta.perangkatDaerah);
+      return { judulKey, meta, skorPerJuri, avgSID, juriCount, status, kategori, savedAt: d.savedAt || '', allData: d, judulDisplay: meta._judulDisplay || judulKey };
+    }).sort((a, b) => b.avgSID - a.avgSID);
+
+    renderTable();
+    renderJuriRekap(inovasiList);
+  }
+
+  function filterKategori(el, kat) {
+    activeKat = kat;
+    currentPage = 1;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+
+  function getFilteredRows() {
+    if (activeKat === 'semua') return allRows;
+    return allRows.filter(r => r.kategori === activeKat);
+  }
+
+  function renderTable() {
+    const rows = getFilteredRows();
+    if (rows.length === 0) {
+      document.getElementById('rankingTableContainer').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📭</div>
+          <div style="font-size:16px;font-weight:700;color:#6b7280;margin-top:8px;">Belum ada data untuk kategori ini</div>
+        </div>`;
+      document.getElementById('paginationContainer').innerHTML = '';
+      return;
+    }
+
+    const totalPages = Math.ceil(rows.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageRows = rows.slice(start, start + PAGE_SIZE);
+
+    let html = `
+      <table class="rekap-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Nama Inovasi</th>
+            <th>OPD / Unit</th>
+            <th>${JURI_SID_LIST[0].split(',')[0].replace(/Prof\.\s*Dr\.\s*Dra\.\s*/,'').replace(/Prof\.\s*Dr\.\s*Ir\.\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').trim()}</th>
+            <th>${JURI_SID_LIST[1].split(',')[0].replace(/Prof\.\s*Dr\.\s*Dra\.\s*/,'').replace(/Prof\.\s*Dr\.\s*Ir\.\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').trim()}</th>
+            <th>${JURI_SID_LIST[2].split(',')[0].replace(/Prof\.\s*Dr\.\s*Dra\.\s*/,'').replace(/Prof\.\s*Dr\.\s*Ir\.\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').trim()}</th>
+            <th>Rata-rata SID</th>
+            <th>Juri</th>
+            <th>Status</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+    pageRows.forEach((r, idx) => {
+      const globalRank = start + idx + 1;
+      const medal = globalRank === 1 ? '🥇' : globalRank === 2 ? '🥈' : globalRank === 3 ? '🥉' : globalRank;
+      const badgeCls = r.status === 'lengkap' ? 'badge-lengkap' : r.status === 'partial' ? 'badge-partial' : 'badge-kosong';
+      const badgeTxt = r.status === 'lengkap' ? '✅ Lengkap' : r.status === 'partial' ? '⏳ Sebagian' : '—';
+      const ej = r.judulKey.replace(/'/g, "\\'");
+      const s1 = r.skorPerJuri[JURI_SID_LIST[0]];
+      const s2 = r.skorPerJuri[JURI_SID_LIST[1]];
+      const s3 = r.skorPerJuri[JURI_SID_LIST[2]];
+
+      html += `
+        <tr>
+          <td class="number-cell">${medal}</td>
+          <td><b style="color:#1e3a8a;line-height:1.4;display:block;max-width:320px;">${esc(r.judulDisplay)}</b></td>
+          <td style="font-size:11px;color:#667085;">${esc(r.meta.perangkatDaerah || '—')}</td>
+          <td class="skor-cell">${s1 > 0 ? s1.toFixed(2) : '—'}</td>
+          <td class="skor-cell">${s2 > 0 ? s2.toFixed(2) : '—'}</td>
+          <td class="skor-cell">${s3 > 0 ? s3.toFixed(2) : '—'}</td>
+          <td><span class="total-cell">${r.avgSID > 0 ? r.avgSID.toFixed(2) : '—'}</span></td>
+          <td style="font-weight:700;color:#2563eb;">${r.juriCount}/3</td>
+          <td><span class="${badgeCls}">${badgeTxt}</span></td>
+          <td>
+            <button onclick="showDetail('${ej}')" class="btn" style="background:#2563eb;color:white;border:none;padding:7px 10px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;" title="Detail">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </td>
+        </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    document.getElementById('rankingTableContainer').innerHTML = html;
+
+    // Pagination
+    renderPagination(totalPages, rows.length);
+  }
+
+  function renderPagination(totalPages, totalItems) {
+    if (totalPages <= 1) { document.getElementById('paginationContainer').innerHTML = ''; return; }
+    let html = `<span class="page-info">Hal ${currentPage}/${totalPages} · ${totalItems} inovasi</span>`;
+    if (currentPage > 1) html += `<button class="page-btn" onclick="goPage(${currentPage-1})">◀ Prev</button>`;
+    const start = Math.max(1, currentPage - 2);
+    const end   = Math.min(totalPages, currentPage + 2);
+    for (let i = start; i <= end; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+    }
+    if (currentPage < totalPages) html += `<button class="page-btn" onclick="goPage(${currentPage+1})">Next ▶</button>`;
+    document.getElementById('paginationContainer').innerHTML = html;
+  }
+
+  function goPage(p) { currentPage = p; renderTable(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  function renderJuriRekap(inovasiList) {
+    let html = '';
+    JURI_SID_LIST.forEach(juri => {
+      let count = 0, total = 0;
+      inovasiList.forEach(([, d]) => {
+        const jd = findJuriData(d.juriState, juri);
+        if (!jd) return;
+        const skor = hitungSkorSID(jd);
+        if (skor > 0) { total += skor; count++; }
+      });
+      html += `
+        <div class="juri-rekap-card" onclick="showJuriDetail('${juri.replace(/'/g,"\\'")}')">
+          <div class="juri-rekap-nama">${esc(juri)}</div>
+          <div class="juri-rekap-role">📊 Juri Penilaian SID</div>
+          <div class="juri-rekap-skor">
+            <span><small style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em">Inovasi Dinilai</small><b>${count}</b></span>
+            <span><small style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em">Rata-rata Skor</small><b>${count > 0 ? (total / count).toFixed(2) : '—'}</b></span>
+          </div>
+          <div style="margin-top:12px;text-align:center;font-size:11px;color:#2563eb;font-weight:700;">👁️ Klik untuk lihat detail</div>
+        </div>`;
+    });
+    document.getElementById('rekapJuri').innerHTML = html;
+  }
+
+  async function showDetail(judulKey) {
+    const all = await loadAllDraf();
+    const d = all[judulKey];
+    if (!d) { alert('Data tidak ditemukan.'); return; }
+    const meta = findMetaInovasi(judulKey, d);
+    document.getElementById('modalTitle').textContent = meta._judulDisplay || judulKey;
+    document.getElementById('modalSubtitle').textContent = `${meta.perangkatDaerah || '—'} | Penilaian Indikator SID`;
+
+    const aktifInd = sidIndicators.filter(i => !i.type);
+    let html = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="background:#1e3a8a;color:white;">
+        <th style="padding:10px;text-align:left;min-width:180px;">Indikator</th>
+        <th style="padding:10px;text-align:center;">Bobot</th>`;
+    JURI_SID_LIST.forEach(j => {
+      const singkat = j.split(',')[0].replace(/Prof\.\s*Dr\.\s*(Dra\.|Ir\.)?\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').replace(/Ir\.\s*/,'').trim();
+      html += `<th style="padding:10px;text-align:center;min-width:90px;">${esc(singkat)}</th>`;
+    });
+    html += `<th style="padding:10px;text-align:center;background:#1d4ed8;">Rata-rata</th></tr></thead><tbody>`;
+
+    aktifInd.forEach((ind, idx) => {
+      html += `<tr style="background:${idx % 2 === 0 ? '#f8fafc' : 'white'};">
+        <td style="padding:10px;font-weight:600;">${ind.displayNo}. ${esc(ind.nama)}</td>
+        <td style="padding:10px;text-align:center;color:#6b7280;">${ind.bobot}</td>`;
+      let arr = [];
+      JURI_SID_LIST.forEach(j => {
+        const jd = findJuriData(d.juriState, j);
+        const val = jd?.radio?.[ind.originalNo] || '';
+        const skor = val ? Number(val) * ind.bobot : 0;
+        if (skor > 0) arr.push(skor);
+        html += `<td style="padding:10px;text-align:center;font-weight:700;color:${skor > 0 ? '#2563eb' : '#d1d5db'};">${skor > 0 ? skor.toFixed(2) : '—'}</td>`;
+      });
+      const avg = arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      html += `<td style="padding:10px;text-align:center;font-weight:900;color:#1e3a8a;background:#eff6ff;">${avg > 0 ? avg.toFixed(2) : '—'}</td></tr>`;
+    });
+
+    html += `<tr style="background:#1e3a8a;color:white;font-weight:900;"><td style="padding:12px;" colspan="2">TOTAL SKOR</td>`;
+    let totArr = [];
+    JURI_SID_LIST.forEach(j => {
+      const jd = findJuriData(d.juriState, j);
+      const skor = hitungSkorSID(jd);
+      totArr.push(skor);
+      html += `<td style="padding:12px;text-align:center;">${skor > 0 ? skor.toFixed(2) : '—'}</td>`;
+    });
+    const rataTotal = totArr.filter(s => s > 0);
+    const avg = rataTotal.length > 0 ? rataTotal.reduce((a, b) => a + b, 0) / rataTotal.length : 0;
+    html += `<td style="padding:12px;text-align:center;background:#1d4ed8;">${avg > 0 ? avg.toFixed(2) : '—'}</td></tr>`;
+    html += `</tbody></table></div>`;
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalDetail').classList.add('active');
+  }
+
+  async function showJuriDetail(namaJuri) {
+    const all = await loadAllDraf();
+    const inovasiList = filterInovasiValid(all);
+    const dinilai = inovasiList.filter(([, d]) => {
+      const jd = findJuriData(d.juriState, namaJuri);
+      return jd && Object.values(jd.radio || {}).some(v => v);
+    });
+    if (dinilai.length === 0) { alert('Belum ada penilaian dari juri ini.'); return; }
+    document.getElementById('modalTitle').textContent = namaJuri;
+    document.getElementById('modalSubtitle').textContent = `Juri SID — ${dinilai.length} inovasi dinilai`;
+    let html = `<div style="display:flex;flex-direction:column;gap:16px;">`;
+    dinilai.sort((a, b) => {
+      const sA = hitungSkorSID(findJuriData(a[1].juriState, namaJuri));
+      const sB = hitungSkorSID(findJuriData(b[1].juriState, namaJuri));
+      return sB - sA;
+    }).forEach(([judulKey, d], idx) => {
+      const jd = findJuriData(d.juriState, namaJuri);
+      const skor = hitungSkorSID(jd);
+      const meta = findMetaInovasi(judulKey, d);
+      html += `
+        <div style="background:#f8fafc;border:2px solid #e0f2fe;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <b style="color:#1e3a8a;">${idx + 1}. ${esc(meta._judulDisplay || judulKey)}</b>
+            <div style="font-size:12px;color:#667085;margin-top:4px;">🏛️ ${esc(meta.perangkatDaerah || '—')}</div>
+          </div>
+          <span style="background:#2563eb;color:white;padding:6px 14px;border-radius:10px;font-weight:900;font-size:16px;white-space:nowrap;">${skor.toFixed(2)}</span>
+        </div>`;
+    });
+    html += `</div>`;
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalDetail').classList.add('active');
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+  // ── Export Excel ──
+  async function exportToExcel() {
+    const all = await loadAllDraf();
+    const inovasiList = filterInovasiValid(all);
+    if (inovasiList.length === 0) { alert('Tidak ada data untuk di-export!'); return; }
+
+    const tgl = new Date().toLocaleString('id-ID');
+    const tglFile = new Date().toISOString().split('T')[0];
+
+    const rows = inovasiList.map(([judulKey, d]) => {
+      const skorPerJuri = {};
+      JURI_SID_LIST.forEach(j => {
+        const jd = findJuriData(d.juriState, j);
+        const sanitized = j.replace(/[\.,#$\[\]\/]/g, '_');
+        const tersimpan = d.skorPerJuri?.[j] || d.skorPerJuri?.[sanitized] || 0;
+        skorPerJuri[j] = tersimpan > 0 ? tersimpan : hitungSkorSID(jd);
+      });
+      const arr = Object.values(skorPerJuri).filter(s => s > 0);
+      const avgSID = arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      const meta = findMetaInovasi(judulKey, d);
+      return { judulKey, meta, skorPerJuri, avgSID, juriCount: arr.length };
+    }).sort((a, b) => b.avgSID - a.avgSID);
+
+    let csv = `\uFEFF`;
+    csv += `RANKING PENILAIAN INDIKATOR SID — BAPPERIDA KOTA METRO 2026\n`;
+    csv += `Dicetak: ${tgl}\n\n`;
+    csv += `Rank,Nama Inovasi,OPD / Unit,${JURI_SID_LIST[0]},${JURI_SID_LIST[1]},${JURI_SID_LIST[2]},Rata-rata SID,Juri\n`;
+    rows.forEach((r, i) => {
+      const s1 = r.skorPerJuri[JURI_SID_LIST[0]] || 0;
+      const s2 = r.skorPerJuri[JURI_SID_LIST[1]] || 0;
+      const s3 = r.skorPerJuri[JURI_SID_LIST[2]] || 0;
+      csv += `${i + 1},"${(r.meta._judulDisplay || r.judulKey).replace(/"/g,'""')}","${(r.meta.perangkatDaerah || '—').replace(/"/g,'""')}",${s1 > 0 ? s1.toFixed(2) : ''},${s2 > 0 ? s2.toFixed(2) : ''},${s3 > 0 ? s3.toFixed(2) : ''},${r.avgSID > 0 ? r.avgSID.toFixed(2) : ''},${r.juriCount}/3\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ranking_sid_${tglFile}.csv`;
+    a.click();
+  }
+
+  // Auto-load
+  if (typeof firebaseReadyPromise !== 'undefined') {
+    firebaseReadyPromise.then(() => loadRanking());
+  } else {
+    loadRanking();
+  }
+</script>
+</body>
+</html>

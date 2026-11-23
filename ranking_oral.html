@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Ranking SID + Oral — BAPPERIDA 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="landing.css">
+  <link rel="stylesheet" href="penilaian.css">
+  <style>
+    /* ── Hero ── */
+    .hero-ranking-oral {
+      background: linear-gradient(135deg, #0C313A 0%, #0E8991 50%, #2563eb 100%) !important;
+      background-size: 300% 300% !important;
+      animation: gradientShift 8s ease infinite !important;
+      position: relative; overflow: hidden;
+    }
+    .hero-ranking-oral::before {
+      content: ""; position: absolute; inset: 0;
+      background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+      opacity: 0.3;
+    }
+    .hero-ranking-oral::after {
+      content: ""; position: absolute; top: -40%; right: -10%;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 65%);
+      border-radius: 50%; pointer-events: none;
+      animation: orbFloat 9s ease-in-out infinite; z-index: 0;
+    }
+    .hero-ranking-oral .hero-text,
+    .hero-ranking-oral .session-nav-header { position: relative; z-index: 1; }
+
+    /* ── Stat Cards ── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px; margin: 40px 0;
+    }
+    .dash-stat {
+      background: linear-gradient(135deg, #fff 0%, #f0fdfa 100%);
+      border-radius: 22px; padding: 32px 24px 24px;
+      box-shadow: 0 10px 30px rgba(14,137,145,.08), 0 4px 12px rgba(0,0,0,.04);
+      border: 1px solid rgba(14,137,145,.15);
+      animation: fadeSlideUp .5s ease both; text-align: center;
+      position: relative; overflow: hidden;
+      transition: all .35s cubic-bezier(.4,0,.2,1);
+    }
+    .dash-stat::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #0C313A, #0E8991, #2563eb); z-index: 1;
+    }
+    .dash-stat:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(14,137,145,.18); }
+    .dash-stat:nth-child(1){animation-delay:.1s} .dash-stat:nth-child(2){animation-delay:.2s}
+    .dash-stat:nth-child(3){animation-delay:.3s} .dash-stat:nth-child(4){animation-delay:.4s}
+    .dash-stat-icon {
+      font-size: 36px; margin: 0 auto 16px; width: 76px; height: 76px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(14,137,145,.18), inset 0 2px 4px rgba(255,255,255,.5);
+    }
+    .dash-stat-val {
+      font-size: 44px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2;
+      background: linear-gradient(135deg, #0E8991, #0C313A);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .dash-stat-lbl { font-size: 11px; color: #64748b; font-weight: 700; margin-top: 8px; text-transform: uppercase; letter-spacing: .1em; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      background: linear-gradient(135deg, #fff 0%, #f0fdfa 100%);
+      border-radius: 18px; border: 1px solid rgba(14,137,145,.15);
+      padding: 22px 24px; box-shadow: 0 6px 22px rgba(14,137,145,.06);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .toolbar .btn { border-radius: 11px; font-size: 13px; transition: transform .15s, box-shadow .15s; }
+    .toolbar .btn:hover { transform: translateY(-2px); }
+
+    /* ── Formula Banner ── */
+    .formula-banner {
+      background: linear-gradient(135deg, #0C313A, #0E8991);
+      border-radius: 16px; padding: 20px 28px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap; color: white;
+    }
+    .formula-banner-icon { font-size: 32px; }
+    .formula-banner-text { flex: 1; }
+    .formula-banner-text h3 { font-size: 16px; font-weight: 900; margin: 0 0 6px; }
+    .formula-banner-text p { font-size: 13px; opacity: .9; margin: 0; }
+    .formula-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .formula-chip {
+      padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 800;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .chip-sid  { background: rgba(37,99,235,.8);  color: white; }
+    .chip-oral { background: rgba(14,137,145,.8); color: white; }
+    .chip-plus { background: rgba(255,255,255,.2); color: white; font-size: 16px; padding: 4px 8px; }
+
+    /* ── Rekap Section ── */
+    .rekap-section { margin: 48px 0; animation: fadeSlideUp .6s ease both; }
+    .rekap-title {
+      font-size: 20px; font-weight: 900; color: #0C313A;
+      padding: 16px 20px; border-left: 5px solid #0E8991;
+      border-radius: 0 12px 12px 0; background-color: #f0fdfa !important;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+    }
+
+    /* ── Tab Filter ── */
+    .tab-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tab-btn {
+      padding: 8px 18px; border-radius: 999px; border: 2px solid #99f6e4;
+      background: white; color: #0E8991; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: linear-gradient(135deg, #0C313A, #0E8991);
+      color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(14,137,145,.3);
+    }
+
+    /* ── Table ── */
+    .rekap-table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+      font-size: 14px; background: white; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06); border: 1px solid rgba(14,137,145,.1);
+    }
+    .rekap-table thead { background: linear-gradient(135deg, #0C313A 0%, #0E8991 100%); color: white; }
+    .rekap-table th {
+      padding: 18px; text-align: left; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .1em; font-weight: 800;
+      border-bottom: 3px solid rgba(255,255,255,.2); position: sticky; top: 0; z-index: 2;
+    }
+    .rekap-table td { padding: 14px 18px; border-bottom: 1px solid #f0f2f5; vertical-align: middle; }
+    .rekap-table tbody tr:nth-child(even) { background: rgba(14,137,145,.025); }
+    .rekap-table tbody tr:hover { background: linear-gradient(90deg,#f0fdfa 0%,#fff 100%); box-shadow: inset 4px 0 0 #0E8991; }
+    .rekap-table tr:last-child td { border-bottom: none; }
+    .skor-sid-cell  { font-weight: 800; color: #2563eb; }
+    .skor-oral-cell { font-weight: 800; color: #0E8991; }
+    .total-cell {
+      font-weight: 900; font-size: 16px; color: #0C313A;
+      background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+      padding: 8px 14px !important; border-radius: 10px;
+      display: inline-block; box-shadow: 0 2px 6px rgba(14,137,145,.12);
+    }
+    .number-cell { font-weight: 900; color: #9ca3af; width: 56px; text-align: center; font-size: 20px; }
+
+    /* mini progress bars */
+    .mini-bar-wrap { margin-top: 3px; height: 4px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+    .mini-bar-sid  { height: 100%; background: linear-gradient(90deg,#2563eb,#3b82f6); border-radius: 999px; }
+    .mini-bar-oral { height: 100%; background: linear-gradient(90deg,#0E8991,#14b8a6); border-radius: 999px; }
+
+    /* status badges */
+    .badge-both { background:#059669 !important; color:white !important; padding:5px 12px; border-radius:999px; font-size:10px; font-weight:800; white-space:nowrap; }
+    .badge-sid-only  { background:#2563eb !important; color:white !important; padding:5px 12px; border-radius:999px; font-size:10px; font-weight:800; white-space:nowrap; }
+    .badge-oral-only { background:#0E8991 !important; color:white !important; padding:5px 12px; border-radius:999px; font-size:10px; font-weight:800; white-space:nowrap; }
+    .badge-none { background:#9ca3af !important; color:white !important; padding:5px 12px; border-radius:999px; font-size:10px; font-weight:800; white-space:nowrap; }
+
+    /* Top 3 highlight */
+    .rekap-table tbody tr:nth-child(1) td { background: linear-gradient(90deg,#fefce8 0%,#fff 80%); }
+    .rekap-table tbody tr:nth-child(2) td { background: linear-gradient(90deg,#f1f5f9 0%,#fff 80%); }
+    .rekap-table tbody tr:nth-child(3) td { background: linear-gradient(90deg,#fff7ed 0%,#fff 80%); }
+
+    /* ── Modal ── */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(8px); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; }
+    .modal-overlay.active { display:flex; }
+    .modal-detail { background:white; border-radius:24px; max-width:860px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 30px 80px rgba(0,0,0,.5); animation:slideUp .35s cubic-bezier(.4,0,.2,1); }
+    .modal-header { background:linear-gradient(135deg,#0C313A,#0E8991); color:white; padding:28px 32px; border-radius:24px 24px 0 0; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+    .modal-header-content { flex:1; }
+    .modal-title { font-size:20px; font-weight:900; margin-bottom:6px; }
+    .modal-subtitle { font-size:13px; opacity:.9; font-weight:600; }
+    .modal-close { background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.2); color:white; width:38px; height:38px; border-radius:50%; font-size:22px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; }
+    .modal-close:hover { transform:rotate(90deg); background:rgba(255,255,255,.3); }
+    .modal-body { padding:32px; }
+
+    /* Score breakdown */
+    .score-breakdown { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px; }
+    .score-card { border-radius:16px; padding:20px; text-align:center; }
+    .score-card-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; opacity:.85; }
+    .score-card-value { font-size:32px; font-weight:900; }
+    .score-card-sub { font-size:11px; opacity:.7; margin-top:4px; }
+    .sc-sid   { background:linear-gradient(135deg,#eff6ff,#dbeafe); color:#1e3a8a; }
+    .sc-oral  { background:linear-gradient(135deg,#f0fdfa,#ccfbf1); color:#0C313A; }
+    .sc-total { background:linear-gradient(135deg,#0C313A,#0E8991); color:white; box-shadow:0 8px 24px rgba(14,137,145,.3); }
+
+    /* ── Pagination ── */
+    .pagination { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:20px; flex-wrap:wrap; }
+    .page-btn { padding:8px 14px; border:2px solid #99f6e4; border-radius:8px; background:white; color:#0E8991; font-size:13px; font-weight:700; cursor:pointer; transition:all .2s; }
+    .page-btn:hover, .page-btn.active { background:linear-gradient(135deg,#0C313A,#0E8991); color:white; border-color:transparent; }
+    .page-info { font-size:13px; color:#6b7280; font-weight:600; }
+
+    @keyframes fadeSlideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideUp     { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+    @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-25px,25px) scale(1.05)} }
+
+    @media(max-width:768px) {
+      .dash-grid { grid-template-columns:1fr 1fr; gap:16px; }
+      .rekap-table { font-size:12px; }
+      .rekap-table th, .rekap-table td { padding:10px 8px; }
+      .toolbar { flex-direction:column; align-items:flex-start; }
+      .score-breakdown { grid-template-columns:1fr; }
+    }
+    @media(max-width:480px) { .dash-grid { grid-template-columns:1fr; } }
+    @media print { .modal-overlay { display:none !important; } }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+
+  <header class="hero hero-ranking-oral">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <div class="badge">🏆 RANKING GABUNGAN — BAPPERIDA 2026</div>
+        <h1>Ranking Penilaian: SID + Oral</h1>
+        <p>Perankingan inovasi — SID 70% + Oral Presentation 30% — semua juri</p>
+      </div>
+      <div id="sessionNav" class="session-nav-header"></div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Stat Cards -->
+    <div class="dash-grid" id="dashStats"></div>
+
+    <!-- Toolbar -->
+    <section class="toolbar">
+      <div>
+        <h2>Ranking: Penilaian SID + Oral</h2>
+        <p>Total = (Rata-rata SID × 70%) + (Rata-rata Oral × 30%)</p>
+      </div>
+      <div class="actions">
+        <button onclick="exportToExcel()" class="btn btn-print" style="background:linear-gradient(135deg,#10b981,#059669);color:white;">📊 Export Excel</button>
+        <button onclick="loadRanking()" class="btn primary">🔄 Refresh</button>
+        <a href="ranking_sid.html" class="btn" style="background:linear-gradient(135deg,#2563eb,#1e3a8a);color:white;">📊 Ranking SID</a>
+        <a href="ranking_gabungan.html" class="btn" style="background:linear-gradient(135deg,#7c3aed,#4c1d95);color:white;">📋 Rekap per Juri</a>
+        <a href="dashboard.html" class="btn secondary">📋 Dashboard</a>
+        <a href="index.html" class="btn secondary">🏠 Beranda</a>
+      </div>
+    </section>
+
+    <!-- Formula Banner -->
+    <div class="formula-banner">
+      <div class="formula-banner-icon">🧮</div>
+      <div class="formula-banner-text">
+        <h3>Formula Penilaian Gabungan</h3>
+        <p>Total Nilai = (Rata-rata Skor SID × 70%) + (Rata-rata Skor Oral × 30%)</p>
+        <div class="formula-chips">
+          <span class="formula-chip chip-sid">📊 SID — bobot 70%</span>
+          <span class="formula-chip chip-plus">+</span>
+          <span class="formula-chip chip-oral">🎤 Oral — bobot 30%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking Table -->
+    <div class="rekap-section">
+      <div class="rekap-title">🏆 Perankingan Gabungan SID + Oral</div>
+      <div class="tab-filter">
+        <button class="tab-btn active" data-kat="semua" onclick="filterKategori(this,'semua')">📋 Semua</button>
+        <button class="tab-btn" data-kat="opd" onclick="filterKategori(this,'opd')">🏛️ OPD</button>
+        <button class="tab-btn" data-kat="pendidikan" onclick="filterKategori(this,'pendidikan')">🎓 UPTD Pendidikan</button>
+        <button class="tab-btn" data-kat="kesehatan" onclick="filterKategori(this,'kesehatan')">🏥 UPTD Kesehatan</button>
+      </div>
+      <div id="rankingTableContainer"></div>
+      <div id="paginationContainer" class="pagination"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal Detail -->
+<div id="modalDetail" class="modal-overlay">
+  <div class="modal-detail">
+    <div class="modal-header">
+      <div class="modal-header-content">
+        <div class="modal-title" id="modalTitle">Detail Penilaian</div>
+        <div class="modal-subtitle" id="modalSubtitle">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="data.js"></script>
+<script src="inovasi.js"></script>
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+
+<script>
+  // ── Route Guard ──
+  const SESSION = requireAuth("admin");
+  if (!SESSION) throw new Error("Unauthorized");
+  window.addEventListener('pageshow', () => { if (!getSession()) window.location.replace("login.html"); });
+  renderSessionNav("sessionNav");
+
+  // Bobot tetap
+  const BOBOT_SID  = 0.70;
+  const BOBOT_ORAL = 0.30;
+
+  const JURI_SID_LIST = [
+    "Prof. Dr. Dra. Sowiyah M.Pd.",
+    "Prof. Dr. Ir. Etik Puji Handayani, M.Si.",
+    "Dr. Ir. Eva Rolia, M.T., M.K.M."
+  ];
+
+  let allRows    = [];
+  let activeKat  = "semua";
+  let currentPage = 1;
+  const PAGE_SIZE = 15;
+
+  /* ── Helpers ── */
+  function esc(v) {
+    return String(v ?? '').replace(/[&<>"']/g, c =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  function getKategori(opd) {
+    if (!opd) return 'opd';
+    const l = opd.toLowerCase();
+    if (l.includes('smp')||l.includes('sd ')||l.includes('sekolah')||l.includes('uptd pend')||l.includes('sdn ')||l.includes('smpn ')) return 'pendidikan';
+    if (l.includes('puskesmas')||l.includes('uptd kes')||l.includes('upt kes')||l.includes('klinik')) return 'kesehatan';
+    return 'opd';
+  }
+
+  function findJuriData(obj, nama) {
+    if (!obj) return null;
+    if (obj[nama]) return obj[nama];
+    return obj[nama.replace(/[\.,#$\[\]\/]/g,'_')] || null;
+  }
+
+  function hitungSkorSID(juriData) {
+    if (!juriData) return 0;
+    let t = 0;
+    sidIndicators.filter(i => !i.type).forEach(i => {
+      const v = juriData.radio?.[i.originalNo] || '';
+      if (v) t += Number(v) * i.bobot;
+    });
+    return t;
+  }
+
+  function getOralScores(d) {
+    const scores = {};
+    if (!d.oralSkorPerJuri) return scores;
+    Object.entries(d.oralSkorPerJuri).forEach(([key, skor]) => {
+      if (Number(skor) > 0) {
+        const nama = d.oralUserMetadata?.[key]?.namaOriginal || key;
+        scores[nama] = Number(skor);
+      }
+    });
+    return scores;
+  }
+
+  function findMeta(judulKey, d) {
+    const norm = s => s.toLowerCase().trim().replace(/\s+/g,' ');
+    const ALIAS = {
+      "Digitalisasi Laporan Ikhtisar Pengawasan APIP":  "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+      "Digitalisasi Laporan Ikhtisar Pengawasan":       "Digitalisasi Laporan Ikhtisar Pengawasan (e-ILHP)",
+      "SI GEMBIRA (Sistem Gerakan Metro Bersih Dari Narkotika)": "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+      "SI GEMBIRA (Sistem Gerakan Metro Bebas Dari Narkotika)":  "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+      "SI GEMBIRA": "SIAP GEMBIRA (Sistem Informasi, Layanan dan Pengaduan Gerakan Metro Bebas dari Narkotika)",
+    };
+    const r = ALIAS[judulKey] || ALIAS[judulKey?.trim()] || judulKey;
+    const lo = norm(r);
+    let m = daftarInovasiSID.find(i => i.judul===r)
+          || daftarInovasiJudulLengkap.find(i => i.judul===r)
+          || daftarInovasiSID.find(i => norm(i.judul)===lo)
+          || daftarInovasiJudulLengkap.find(i => norm(i.judul)===lo)
+          || daftarInovasiSID.find(i => norm(i.judul).includes(lo)||lo.includes(norm(i.judul)))
+          || daftarInovasiJudulLengkap.find(i => norm(i.judul).includes(lo)||lo.includes(norm(i.judul)));
+    if (m) return { ...m, _disp: r };
+    if (d?.perangkatDaerah) return { perangkatDaerah: d.perangkatDaerah, _disp: r };
+    return { _disp: r };
+  }
+
+  /* ── Muat data ── */
+  async function loadRanking() {
+    document.getElementById('dashStats').innerHTML = `<div style="padding:20px;color:#6b7280">🔄 Memuat data…</div>`;
+    if (typeof firebaseReadyPromise !== 'undefined') await firebaseReadyPromise;
+    const all = await loadAllDraf();
+
+    // Ambil semua inovasi yang punya SID atau Oral
+    const SKIP_KEYS = new Set(['activeJuri','bentukInovasi','createdAt','judulState','juriState',
+      'namaInovasi','notesState','savedAt','signatureState','skorPerJuri','skorJudulPerJuri',
+      'perangkatDaerah','tahun','ringkasan','kategori','userMetadata']);
+
+    const inovasiList = Object.entries(all).filter(([k, v]) => {
+      if (typeof v !== 'object' || v === null) return false;
+      if (typeof isJudulExcluded === 'function' && isJudulExcluded(k)) return false;
+      if (SKIP_KEYS.has(k)) return false;
+      const hasSID  = v.skorPerJuri && Object.values(v.skorPerJuri).some(s => Number(s) > 0);
+      const hasOral = v.oralSkorPerJuri && Object.values(v.oralSkorPerJuri).some(s => Number(s) > 0);
+      return hasSID || hasOral;
+    });
+
+    // Hitung skor per inovasi
+    allRows = inovasiList.map(([judulKey, d]) => {
+      // — SID —
+      const sidPerJuri = {};
+      JURI_SID_LIST.forEach(j => {
+        const jd  = findJuriData(d.juriState, j);
+        const san = j.replace(/[\.,#$\[\]\/]/g,'_');
+        const ter = d.skorPerJuri?.[j] || d.skorPerJuri?.[san] || 0;
+        sidPerJuri[j] = ter > 0 ? ter : hitungSkorSID(jd);
+      });
+      const sidArr = Object.values(sidPerJuri).filter(s => s > 0);
+      const avgSID = sidArr.length ? sidArr.reduce((a,b)=>a+b,0)/sidArr.length : 0;
+
+      // — Oral —
+      const oralScores = getOralScores(d);
+      const oralArr = Object.values(oralScores).filter(s => s > 0);
+      const avgOral = oralArr.length ? oralArr.reduce((a,b)=>a+b,0)/oralArr.length : 0;
+
+      // — Total tertimbang —
+      const total = (avgSID * BOBOT_SID) + (avgOral * BOBOT_ORAL);
+
+      const meta = findMeta(judulKey, d);
+      const statusType = avgSID>0 && avgOral>0 ? 'both'
+                       : avgSID>0 ? 'sid' : avgOral>0 ? 'oral' : 'none';
+
+      return {
+        judulKey, meta, avgSID, avgOral, total, statusType,
+        sidPerJuri, oralScores,
+        sidJuri: sidArr.length, oralJuri: oralArr.length,
+        kategori: getKategori(meta.perangkatDaerah),
+        judulDisplay: meta._disp || judulKey,
+        allData: d, savedAt: d.savedAt || ''
+      };
+    }).sort((a,b) => b.total - a.total);
+
+    // — Stat Cards —
+    const denganSID   = allRows.filter(r => r.avgSID  > 0).length;
+    const denganOral  = allRows.filter(r => r.avgOral > 0).length;
+    const denganBoth  = allRows.filter(r => r.statusType === 'both').length;
+
+    document.getElementById('dashStats').innerHTML = `
+      <div class="dash-stat"><div class="dash-stat-icon">📋</div>
+        <div class="dash-stat-val">${allRows.length}</div>
+        <div class="dash-stat-lbl">Total Inovasi</div></div>
+      <div class="dash-stat"><div class="dash-stat-icon">📊</div>
+        <div class="dash-stat-val">${denganSID}</div>
+        <div class="dash-stat-lbl">Ada Nilai SID</div></div>
+      <div class="dash-stat"><div class="dash-stat-icon">🎤</div>
+        <div class="dash-stat-val">${denganOral}</div>
+        <div class="dash-stat-lbl">Ada Nilai Oral</div></div>
+      <div class="dash-stat"><div class="dash-stat-icon">✅</div>
+        <div class="dash-stat-val">${denganBoth}</div>
+        <div class="dash-stat-lbl">Dinilai Keduanya</div></div>`;
+
+    renderTable();
+  }
+
+  function filterKategori(el, kat) {
+    activeKat = kat; currentPage = 1;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+
+  function getFiltered() {
+    return activeKat === 'semua' ? allRows : allRows.filter(r => r.kategori === activeKat);
+  }
+
+  function renderTable() {
+    const rows = getFiltered();
+    if (!rows.length) {
+      document.getElementById('rankingTableContainer').innerHTML = `
+        <div style="text-align:center;padding:80px 20px;border:2px dashed rgba(14,137,145,.2);border-radius:16px;background:linear-gradient(135deg,#f0fdfa,#fff);">
+          <div style="font-size:64px;margin-bottom:16px;opacity:.6">📭</div>
+          <div style="font-size:16px;font-weight:700;color:#6b7280;">Belum ada data untuk kategori ini</div>
+        </div>`;
+      document.getElementById('paginationContainer').innerHTML = '';
+      return;
+    }
+
+    const totalPages = Math.ceil(rows.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageRows = rows.slice(start, start + PAGE_SIZE);
+
+    let html = `<table class="rekap-table">
+      <thead><tr>
+        <th>Rank</th>
+        <th>Nama Inovasi</th>
+        <th>OPD / Unit</th>
+        <th>Rata-rata SID <small style="opacity:.7;font-weight:600;">(×70%)</small></th>
+        <th>Rata-rata Oral <small style="opacity:.7;font-weight:600;">(×30%)</small></th>
+        <th>Total Gabungan</th>
+        <th>Komponen</th>
+        <th>Detail</th>
+      </tr></thead><tbody>`;
+
+    pageRows.forEach((r, idx) => {
+      const grank = start + idx + 1;
+      const medal = grank===1?'🥇':grank===2?'🥈':grank===3?'🥉':grank;
+      const ej = r.judulKey.replace(/'/g,"\\'");
+
+      let badge = '';
+      if      (r.statusType==='both') badge = `<span class="badge-both">SID + Oral</span>`;
+      else if (r.statusType==='sid')  badge = `<span class="badge-sid-only">SID saja</span>`;
+      else if (r.statusType==='oral') badge = `<span class="badge-oral-only">Oral saja</span>`;
+      else                            badge = `<span class="badge-none">—</span>`;
+
+      const sidPct  = Math.min(100, r.avgSID);
+      const oralPct = Math.min(100, r.avgOral);
+
+      html += `<tr>
+        <td class="number-cell">${medal}</td>
+        <td><b style="color:#0C313A;line-height:1.4;display:block;max-width:300px;">${esc(r.judulDisplay)}</b></td>
+        <td style="font-size:11px;color:#667085;">${esc(r.meta.perangkatDaerah||'—')}</td>
+        <td>
+          <span class="skor-sid-cell">${r.avgSID>0?r.avgSID.toFixed(2):'—'}</span>
+          <div style="font-size:10px;color:#9ca3af;">kontrib: ${(r.avgSID*BOBOT_SID).toFixed(2)}</div>
+          ${r.avgSID>0?`<div class="mini-bar-wrap"><div class="mini-bar-sid" style="width:${sidPct}%"></div></div>`:''}
+        </td>
+        <td>
+          <span class="skor-oral-cell">${r.avgOral>0?r.avgOral.toFixed(2):'—'}</span>
+          <div style="font-size:10px;color:#9ca3af;">kontrib: ${(r.avgOral*BOBOT_ORAL).toFixed(2)}</div>
+          ${r.avgOral>0?`<div class="mini-bar-wrap"><div class="mini-bar-oral" style="width:${oralPct}%"></div></div>`:''}
+        </td>
+        <td><span class="total-cell">${r.total>0?r.total.toFixed(2):'—'}</span></td>
+        <td>${badge}</td>
+        <td><button onclick="showDetail('${ej}')" title="Detail"
+          style="background:linear-gradient(135deg,#0C313A,#0E8991);color:white;border:none;padding:7px 10px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button></td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('rankingTableContainer').innerHTML = html;
+    renderPagination(totalPages, rows.length);
+  }
+
+  function renderPagination(totalPages, total) {
+    if (totalPages <= 1) { document.getElementById('paginationContainer').innerHTML=''; return; }
+    let html = `<span class="page-info">Hal ${currentPage}/${totalPages} · ${total} inovasi</span>`;
+    if (currentPage > 1) html += `<button class="page-btn" onclick="goPage(${currentPage-1})">◀</button>`;
+    for (let i = Math.max(1,currentPage-2); i <= Math.min(totalPages,currentPage+2); i++) {
+      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    }
+    if (currentPage < totalPages) html += `<button class="page-btn" onclick="goPage(${currentPage+1})">▶</button>`;
+    document.getElementById('paginationContainer').innerHTML = html;
+  }
+
+  function goPage(p) { currentPage=p; renderTable(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  /* ── Modal Detail ── */
+  async function showDetail(judulKey) {
+    const all = await loadAllDraf();
+    const d = all[judulKey];
+    if (!d) { alert('Data tidak ditemukan.'); return; }
+
+    const r = allRows.find(x => x.judulKey===judulKey) || {};
+    const meta = r.meta || findMeta(judulKey, d);
+
+    document.getElementById('modalTitle').textContent = meta._disp || judulKey;
+    document.getElementById('modalSubtitle').textContent = `${meta.perangkatDaerah||'—'} | SID 70% + Oral 30%`;
+
+    let html = `<div class="score-breakdown">
+      <div class="score-card sc-sid">
+        <div class="score-card-label">📊 Rata-rata SID</div>
+        <div class="score-card-value">${r.avgSID>0?r.avgSID.toFixed(2):'—'}</div>
+        <div class="score-card-sub">Kontrib: ${(r.avgSID*BOBOT_SID).toFixed(2)} (70%)</div>
+      </div>
+      <div class="score-card sc-oral">
+        <div class="score-card-label">🎤 Rata-rata Oral</div>
+        <div class="score-card-value">${r.avgOral>0?r.avgOral.toFixed(2):'—'}</div>
+        <div class="score-card-sub">Kontrib: ${(r.avgOral*BOBOT_ORAL).toFixed(2)} (30%)</div>
+      </div>
+      <div class="score-card sc-total">
+        <div class="score-card-label">🏆 Total Gabungan</div>
+        <div class="score-card-value">${r.total>0?r.total.toFixed(2):'—'}</div>
+        <div class="score-card-sub">SID×70% + Oral×30%</div>
+      </div>
+    </div>`;
+
+    // Rumus
+    html += `<div style="background:#f0fdfa;border:2px solid #99f6e4;border-radius:14px;padding:16px 20px;margin-bottom:20px;text-align:center;">
+      <span style="font-size:14px;font-weight:700;color:#0C313A;">
+        Total = (${r.avgSID>0?r.avgSID.toFixed(2):'0.00'} × 70%) + (${r.avgOral>0?r.avgOral.toFixed(2):'0.00'} × 30%)
+        = ${(r.avgSID*BOBOT_SID).toFixed(2)} + ${(r.avgOral*BOBOT_ORAL).toFixed(2)}
+        = <b style="font-size:18px;color:#0E8991;">${r.total>0?r.total.toFixed(2):'—'}</b>
+      </span>
+    </div>`;
+
+    // SID per juri
+    if (r.avgSID > 0) {
+      html += `<div style="background:#eff6ff;border:2px solid #bfdbfe;border-radius:14px;padding:18px;margin-bottom:16px;">
+        <h4 style="color:#1e3a8a;margin:0 0 12px;">📊 Detail Skor SID (bobot 70%)</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">`;
+      JURI_SID_LIST.forEach(j => {
+        const skor = r.sidPerJuri?.[j] || 0;
+        const singkat = j.split(',')[0].replace(/Prof\.\s*Dr\.\s*(Dra\.|Ir\.)?\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').trim();
+        if (skor > 0) {
+          html += `<div style="background:white;border:2px solid #bfdbfe;border-radius:10px;padding:12px 16px;text-align:center;">
+            <div style="font-size:11px;color:#6b7280;font-weight:700;">${esc(singkat)}</div>
+            <div style="font-size:22px;font-weight:900;color:#2563eb;">${skor.toFixed(2)}</div>
+          </div>`;
+        }
+      });
+      html += `<div style="background:linear-gradient(135deg,#2563eb,#1e3a8a);border-radius:10px;padding:12px 16px;text-align:center;color:white;">
+        <div style="font-size:11px;font-weight:700;opacity:.85;">Rata-rata SID</div>
+        <div style="font-size:22px;font-weight:900;">${r.avgSID.toFixed(2)}</div>
+        <div style="font-size:10px;opacity:.7;">× 70% = ${(r.avgSID*BOBOT_SID).toFixed(2)}</div>
+      </div></div></div>`;
+    }
+
+    // Oral per juri
+    if (r.avgOral > 0) {
+      html += `<div style="background:#f0fdfa;border:2px solid #99f6e4;border-radius:14px;padding:18px;margin-bottom:16px;">
+        <h4 style="color:#0C313A;margin:0 0 12px;">🎤 Detail Skor Oral (bobot 30%)</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">`;
+      Object.entries(r.oralScores||{}).forEach(([nama, skor]) => {
+        const singkat = nama.split(',')[0].replace(/Prof\.\s*Dr\.\s*(Dra\.|Ir\.)?\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').replace(/Ir\.\s*/,'').trim();
+        html += `<div style="background:white;border:2px solid #99f6e4;border-radius:10px;padding:12px 16px;text-align:center;">
+          <div style="font-size:11px;color:#6b7280;font-weight:700;">${esc(singkat)}</div>
+          <div style="font-size:22px;font-weight:900;color:#0E8991;">${skor.toFixed(2)}</div>
+        </div>`;
+      });
+      html += `<div style="background:linear-gradient(135deg,#0C313A,#0E8991);border-radius:10px;padding:12px 16px;text-align:center;color:white;">
+        <div style="font-size:11px;font-weight:700;opacity:.85;">Rata-rata Oral</div>
+        <div style="font-size:22px;font-weight:900;">${r.avgOral.toFixed(2)}</div>
+        <div style="font-size:10px;opacity:.7;">× 30% = ${(r.avgOral*BOBOT_ORAL).toFixed(2)}</div>
+      </div></div></div>`;
+    }
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('modalDetail').classList.add('active');
+  }
+
+  function closeModal() { document.getElementById('modalDetail').classList.remove('active'); }
+
+  /* ── Export Excel ── */
+  async function exportToExcel() {
+    if (!allRows.length) { alert('Tidak ada data untuk di-export!'); return; }
+    const tgl = new Date().toLocaleString('id-ID');
+    const tglFile = new Date().toISOString().split('T')[0];
+    let csv = `\uFEFF`;
+    csv += `RANKING GABUNGAN SID + ORAL — BAPPERIDA KOTA METRO 2026\n`;
+    csv += `Formula: Total = (Rata-rata SID × 70%) + (Rata-rata Oral × 30%)\nDicetak: ${tgl}\n\n`;
+    csv += `Rank,Nama Inovasi,OPD / Unit,Rata-rata SID,Kontrib SID (70%),Rata-rata Oral,Kontrib Oral (30%),Total Gabungan,Juri SID,Juri Oral\n`;
+    allRows.forEach((r,i) => {
+      csv += `${i+1},"${(r.judulDisplay).replace(/"/g,'""')}","${(r.meta.perangkatDaerah||'—').replace(/"/g,'""')}",` +
+        `${r.avgSID>0?r.avgSID.toFixed(2):''},${(r.avgSID*BOBOT_SID).toFixed(2)},` +
+        `${r.avgOral>0?r.avgOral.toFixed(2):''},${(r.avgOral*BOBOT_ORAL).toFixed(2)},` +
+        `${r.total>0?r.total.toFixed(2):''},${r.sidJuri},${r.oralJuri}\n`;
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ranking_sid_oral_${tglFile}.csv`;
+    a.click();
+  }
+
+  if (typeof firebaseReadyPromise !== 'undefined') {
+    firebaseReadyPromise.then(() => loadRanking());
+  } else {
+    loadRanking();
+  }
+</script>
+</body>
+</html>
