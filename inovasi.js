@@ -727,7 +727,7 @@ const daftarInovasiJudulLengkap = [
   }
 ];
 
-// Data untuk JURI SID (55 inovasi - data dari dokumen baru)
+// Data untuk JURI SID (56 inovasi - data dari dokumen baru)
 const daftarInovasiSID = [
   // ═══════════════ KATEGORI OPD (32 Inovasi) ═══════════════
   {
@@ -1131,7 +1131,7 @@ const daftarInovasiSID = [
 // Fungsi untuk mendapatkan daftar inovasi berdasarkan role
 function getDaftarInovasiByRole(role) {
   if (role === 'juri_sid') {
-    return daftarInovasiSID; // 55 inovasi untuk juri SID
+    return daftarInovasiSID; // 56 inovasi untuk juri SID
   } else {
     return daftarInovasiJudulLengkap; // 106 inovasi untuk juri judul
   }
