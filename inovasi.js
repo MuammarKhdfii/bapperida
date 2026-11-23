@@ -766,7 +766,7 @@ const daftarInovasiSID = [
     ringkasan: "Program pemberdayaan masyarakat untuk meningkatkan daya saing ekonomi lokal."
   },
   {
-    judul: "Tanah Harapan 2.0",
+    judul: "Tanah Harapan",
     perangkatDaerah: "Bapperida",
     bentuk: "Tata Kelola Pemerintahan Daerah",
     waktu: "2026",
