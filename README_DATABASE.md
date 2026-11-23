@@ -747,7 +747,7 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 ---
 
-**Selamat menggunakan Sistem Penilaian Inovasi Daerah 2027! 🚀**
+**Selamat menggunakan Sistem Penilaian Inovasi Daerah 2026! 🚀**
 
 Untuk pertanyaan lebih lanjut, silakan merujuk ke:
 - **DATABASE_DOCUMENTATION.md** - Detail struktur database

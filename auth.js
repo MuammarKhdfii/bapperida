@@ -177,25 +177,23 @@ function renderSessionNav(containerId = "sessionNav") {
   const iconHtml = cfg.icon ? `<span class="snav-icon">${cfg.icon}</span>` : '';
   
   el.innerHTML = `
-    <div class="snav-user">
+    <div class="snav-user snav-logout-trigger" title="Klik untuk keluar" style="cursor:pointer;">
       ${iconHtml}
       <div class="snav-info">
         <div class="snav-nama">${session.nama}</div>
-        <div class="snav-role" style="background:rgba(255,255,255,0.25);color:white;font-weight:800;">${cfg.label}</div>
+        <div class="snav-role">${cfg.label}</div>
       </div>
+      <span class="snav-exit-hint">↩</span>
     </div>
     <div id="firebaseStatus" class="firebase-status" style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,255,255,0.15);border-radius:8px;font-size:13px;color:white;">
       <span id="firebaseStatusIcon" style="font-size:16px;">🔄</span>
       <span id="firebaseStatusText">Checking...</span>
-    </div>
-    <button class="snav-logout" type="button">↩ Keluar</button>`;
+    </div>`;
   
-  // Attach event listener to logout button immediately
-  const btn = el.querySelector('.snav-logout');
-  console.log('Logout button found:', btn); // Debug
-  if (btn) {
-    btn.onclick = function(e) {
-      console.log('Logout clicked!'); // Debug
+  // Attach logout to the user name/card click
+  const userCard = el.querySelector('.snav-logout-trigger');
+  if (userCard) {
+    userCard.onclick = function(e) {
       e.preventDefault();
       e.stopPropagation();
       if (confirm("Anda yakin ingin keluar?")) {
@@ -204,7 +202,6 @@ function renderSessionNav(containerId = "sessionNav") {
       }
       return false;
     };
-    console.log('Event handler attached'); // Debug
   }
   
   // Check Firebase connection status

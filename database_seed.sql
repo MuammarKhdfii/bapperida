@@ -1,5 +1,5 @@
 -- ══════════════════════════════════════════════════════════════════
---  DATA AWAL SISTEM PENILAIAN INOVASI DAERAH KOTA METRO 2027
+--  DATA AWAL SISTEM PENILAIAN INOVASI DAERAH KOTA METRO 2026
 -- ══════════════════════════════════════════════════════════════════
 -- File ini berisi data master dan data awal untuk sistem
 -- ══════════════════════════════════════════════════════════════════
@@ -290,8 +290,8 @@ INSERT INTO parameter_indikator_sid (indikator_id, nilai_parameter, deskripsi_pa
 -- ══════════════════════════════════════════════════════════════════
 
 INSERT INTO pengaturan_sistem (kunci, nilai, tipe_data, deskripsi) VALUES
-('nama_sistem', 'Sistem Penilaian Inovasi Daerah 2027', 'string', 'Nama sistem'),
-('tahun_aktif', '2027', 'string', 'Tahun penilaian aktif'),
+('nama_sistem', 'Sistem Penilaian Inovasi Daerah 2026', 'string', 'Nama sistem'),
+('tahun_aktif', '2026', 'string', 'Tahun penilaian aktif'),
 ('batas_penilaian', '2027-12-31', 'string', 'Batas waktu penilaian'),
 ('max_skor_judul', '63', 'integer', 'Maksimal skor penilaian judul'),
 ('jumlah_juri_judul', '3', 'integer', 'Jumlah juri penilaian judul'),

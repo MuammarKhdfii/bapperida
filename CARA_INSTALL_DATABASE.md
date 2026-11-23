@@ -1,6 +1,6 @@
 # 📦 CARA INSTALL DATABASE - STEP BY STEP
 
-## Sistem Penilaian Inovasi Daerah Kota Metro 2027
+## Sistem Penilaian Inovasi Daerah Kota Metro 2026
 
 ---
 

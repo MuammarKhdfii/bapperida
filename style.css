@@ -2122,80 +2122,114 @@ details[open] .rk-rest-toggle { border-radius: 10px 10px 0 0; }
 .session-nav-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
 }
+
+/* ── User card (klik = keluar) ── */
 .snav-user {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 12px;
-  padding: 8px 14px;
-  backdrop-filter: blur(6px);
+  gap: 12px;
+  background: rgba(255,255,255,.13);
+  border: 1.5px solid rgba(255,255,255,.22);
+  border-radius: 14px;
+  padding: 10px 16px;
+  backdrop-filter: blur(8px);
+  transition: background .25s, border-color .25s, box-shadow .25s, transform .2s;
+  position: relative;
+  overflow: hidden;
 }
-.snav-icon { font-size: 22px; flex-shrink: 0; }
+
+/* shimmer saat hover */
+.snav-logout-trigger::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.12) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform .4s ease;
+  pointer-events: none;
+}
+.snav-logout-trigger:hover::after {
+  transform: translateX(100%);
+}
+
+.snav-logout-trigger:hover {
+  background: rgba(239,68,68,.28);
+  border-color: rgba(239,68,68,.55);
+  box-shadow: 0 6px 20px rgba(239,68,68,.3);
+  transform: translateY(-2px);
+}
+
+/* ikon "power off" kecil muncul saat hover */
+.snav-logout-trigger .snav-exit-hint {
+  font-size: 15px;
+  opacity: 0;
+  transform: scale(.6) translateX(-6px);
+  transition: opacity .2s, transform .2s;
+  flex-shrink: 0;
+}
+.snav-logout-trigger:hover .snav-exit-hint {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+}
+
+.snav-icon { font-size: 24px; flex-shrink: 0; }
 .snav-info { min-width: 0; }
 .snav-nama {
-  font-size: 13px; font-weight: 800; color: white;
+  font-size: 13.5px; font-weight: 800; color: white;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   max-width: 220px;
+  letter-spacing: .01em;
 }
 .snav-role {
-  font-size: 10px; font-weight: 700; padding: 2px 7px;
-  border-radius: 6px; margin-top: 3px; display: inline-block;
-  background: rgba(255,255,255,.2); color: white;
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 20px; margin-top: 4px; display: inline-block;
+  background: rgba(255,255,255,.22); color: rgba(255,255,255,.95);
+  letter-spacing: .03em; text-transform: uppercase;
 }
-.snav-logout {
-  background: rgba(239,68,68,.25);
-  border: 1px solid rgba(239,68,68,.4);
-  color: #fca5a5;
-  font-size: 12px; font-weight: 700; font-family: inherit;
-  padding: 7px 12px; border-radius: 9px; cursor: pointer;
-  transition: background .15s; white-space: nowrap;
-  position: relative;
-  z-index: 100;
-  pointer-events: auto;
-}
-.snav-logout:hover { background: rgba(239,68,68,.45); color: white; }
 
-@media(max-width:760px) {
-  .snav-nama { max-width: 120px; font-size: 11px; }
-  .session-nav-header { gap: 6px; }
-  .snav-user { padding: 6px 10px; }
-}
-@media print { .session-nav-header { display: none !important; } }
-
-
-/* Firebase Status Indicator */
+/* ── Firebase status pill ── */
 .firebase-status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 8px;
-  font-size: 13px;
+  gap: 7px;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.13);
+  border: 1.5px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
   color: white;
-  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  transition: background .25s, transform .2s, box-shadow .25s;
   cursor: help;
+  white-space: nowrap;
 }
-
 .firebase-status:hover {
-  background: rgba(255,255,255,0.25);
-  transform: translateY(-1px);
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.35);
+  box-shadow: 0 4px 14px rgba(0,0,0,.15);
+  transform: translateY(-2px);
 }
 
 #firebaseStatusIcon {
-  font-size: 16px;
-  animation: pulse 2s ease-in-out infinite;
+  font-size: 15px;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+#firebaseStatusText {
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 
-#firebaseStatusText {
-  font-weight: 600;
-  letter-spacing: 0.02em;
+@media(max-width:760px) {
+  .snav-nama { max-width: 120px; font-size: 11.5px; }
+  .session-nav-header { gap: 8px; }
+  .snav-user { padding: 8px 12px; }
+  .firebase-status { padding: 7px 11px; font-size: 11px; }
 }
+@media print { .session-nav-header { display: none !important; } }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }

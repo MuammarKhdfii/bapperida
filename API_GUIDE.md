@@ -1,6 +1,6 @@
 # 🔌 PANDUAN API - SISTEM PENILAIAN INOVASI DAERAH
 
-## BAPPERIDA KOTA METRO 2027
+## BAPPERIDA KOTA METRO 2026
 
 ---
 
@@ -272,7 +272,7 @@ Content-Type: application/json
   "latar_belakang": "...",
   "tujuan": "...",
   "manfaat": "...",
-  "tahun_implementasi": 2027
+  "tahun_implementasi": 2026
 }
 ```
 
@@ -773,7 +773,7 @@ GET /api/v1/export/excel?kategori=opd
 **Response:**
 ```
 Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-Content-Disposition: attachment; filename="rekap_penilaian_2027.xlsx"
+Content-Disposition: attachment; filename="rekap_penilaian_2026.xlsx"
 
 [Binary file content]
 ```
@@ -1203,7 +1203,7 @@ if ($current > $limit) {
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"eva.rolia\",\n  \"password\": \"juri2027\"\n}",
+              "raw": "{\n  \"username\": \"eva.rolia\",\n  \"password\": \"juri2026\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

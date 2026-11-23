@@ -295,7 +295,7 @@ Password: juri2027
 
 ## 🎉 KESIMPULAN
 
-**Sistem Penilaian Inovasi Daerah Kota Metro 2027** sudah **LENGKAP dan SIAP DIGUNAKAN!**
+**Sistem Penilaian Inovasi Daerah Kota Metro 2026** sudah **LENGKAP dan SIAP DIGUNAKAN!**
 
 ✅ **105 inovasi** untuk Juri Judul  
 ✅ **56 inovasi** untuk Juri SID  
