@@ -196,22 +196,6 @@ let asalPD = "";
   // Inisialisasi scroll top
   if (typeof initScrollTop === "function") initScrollTop("scrollTopBtn");
 
-  // Expand/collapse all
-  const expandBtn = document.getElementById("expandAllBtn");
-  if (expandBtn) {
-    expandBtn.addEventListener("click", function() {
-      const isCollapsed = this.dataset.state === "collapsed";
-      document.querySelectorAll(".oral-fokus-content").forEach(el => {
-        el.style.display = isCollapsed ? "" : "none";
-      });
-      document.querySelectorAll(".oral-fokus-toggle").forEach(btn => {
-        btn.textContent = isCollapsed ? "🎯 Fokus Observasi ▼" : "🎯 Fokus Observasi ▶";
-      });
-      this.textContent   = isCollapsed ? "🔽 Buka Semua" : "🔼 Tutup Semua";
-      this.dataset.state = isCollapsed ? "" : "collapsed";
-    });
-  }
-
 })().catch(e => console.error("[oral.js init]", e));
 
 // ── Restore state dari storage ────────────────────────────────────────────────
@@ -272,15 +256,6 @@ function renderOralForm() {
       </label>`;
     }).join("");
 
-    // Build rubrik panel items
-    const rubrikItems = param.rubrik.map((desc, i) => {
-      const val = i + 1;
-      return `<div class="oral-rubrik-item" id="oral-rubrik-${param.no}-lv${val}">
-        <span class="oral-rubrik-lv">Nilai ${val}</span>
-        <span class="oral-rubrik-desc">${esc(desc)}</span>
-      </div>`;
-    }).join("");
-
     card.innerHTML = `
       <div class="oral-card-header" id="oral-card-header-${param.no}">
         <div class="oral-card-num">${param.no}</div>
@@ -290,20 +265,8 @@ function renderOralForm() {
         <div class="oral-bobot-badge oral-bobot-${colorName}">Bobot ${param.bobot}%</div>
         <div class="oral-card-check hidden" id="oral-card-check-${param.no}">✓ Dipilih</div>
       </div>
-      <div class="oral-fokus-wrap">
-        <button class="oral-fokus-toggle" onclick="toggleFokus(${param.no})">🎯 Fokus Observasi ▶</button>
-        <div class="oral-fokus-content" id="oral-fokus-${param.no}" style="display:none">
-          <div class="oral-fokus">${esc(param.fokus)}</div>
-        </div>
-      </div>
       <div class="oral-options-grid" id="oral-opts-${param.no}">
         ${optButtons}
-      </div>
-      <div class="oral-rubrik-wrap">
-        <button class="oral-rubrik-toggle" onclick="toggleRubrik(${param.no})">📖 Lihat Rubrik Lengkap ▼</button>
-        <div class="oral-rubrik-panel" id="oral-rubrik-${param.no}">
-          ${rubrikItems}
-        </div>
       </div>
       <div class="oral-result">
         Skor terbobot: <b id="oral-skor-${param.no}">0.00</b> <small>/ ${param.bobot}</small>

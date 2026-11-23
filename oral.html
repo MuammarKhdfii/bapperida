@@ -240,8 +240,8 @@
       border: 2px solid transparent; text-decoration: none;
       user-select: none;
     }
-    .quick-nav-pill.filled { background: #10b981; color: white; border-color: #059669; }
-    .quick-nav-pill.empty  { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+    .quick-nav-pill.filled { background: #0E8991; color: white; border-color: #0C313A; }
+    .quick-nav-pill.empty  { background: #E8BBA6; color: #4a6b75; border-color: #8DB6BC; }
     .quick-nav-pill:hover  { transform: scale(1.15); }
 
     /* ══ Bottom Nav Pills Mobile ══ */
@@ -266,21 +266,21 @@
       cursor: pointer; transition: all .2s;
       border: 2px solid transparent; text-decoration: none;
     }
-    .bnp-pill.filled { background: #10b981; color: white; border-color: #059669; }
-    .bnp-pill.empty  { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+    .bnp-pill.filled { background: #0E8991; color: white; border-color: #0C313A; }
+    .bnp-pill.empty  { background: #E8BBA6; color: #4a6b75; border-color: #8DB6BC; }
 
     /* ══ Toast ══ */
     .toast-notification {
       position: fixed; top: 80px; right: 20px; z-index: 9999;
-      background: #032539; color: white;
+      background: #0C313A; color: white;
       padding: 14px 20px; border-radius: 12px;
       font-weight: 700; font-size: 14px;
       box-shadow: 0 4px 20px rgba(0,0,0,.18);
       animation: toastIn .3s ease both;
       max-width: 320px;
     }
-    .toast-notification.toast-info  { background: #1C768F; }
-    .toast-notification.toast-error { background: #ef4444; }
+    .toast-notification.toast-info  { background: #0E8991; }
+    .toast-notification.toast-error { background: #c8503a; }
     @keyframes toastIn {
       from { opacity: 0; transform: translateX(100%); }
       to   { opacity: 1; transform: translateX(0); }
@@ -300,36 +300,36 @@
       animation: fadeSlideUp .4s ease both;
     }
     .oral-card-unfilled {
-      border: 2px dashed #cbd5e1;
+      border: 2px dashed #8DB6BC;
     }
-    .oral-card-filled-1 { border: 3px solid #032539; }
-    .oral-card-filled-2 { border: 3px solid #5a7a8a; }
-    .oral-card-filled-3 { border: 3px solid #FA991C; }
-    .oral-card-filled-4 { border: 3px solid #1C768F; }
-    .oral-card-filled-5 { border: 3px solid #0d5a70; }
+    .oral-card-filled-1 { border: 3px solid #0C313A; }
+    .oral-card-filled-2 { border: 3px solid #8DB6BC; }
+    .oral-card-filled-3 { border: 3px solid #EAA27C; }
+    .oral-card-filled-4 { border: 3px solid #0E8991; }
+    .oral-card-filled-5 { border: 3px solid #0ab8c4; }
 
     /* Header kartu */
     .oral-card-header {
       display: flex; align-items: center; gap: 12px;
       padding: 16px 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid #E8BBA6;
       background: white; position: relative;
       transition: background .3s;
     }
-    .oral-card-header.hdr-val-1 { background: linear-gradient(135deg, #e8ecef, #d4dde3); border-bottom-color: #032539; }
-    .oral-card-header.hdr-val-2 { background: linear-gradient(135deg, #dce5ea, #c8d8df); border-bottom-color: #5a7a8a; }
-    .oral-card-header.hdr-val-3 { background: linear-gradient(135deg, #fef3e2, #fbe8cc); border-bottom-color: #FA991C; }
-    .oral-card-header.hdr-val-4 { background: linear-gradient(135deg, #e3f1f5, #c2dfe8); border-bottom-color: #1C768F; }
-    .oral-card-header.hdr-val-5 { background: linear-gradient(135deg, #d0eaf1, #a8d4df); border-bottom-color: #0d5a70; }
+    .oral-card-header.hdr-val-1 { background: linear-gradient(135deg, #eaecee, #d6dadd); border-bottom-color: #8DB6BC; }
+    .oral-card-header.hdr-val-2 { background: linear-gradient(135deg, #ddeaed, #c5dade); border-bottom-color: #8DB6BC; }
+    .oral-card-header.hdr-val-3 { background: linear-gradient(135deg, #fdf0e8, #f9dece); border-bottom-color: #EAA27C; }
+    .oral-card-header.hdr-val-4 { background: linear-gradient(135deg, #e0f4f5, #c7eaec); border-bottom-color: #0E8991; }
+    .oral-card-header.hdr-val-5 { background: linear-gradient(135deg, #c7eaec, #a5dde0); border-bottom-color: #0ab8c4; }
 
     .oral-card-num {
       font-size: 32px; font-weight: 900; min-width: 44px; line-height: 1;
-      background: linear-gradient(135deg, #1C768F, #032539);
+      background: linear-gradient(135deg, #0E8991, #0C313A);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .oral-card-info { flex: 1; min-width: 0; }
     .oral-card-nama {
-      font-size: 14px; font-weight: 800; color: #032539;
+      font-size: 14px; font-weight: 800; color: #0C313A;
       line-height: 1.4;
     }
 
@@ -340,20 +340,20 @@
       padding: 4px 12px; border-radius: 999px;
       white-space: nowrap;
     }
-    .oral-bobot-indigo  { background: linear-gradient(135deg, #1C768F, #0d5a70); }
-    .oral-bobot-emerald { background: linear-gradient(135deg, #059669, #10b981); }
-    .oral-bobot-amber   { background: linear-gradient(135deg, #FA991C, #d97d10); }
-    .oral-bobot-violet  { background: linear-gradient(135deg, #032539, #1C768F); }
-    .oral-bobot-sky     { background: linear-gradient(135deg, #1C768F, #38bdf8); }
-    .oral-bobot-rose    { background: linear-gradient(135deg, #FA991C, #c47612); }
-    .oral-bobot-teal    { background: linear-gradient(135deg, #032539, #1C768F); }
-    .oral-bobot-purple  { background: linear-gradient(135deg, #1C768F, #0d5a70); }
-    .oral-bobot-orange  { background: linear-gradient(135deg, #FA991C, #d97d10); }
-    .oral-bobot-cyan    { background: linear-gradient(135deg, #1C768F, #22d3ee); }
+    .oral-bobot-teal-dark  { background: linear-gradient(135deg, #0E8991, #0C313A); }
+    .oral-bobot-navy-teal  { background: linear-gradient(135deg, #0C313A, #0E8991); }
+    .oral-bobot-terra      { background: linear-gradient(135deg, #EAA27C, #c8814e); }
+    .oral-bobot-dusty      { background: linear-gradient(135deg, #8DB6BC, #5a8e96); }
+    .oral-bobot-teal-terra { background: linear-gradient(135deg, #0E8991, #EAA27C); }
+    .oral-bobot-navy-terra { background: linear-gradient(135deg, #0C313A, #EAA27C); }
+    .oral-bobot-dusty-navy { background: linear-gradient(135deg, #8DB6BC, #0C313A); }
+    .oral-bobot-teal-dusty { background: linear-gradient(135deg, #0E8991, #8DB6BC); }
+    .oral-bobot-terra-navy { background: linear-gradient(135deg, #EAA27C, #0C313A); }
+    .oral-bobot-navy-dusty { background: linear-gradient(135deg, #0C313A, #8DB6BC); }
 
     .oral-card-check {
       flex-shrink: 0;
-      background: #10b981; color: white;
+      background: #0E8991; color: white;
       font-size: 11px; font-weight: 800;
       padding: 3px 10px; border-radius: 999px;
     }
@@ -363,17 +363,17 @@
     .oral-fokus-wrap { padding: 0 20px; }
     .oral-fokus-toggle {
       background: none; border: none; font-family: inherit;
-      font-size: 12px; font-weight: 700; color: #1C768F;
+      font-size: 12px; font-weight: 700; color: #0E8991;
       cursor: pointer; padding: 10px 0 6px;
       display: flex; align-items: center; gap: 6px;
     }
-    .oral-fokus-toggle:hover { color: #032539; }
+    .oral-fokus-toggle:hover { color: #0C313A; }
     .oral-fokus-content { overflow: hidden; }
     .oral-fokus {
-      background: linear-gradient(135deg, #fef3e2, #fbe8cc);
-      border: 1.5px solid #FA991C;
+      background: linear-gradient(135deg, #fdf0e8, #f9dece);
+      border: 1.5px solid #EAA27C;
       border-radius: 10px; padding: 12px 14px;
-      font-size: 13px; color: #032539; line-height: 1.6;
+      font-size: 13px; color: #0C313A; line-height: 1.6;
       margin-bottom: 10px;
     }
 
@@ -398,7 +398,7 @@
       font-size: 32px; font-weight: 900; line-height: 1;
     }
     .oral-opt-desc {
-      font-size: 11px; color: #374151; text-align: center;
+      font-size: 11px; color: #0C313A; text-align: center;
       margin-top: 6px;
       display: -webkit-box;
       -webkit-line-clamp: 3;
@@ -411,74 +411,74 @@
       display: none;
     }
     /* Colors per value */
-    .oral-opt-1 { background: #fee2e2; border-color: #fca5a5; }
-    .oral-opt-2 { background: #fff7ed; border-color: #fdba74; }
-    .oral-opt-3 { background: #fef3e2; border-color: #FA991C; }
-    .oral-opt-4 { background: #e3f1f5; border-color: #1C768F; }
-    .oral-opt-5 { background: #d0eaf1; border-color: #0d5a70; }
-    .oral-opt-1.selected { background: #e8ecef; border-color: #032539; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(3,37,57,.2); }
-    .oral-opt-2.selected { background: #d8e3e8; border-color: #5a7a8a; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(90,122,138,.2); }
-    .oral-opt-3.selected { background: #fbe8cc; border-color: #FA991C; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(250,153,28,.25); }
-    .oral-opt-4.selected { background: #c2dfe8; border-color: #1C768F; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(28,118,143,.25); }
-    .oral-opt-5.selected { background: #a8d4df; border-color: #0d5a70; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(13,90,112,.25); }
+    .oral-opt-1 { background: white; border-color: #8DB6BC; }
+    .oral-opt-2 { background: white; border-color: #8DB6BC; }
+    .oral-opt-3 { background: white; border-color: #8DB6BC; }
+    .oral-opt-4 { background: white; border-color: #8DB6BC; }
+    .oral-opt-5 { background: white; border-color: #8DB6BC; }
+    .oral-opt-1.selected { background: #0C313A; color: white; border-color: #0C313A; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(12,49,58,.3); }
+    .oral-opt-2.selected { background: #8DB6BC; color: white; border-color: #8DB6BC; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(141,182,188,.35); }
+    .oral-opt-3.selected { background: #E8BBA6; color: #0C313A; border-color: #EAA27C; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(234,162,124,.3); }
+    .oral-opt-4.selected { background: #0E8991; color: white; border-color: #0E8991; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(14,137,145,.3); }
+    .oral-opt-5.selected { background: #0ab8c4; color: white; border-color: #0ab8c4; border-width: 3px; transform: scale(1.04); box-shadow: 0 4px 14px rgba(10,184,196,.3); }
     .oral-opt-btn.selected .oral-opt-check { display: block; }
 
     /* Rubrik panel */
     .oral-rubrik-wrap { padding: 0 20px 10px; }
     .oral-rubrik-toggle {
       background: none; border: none; font-family: inherit;
-      font-size: 12px; font-weight: 700; color: #1C768F;
+      font-size: 12px; font-weight: 700; color: #0E8991;
       cursor: pointer; padding: 4px 0 8px;
       display: flex; align-items: center; gap: 6px;
     }
-    .oral-rubrik-toggle:hover { color: #032539; }
+    .oral-rubrik-toggle:hover { color: #0C313A; }
     .oral-rubrik-panel {
-      background: #e3f1f5; border: 1px solid #1C768F;
+      background: #e0f4f5; border: 1px solid #0E8991;
       border-radius: 10px; padding: 12px; margin-top: 2px;
       display: none;
     }
     .oral-rubrik-item {
       padding: 8px 10px;
-      border-left: 3px solid #e3f1f5;
+      border-left: 3px solid #8DB6BC;
       margin-bottom: 8px; border-radius: 0 8px 8px 0;
       transition: all .2s;
     }
     .oral-rubrik-item:last-child { margin-bottom: 0; }
-    .oral-rubrik-lv { font-size: 11px; font-weight: 800; display: block; margin-bottom: 2px; color: #1C768F; }
-    .oral-rubrik-desc { font-size: 12px; color: #032539; line-height: 1.5; }
-    .oral-rubrik-item.active-1 { border-left-color: #ef4444; background: #fff1f2; }
-    .oral-rubrik-item.active-2 { border-left-color: #5a7a8a; background: #f0f4f6; }
-    .oral-rubrik-item.active-3 { border-left-color: #FA991C; background: #fef3e2; }
-    .oral-rubrik-item.active-4 { border-left-color: #1C768F; background: #e3f1f5; }
-    .oral-rubrik-item.active-5 { border-left-color: #0d5a70; background: #d0eaf1; }
+    .oral-rubrik-lv { font-size: 11px; font-weight: 800; display: block; margin-bottom: 2px; color: #0E8991; }
+    .oral-rubrik-desc { font-size: 12px; color: #0C313A; line-height: 1.5; }
+    .oral-rubrik-item.active-1 { border-left-color: #0C313A; background: #eaecee; }
+    .oral-rubrik-item.active-2 { border-left-color: #8DB6BC; background: #ddeaed; }
+    .oral-rubrik-item.active-3 { border-left-color: #EAA27C; background: #fdf0e8; }
+    .oral-rubrik-item.active-4 { border-left-color: #0E8991; background: #e0f4f5; }
+    .oral-rubrik-item.active-5 { border-left-color: #0ab8c4; background: #c7eaec; }
 
     /* Result area */
     .oral-result {
-      background: linear-gradient(135deg, #e3f1f5, #d0eaf1);
+      background: linear-gradient(135deg, #e0f4f5, #c7eaec);
       border-radius: 0 0 16px 16px;
       padding: 10px 20px 14px;
-      font-size: 14px; color: #032539; font-weight: 600;
+      font-size: 14px; color: #0C313A; font-weight: 600;
     }
-    .oral-result b { font-size: 20px; font-weight: 900; margin: 0 4px; color: #032539; }
-    .oral-result small { color: #1C768F; font-size: 12px; }
-    .oral-skor-bar { height: 6px; background: #FBF3F2; border-radius: 999px; margin-top: 8px; overflow: hidden; }
-    .oral-skor-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #FA991C, #d97d10); transition: width .4s ease; }
+    .oral-result b { font-size: 20px; font-weight: 900; margin: 0 4px; color: #0C313A; }
+    .oral-result small { color: #0E8991; font-size: 12px; }
+    .oral-skor-bar { height: 6px; background: #E8BBA6; border-radius: 999px; margin-top: 8px; overflow: hidden; }
+    .oral-skor-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #EAA27C, #c8814e); transition: width .4s ease; }
 
     /* ══ Interpretasi Nilai Akhir ══ */
     .interpretasi-card {
       background: white;
-      border: 1.5px solid #e3f1f5;
+      border: 1.5px solid #8DB6BC;
       border-radius: 20px;
       padding: 24px;
       margin: 24px 0;
-      box-shadow: 0 4px 20px rgba(28,118,143,.08);
+      box-shadow: 0 4px 20px rgba(14,137,145,.08);
     }
     .interpretasi-card h3 {
-      font-size: 15px; font-weight: 900; color: #032539;
+      font-size: 15px; font-weight: 900; color: #0C313A;
       margin: 0 0 18px;
       display: flex; align-items: center; gap: 8px;
       padding-bottom: 14px;
-      border-bottom: 1.5px solid #e3f1f5;
+      border-bottom: 1.5px solid #8DB6BC;
     }
     /* Grid 5 kartu horizontal */
     .interpretasi-grid {
@@ -497,34 +497,34 @@
     }
     .kat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.12); }
 
-    .kat-box.kb-sangat-kuat  { background: #d1fae5; border-color: #6ee7b7; }
-    .kat-box.kb-kuat         { background: #dcfce7; border-color: #86efac; }
-    .kat-box.kb-memadai      { background: #fefce8; border-color: #fde047; }
-    .kat-box.kb-perlu        { background: #fff7ed; border-color: #fdba74; }
-    .kat-box.kb-belum        { background: #fef2f2; border-color: #fca5a5; }
+    .kat-box.kb-sangat-kuat  { background: #e0f4f5; border-color: #0E8991; }
+    .kat-box.kb-kuat         { background: #c7eaec; border-color: #0E8991; }
+    .kat-box.kb-memadai      { background: #fdf0e8; border-color: #EAA27C; }
+    .kat-box.kb-perlu        { background: #f9dece; border-color: #EAA27C; }
+    .kat-box.kb-belum        { background: #f5cbb2; border-color: #c8814e; }
 
     .kat-box-rentang {
       font-size: 11px; font-weight: 800; letter-spacing: .02em;
       padding: 3px 10px; border-radius: 999px;
       white-space: nowrap;
     }
-    .kb-sangat-kuat .kat-box-rentang { background: #059669; color: white; }
-    .kb-kuat        .kat-box-rentang { background: #16a34a; color: white; }
-    .kb-memadai     .kat-box-rentang { background: #ca8a04; color: white; }
-    .kb-perlu       .kat-box-rentang { background: #ea580c; color: white; }
-    .kb-belum       .kat-box-rentang { background: #dc2626; color: white; }
+    .kb-sangat-kuat .kat-box-rentang { background: #0E8991; color: white; }
+    .kb-kuat        .kat-box-rentang { background: #0C313A; color: white; }
+    .kb-memadai     .kat-box-rentang { background: #EAA27C; color: white; }
+    .kb-perlu       .kat-box-rentang { background: #c8814e; color: white; }
+    .kb-belum       .kat-box-rentang { background: #8c5030; color: white; }
 
     .kat-box-nama {
       font-size: 13px; font-weight: 900; line-height: 1.3;
     }
-    .kb-sangat-kuat .kat-box-nama { color: #065f46; }
-    .kb-kuat        .kat-box-nama { color: #14532d; }
-    .kb-memadai     .kat-box-nama { color: #713f12; }
-    .kb-perlu       .kat-box-nama { color: #7c2d12; }
-    .kb-belum       .kat-box-nama { color: #7f1d1d; }
+    .kb-sangat-kuat .kat-box-nama { color: #0C313A; }
+    .kb-kuat        .kat-box-nama { color: #0C313A; }
+    .kb-memadai     .kat-box-nama { color: #0C313A; }
+    .kb-perlu       .kat-box-nama { color: #0C313A; }
+    .kb-belum       .kat-box-nama { color: #0C313A; }
 
     .kat-box-makna {
-      font-size: 11px; line-height: 1.5; color: #374151;
+      font-size: 11px; line-height: 1.5; color: #4a6b75;
     }
     .kat-box-icon { font-size: 24px; }
 
@@ -533,6 +533,7 @@
       transform: translateY(-4px) scale(1.03);
       box-shadow: 0 10px 28px rgba(0,0,0,.15);
       border-width: 2.5px;
+      border-color: #0E8991;
     }
 
     @media (max-width: 900px) {
@@ -546,9 +547,9 @@
 
     /* ══ Notes ══ */
     .oral-notes-card {
-      background: linear-gradient(135deg, #e3f1f5, #d0eaf1);
-      border: 2px solid #1C768F; border-radius: 16px; padding: 24px;
-      box-shadow: 0 4px 16px rgba(28,118,143,.1);
+      background: linear-gradient(135deg, #e0f4f5, #c7eaec);
+      border: 2px solid #0E8991; border-radius: 16px; padding: 24px;
+      box-shadow: 0 4px 16px rgba(14,137,145,.1);
     }
 
     /* ══ Tombol aksi bawah halaman ══ */
@@ -560,8 +561,8 @@
     .btn-draft {
       display: inline-flex; align-items: center; gap: 8px;
       background: white;
-      color: #032539;
-      border: 2px solid #1C768F;
+      color: #0C313A;
+      border: 2px solid #0E8991;
       border-radius: 12px;
       padding: 13px 24px;
       font-size: 15px; font-weight: 800; font-family: inherit;
@@ -569,12 +570,12 @@
       transition: all .2s ease;
     }
     .btn-draft:hover {
-      background: #1C768F; color: white;
+      background: #0E8991; color: white;
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(28,118,143,.25);
+      box-shadow: 0 6px 18px rgba(14,137,145,.25);
     }
     .btn-draft.saved {
-      background: #1C768F; color: white; border-color: #1C768F;
+      background: #0E8991; color: white; border-color: #0E8991;
     }
 
     /* ══ Spinner button ══ */
@@ -599,7 +600,7 @@
       max-height: 90vh; overflow-y: auto;
     }
     .modal-final-head {
-      background: linear-gradient(135deg, #032539, #1C768F);
+      background: linear-gradient(135deg, #0C313A, #0E8991);
       padding: 24px 28px 20px; color: white;
       position: sticky; top: 0; z-index: 1;
     }
@@ -616,13 +617,13 @@
       gap: 8px; align-items: center;
       padding: 7px 10px; border-radius: 8px; font-size: 12px;
     }
-    .mfg-row:nth-child(even) { background: #ffffff; }
-    .mfg-no   { font-weight: 900; color: #1C768F; text-align: center; }
-    .mfg-nama { font-weight: 600; color: #334155; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mfg-row:nth-child(even) { background: #f5f0ee; }
+    .mfg-no   { font-weight: 900; color: #0E8991; text-align: center; }
+    .mfg-nama { font-weight: 600; color: #4a6b75; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .mfg-nilai { text-align: center; font-weight: 800; }
-    .mfg-skor  { text-align: right; font-weight: 800; color: #032539; font-size: 13px; }
+    .mfg-skor  { text-align: right; font-weight: 800; color: #0C313A; font-size: 13px; }
     .modal-final-total {
-      background: linear-gradient(135deg, #032539, #1C768F);
+      background: linear-gradient(135deg, #0C313A, #0E8991);
       color: white; border-radius: 12px; padding: 14px 20px;
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 20px;
@@ -648,7 +649,7 @@
       .print-id-item { border: 1px solid #94a3b8; padding: 6px 10px; border-radius: 4px; }
       .print-id-label { font-size: 9pt; font-weight: 700; color: #64748b; display: block; }
       .print-id-value { font-size: 11pt; font-weight: 800; }
-      .print-section-heading { font-size: 12pt; font-weight: 900; background: #032539; color: white; padding: 6px 12px; margin: 10px 0 6px; border-radius: 4px; }
+      .print-section-heading { font-size: 12pt; font-weight: 900; background: #0C313A; color: white; padding: 6px 12px; margin: 10px 0 6px; border-radius: 4px; }
       .print-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9.5pt; }
       .print-table th { background: #334155; color: white; padding: 6px 8px; text-align: left; font-weight: 700; }
       .print-table td { padding: 5px 8px; border: 1px solid #cbd5e1; vertical-align: top; }
@@ -779,7 +780,7 @@
   <main class="container">
 
     <!-- Session bar -->
-    <div class="session-bar" style="background:linear-gradient(135deg,#032539,#1C768F);border-radius:14px;padding:14px 20px;margin:20px 0;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div class="session-bar" style="background:linear-gradient(135deg,#0C313A,#0E8991);border-radius:14px;padding:14px 20px;margin:20px 0;color:white;display:flex;align-items:center;justify-content:space-between;gap:12px;">
       <div style="display:flex;align-items:center;gap:12px;">
         <div>
           <div class="session-bar-nama" id="sessionNamaJuri">—</div>
@@ -791,7 +792,7 @@
 
     <!-- Inovasi info card -->
     <div class="inovasi-card" style="margin:16px 0;border-radius:18px;overflow:hidden;border:1px solid rgba(0,0,0,.07);box-shadow:0 6px 24px rgba(0,0,0,.07);">
-      <div class="inovasi-card-header" style="background:linear-gradient(135deg,#032539,#1C768F);color:white;padding:18px 20px;">
+      <div class="inovasi-card-header" style="background:linear-gradient(135deg,#0C313A,#0E8991);color:white;padding:18px 20px;">
         <div class="inovasi-card-icon">🎤</div>
         <div class="inovasi-card-meta">
           <div class="inovasi-card-judul" id="icJudul">—</div>
@@ -882,7 +883,6 @@
         <p>Pilih satu nilai 1–5 untuk setiap parameter. Skor terbobot = (Nilai ÷ 5) × Bobot.</p>
       </div>
       <div class="actions">
-        <button id="expandAllBtn" class="btn btn-text-only">🔽 Buka Semua</button>
         <button class="btn btn-print" onclick="printOral()">🖨️ Cetak</button>
         <button class="btn secondary"
           style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;border-color:#dc2626;"
@@ -957,10 +957,10 @@
 
     <!-- Summary -->
     <section class="summary" style="margin-top:20px;border-radius:18px;padding:24px;background:white;box-shadow:0 6px 24px rgba(0,0,0,.07);border:1px solid rgba(0,0,0,.06);">
-      <h2 style="font-size:18px;font-weight:900;color:#1f2937;margin:0 0 16px;">Ringkasan Nilai</h2>
-      <div class="summary-grid" style="background:linear-gradient(135deg,#e3f1f5,#d0eaf1);border-radius:12px;padding:16px;border:1.5px solid #1C768F;">
-        <div><span style="font-size:12px;color:#6b7280;font-weight:600;">Total Skor Terbobot / Nilai Akhir</span>
-          <b id="sumTotal" style="font-size:28px;font-weight:900;color:#032539;display:block;">0.00 / 100</b></div>
+      <h2 style="font-size:18px;font-weight:900;color:#0C313A;margin:0 0 16px;">Ringkasan Nilai</h2>
+      <div class="summary-grid" style="background:linear-gradient(135deg,#e0f4f5,#c7eaec);border-radius:12px;padding:16px;border:1.5px solid #0E8991;">
+        <div><span style="font-size:12px;color:#4a6b75;font-weight:600;">Total Skor Terbobot / Nilai Akhir</span>
+          <b id="sumTotal" style="font-size:28px;font-weight:900;color:#0C313A;display:block;">0.00 / 100</b></div>
       </div>
       <div class="oral-progress-wrap" style="margin-top:16px;">
         <div class="oral-progress-header">
@@ -975,8 +975,8 @@
 
     <!-- Catatan & Rekomendasi -->
     <section class="notes-section" style="margin-top:20px;border-radius:18px;padding:24px;background:white;box-shadow:0 6px 24px rgba(0,0,0,.07);border:1px solid rgba(0,0,0,.06);">
-      <h2 style="font-size:18px;font-weight:900;color:#1f2937;margin:0 0 6px;">📝 Catatan dan Rekomendasi</h2>
-      <p style="font-size:13px;color:#6b7280;margin:0 0 16px;">Tambahkan catatan atau rekomendasi untuk perbaikan (opsional)</p>
+      <h2 style="font-size:18px;font-weight:900;color:#0C313A;margin:0 0 6px;">📝 Catatan dan Rekomendasi</h2>
+      <p style="font-size:13px;color:#4a6b75;margin:0 0 16px;">Tambahkan catatan atau rekomendasi untuk perbaikan (opsional)</p>
       <div class="oral-notes-card">
         <div class="notes-field" style="margin-bottom:20px;">
           <label for="notesCatatan" class="notes-label">
@@ -1022,18 +1022,18 @@
   align-items:center; justify-content:center; padding:20px;">
   <div style="background:white;border-radius:24px;max-width:420px;width:100%;
     box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden;">
-    <div style="background:linear-gradient(135deg,#032539,#1C768F);padding:24px 28px 20px;color:white;">
+    <div style="background:linear-gradient(135deg,#0C313A,#0E8991);padding:24px 28px 20px;color:white;">
       <div style="font-size:36px;margin-bottom:8px;">📝</div>
       <div style="font-size:17px;font-weight:900;margin-bottom:4px;">Simpan Draft</div>
       <div style="font-size:13px;opacity:.85;">Penilaian tersimpan sementara, bisa dilanjutkan nanti.</div>
     </div>
     <div style="padding:24px 28px;">
-      <p style="font-size:14px;color:#374151;margin:0 0 20px;">Simpan progres penilaian saat ini sebagai draft?</p>
+      <p style="font-size:14px;color:#4a6b75;margin:0 0 20px;">Simpan progres penilaian saat ini sebagai draft?</p>
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button onclick="konfirmasiDraftOral(true)" style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#1C768F,#032539);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+        <button onclick="konfirmasiDraftOral(true)" style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#0E8991,#0C313A);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
           ✅ Ya, simpan draft
         </button>
-        <button onclick="konfirmasiDraftOral(false)" style="width:100%;padding:13px 20px;background:#f3f4f6;color:#374151;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+        <button onclick="konfirmasiDraftOral(false)" style="width:100%;padding:13px 20px;background:#f5f0ee;color:#0C313A;border:2px solid #8DB6BC;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
           🔍 Cek kembali dulu
         </button>
       </div>
@@ -1057,11 +1057,11 @@
       </div>
       <div class="modal-final-actions">
         <button onclick="konfirmasiFinalOral(true)" id="btnFinalKonfirmasi"
-          style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+          style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#0E8991,#0C313A);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
           ✅ Konfirmasi &amp; Simpan
         </button>
         <button onclick="konfirmasiFinalOral(false)"
-          style="width:100%;padding:13px 20px;background:#f3f4f6;color:#374151;border:2px solid #e5e7eb;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
+          style="width:100%;padding:13px 20px;background:#f5f0ee;color:#0C313A;border:2px solid #8DB6BC;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
           ← Cek Kembali
         </button>
       </div>
