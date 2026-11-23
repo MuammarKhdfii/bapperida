@@ -690,7 +690,7 @@ function openFinalModal() {
     const row = document.createElement("div");
     row.className = "mfg-row";
 
-    const valColors = ["", "#9b2335", "#5a7a8a", "#FA991C", "#1C768F", "#0d5a70"];
+    const valColors = ["", "#f97316", "#5a7a8a", "#FA991C", "#1C768F", "#0d5a70"];
     const color = v ? valColors[Number(v)] : "#94a3b8";
 
     row.innerHTML = `
