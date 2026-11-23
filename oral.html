@@ -558,25 +558,6 @@
       gap: 12px; flex-wrap: wrap;
       margin: 24px 0 48px;
     }
-    .btn-draft {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: white;
-      color: #0C313A;
-      border: 2px solid #0E8991;
-      border-radius: 12px;
-      padding: 13px 24px;
-      font-size: 15px; font-weight: 800; font-family: inherit;
-      cursor: pointer;
-      transition: all .2s ease;
-    }
-    .btn-draft:hover {
-      background: #0E8991; color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(14,137,145,.25);
-    }
-    .btn-draft.saved {
-      background: #0E8991; color: white; border-color: #0E8991;
-    }
 
     /* ══ Spinner button ══ */
     .btn-spinner {
@@ -1000,10 +981,6 @@
     <!-- Tombol aksi bawah halaman -->
     <div class="bottom-actions">
       <a href="index.html" class="btn btn-step-back">🏠 Beranda</a>
-      <button id="fabSaveOral" class="btn-draft" onclick="handleDraftOral()">
-        <span id="fabSaveOralIcon">📝</span>
-        <span>Simpan Draft</span>
-      </button>
       <button id="btnSaveOral" class="btn btn-save-all" onclick="doSaveOral()" style="padding:13px 28px;font-size:15px;font-weight:900;">
         💾 Simpan Penilaian
       </button>
@@ -1014,32 +991,6 @@
 
 <!-- Bottom Nav Pills Mobile -->
 <nav class="bottom-nav-pills" id="bottomNavPills" aria-label="Navigasi parameter mobile"></nav>
-
-<!-- Modal Konfirmasi Draft -->
-<div id="modalKonfirmasiOral" style="
-  display:none; position:fixed; inset:0; z-index:99999;
-  background:rgba(0,0,0,.55); backdrop-filter:blur(4px);
-  align-items:center; justify-content:center; padding:20px;">
-  <div style="background:white;border-radius:24px;max-width:420px;width:100%;
-    box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden;">
-    <div style="background:linear-gradient(135deg,#0C313A,#0E8991);padding:24px 28px 20px;color:white;">
-      <div style="font-size:36px;margin-bottom:8px;">📝</div>
-      <div style="font-size:17px;font-weight:900;margin-bottom:4px;">Simpan Draft</div>
-      <div style="font-size:13px;opacity:.85;">Penilaian tersimpan sementara, bisa dilanjutkan nanti.</div>
-    </div>
-    <div style="padding:24px 28px;">
-      <p style="font-size:14px;color:#4a6b75;margin:0 0 20px;">Simpan progres penilaian saat ini sebagai draft?</p>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <button onclick="konfirmasiDraftOral(true)" style="width:100%;padding:13px 20px;background:linear-gradient(135deg,#0E8991,#0C313A);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
-          ✅ Ya, simpan draft
-        </button>
-        <button onclick="konfirmasiDraftOral(false)" style="width:100%;padding:13px 20px;background:#f5f0ee;color:#0C313A;border:2px solid #8DB6BC;border-radius:12px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;">
-          🔍 Cek kembali dulu
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Modal Konfirmasi Final -->
 <div id="modalFinalOral">

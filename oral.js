@@ -661,16 +661,6 @@ async function saveOral(showAnim = false) {
 
   await saveAllDraf(all);
   setLastInovasi(namaInovasi);
-
-  if (!showAnim) return;
-
-  const fab     = document.getElementById("fabSaveOral");
-  const fabIcon = document.getElementById("fabSaveOralIcon");
-  if (fab && fabIcon) {
-    fab.classList.add("saved");
-    fabIcon.textContent = "✅";
-    setTimeout(() => { fab.classList.remove("saved"); fabIcon.textContent = "📝"; }, 2200);
-  }
 }
 
 // ── Buka Modal Final ──────────────────────────────────────────────────────────
@@ -760,37 +750,6 @@ window.konfirmasiFinalOral = async function(lanjut) {
 };
 
 // ── Draft ─────────────────────────────────────────────────────────────────────
-window.handleDraftOral = async function() {
-  if (!namaInovasi) { alert("Pilih inovasi terlebih dahulu."); return; }
-
-  const lanjut = await new Promise(resolve => {
-    _draftResolveOral = resolve;
-    const modal = document.getElementById("modalKonfirmasiOral");
-    if (modal) modal.style.display = "flex";
-  });
-  if (!lanjut) return;
-
-  const fab     = document.getElementById("fabSaveOral");
-  const fabIcon = document.getElementById("fabSaveOralIcon");
-  if (fab)     fab.disabled = true;
-  if (fabIcon) fabIcon.textContent = "⏳";
-
-  saveStateLocal();
-  await saveOral(false);
-
-  if (fabIcon) fabIcon.textContent = "✅";
-  if (fab)     fab.classList.add("saved");
-
-  showToast("📝 Draft tersimpan!", "success");
-
-  setTimeout(() => {
-    if (fabIcon) fabIcon.textContent = "📝";
-    if (fab) {
-      fab.disabled = false;
-      fab.classList.remove("saved");
-    }
-  }, 2000);
-};
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
 window.resetOral = function() {
@@ -854,21 +813,8 @@ window.printOral = function() {
   window.print();
 };
 
-// ── Modal draft helpers ───────────────────────────────────────────────────────
-let _draftResolveOral = null;
-window.konfirmasiDraftOral = function(lanjut) {
-  const modal = document.getElementById("modalKonfirmasiOral");
-  if (modal) modal.style.display = "none";
-  if (_draftResolveOral) { _draftResolveOral(lanjut); _draftResolveOral = null; }
-};
-
-// Tutup modal draft klik overlay
+// ── Modal overlay click handler ───────────────────────────────────────────────
 document.addEventListener("click", e => {
-  const modal = document.getElementById("modalKonfirmasiOral");
-  if (e.target === modal) {
-    modal.style.display = "none";
-    if (_draftResolveOral) { _draftResolveOral(false); _draftResolveOral = null; }
-  }
   // Tutup modal final klik overlay
   const finalModal = document.getElementById("modalFinalOral");
   if (e.target === finalModal) finalModal.style.display = "none";
