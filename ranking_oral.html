@@ -378,6 +378,43 @@
     return { _disp: r };
   }
 
+  // ── Daftar inovasi oral tetap (sama dengan index.html) ──
+  const ORAL_OPD_LIST = [
+    "E-Musrenbang Kota Metro",
+    "GELLUK MENGAN PAI (Gerakan Layanan Dokumen Kependudukan Untuk Penduduk Pendapatan Menengah Kebawah (Miskin) Sampai Selesai)",
+    "Tanah Harapan",
+    "Peksos Go To School 2.0 - Generasi Peduli",
+    "GEMOY SEJIWA (Gerakan Minum Obat Yuk Sehatkan Jiwa)",
+    "MASDI (Memasuki Masa Purnabakti Dokumen Kependudukan Langsung Jadi)",
+    "SIGAP RTLH (Sistem Informasi Geospasial Rumah Tidak layak Huni)",
+    "MPP Beraksi (Mal Pelayanan Publik Bergerak Melayani Masyarakat dengan Kolaborasi)",
+    "SEKELIK PBJ (Seputar Kegiatan dan Klinik Pengadaan Barang/Jasa)",
+    "KOMPAK (Kolaborasi Organisasi Masyarakat Antisipasi Kebakaran)"
+  ];
+  const ORAL_PENDIDIKAN_LIST = [
+    "SERASI HEBAT",
+    "ANTING MERAH (Anti Stunting Meraih Berkah)",
+    "SILAB MATA (Sistem Informasi Laboratorium IPA, Manajemen dan Tata Kelola)",
+    "HARUM (Hari Kunjung Guru Menginspirasi)",
+    "Gerakan Aksi Sekolah Anti Bullying (GASING)",
+    "Game Edukasi METROBOY (Mempelajari Pengetahuan Tentang Kota Metro)"
+  ];
+  const ORAL_KESEHATAN_LIST = [
+    "EDUMY (Edukasi Mingguan Ahmad Yani)",
+    "SI BATOUX (Satu Bulan Satu Kali Balita Test Mantoux)",
+    "Saputangan",
+    "GRADASI (Gerakan Remaja Cerdas Sehat Berprestasi)",
+    "Gemar Beraksi",
+    "KLUNTING"
+  ];
+  // Set semua judul yang diizinkan untuk lookup cepat
+  const ORAL_ALLOWED = new Set([...ORAL_OPD_LIST, ...ORAL_PENDIDIKAN_LIST, ...ORAL_KESEHATAN_LIST]);
+  // Urutan per kategori untuk sorting
+  const ORAL_ORDER = new Map();
+  ORAL_OPD_LIST.forEach((j,i)        => ORAL_ORDER.set(j, { kat:'opd',        rank:i+1 }));
+  ORAL_PENDIDIKAN_LIST.forEach((j,i) => ORAL_ORDER.set(j, { kat:'pendidikan',  rank:i+1 }));
+  ORAL_KESEHATAN_LIST.forEach((j,i)  => ORAL_ORDER.set(j, { kat:'kesehatan',   rank:i+1 }));
+
   /* ── Muat data ── */
   async function loadRanking() {
     document.getElementById('dashStats').innerHTML = `<div style="padding:20px;color:#6b7280">🔄 Memuat data…</div>`;
@@ -393,6 +430,8 @@
       if (typeof v !== 'object' || v === null) return false;
       if (typeof isJudulExcluded === 'function' && isJudulExcluded(k)) return false;
       if (SKIP_KEYS.has(k)) return false;
+      // Hanya inovasi yang ada di daftar oral tetap
+      if (!ORAL_ALLOWED.has(k)) return false;
       const hasSID  = v.skorPerJuri && Object.values(v.skorPerJuri).some(s => Number(s) > 0);
       const hasOral = v.oralSkorPerJuri && Object.values(v.oralSkorPerJuri).some(s => Number(s) > 0);
       return hasSID || hasOral;
@@ -423,15 +462,46 @@
       const statusType = avgSID>0 && avgOral>0 ? 'both'
                        : avgSID>0 ? 'sid' : avgOral>0 ? 'oral' : 'none';
 
+      // Gunakan kategori dari daftar tetap oral
+      const oralInfo = ORAL_ORDER.get(judulKey) || { kat: getKategori(meta.perangkatDaerah), rank: 99 };
+
       return {
         judulKey, meta, avgSID, avgOral, total, statusType,
         sidPerJuri, oralScores,
         sidJuri: sidArr.length, oralJuri: oralArr.length,
-        kategori: getKategori(meta.perangkatDaerah),
+        kategori: oralInfo.kat,
+        oralRank: oralInfo.rank,
         judulDisplay: meta._disp || judulKey,
         allData: d, savedAt: d.savedAt || ''
       };
-    }).sort((a,b) => b.total - a.total);
+    }).sort((a,b) => {
+      // Sort: OPD dulu, lalu Pendidikan, lalu Kesehatan, dalam kategori urut by total
+      const katOrder = { opd: 0, pendidikan: 1, kesehatan: 2 };
+      if (a.kategori !== b.kategori) return (katOrder[a.kategori]||0) - (katOrder[b.kategori]||0);
+      return b.total - a.total;
+    });
+
+    // Tambahkan inovasi dari daftar tetap yang belum ada datanya (belum dinilai)
+    const judulYangAda = new Set(allRows.map(r => r.judulKey));
+    ORAL_ALLOWED.forEach(judul => {
+      if (judulYangAda.has(judul)) return;
+      const oralInfo = ORAL_ORDER.get(judul) || { kat: 'opd', rank: 99 };
+      const meta = findMeta(judul, {});
+      allRows.push({
+        judulKey: judul, meta, avgSID: 0, avgOral: 0, total: 0,
+        statusType: 'none', sidPerJuri: {}, oralScores: {},
+        sidJuri: 0, oralJuri: 0,
+        kategori: oralInfo.kat, oralRank: oralInfo.rank,
+        judulDisplay: meta._disp || judul,
+        allData: {}, savedAt: ''
+      });
+    });
+    // Re-sort setelah menambah inovasi kosong
+    const katOrder = { opd: 0, pendidikan: 1, kesehatan: 2 };
+    allRows.sort((a,b) => {
+      if (a.kategori !== b.kategori) return (katOrder[a.kategori]||0) - (katOrder[b.kategori]||0);
+      return b.total - a.total;
+    });
 
     // — Stat Cards —
     const denganSID   = allRows.filter(r => r.avgSID  > 0).length;
@@ -463,7 +533,8 @@
   }
 
   function getFiltered() {
-    return activeKat === 'semua' ? allRows : allRows.filter(r => r.kategori === activeKat);
+    if (activeKat === 'semua') return allRows;
+    return allRows.filter(r => r.kategori === activeKat);
   }
 
   function renderTable() {
