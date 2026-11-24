@@ -730,12 +730,12 @@
   </main>
 </div>
 
-<!-- FAB Simpan Draft (untuk semua role) -->
-<button id="fabDraft" class="fab-save" title="Simpan Draft - Simpan penilaian sementara" 
+<!-- FAB Simpan (untuk semua role) -->
+<button id="fabDraft" class="fab-save" title="Simpan Penilaian - Simpan semua penilaian ke server" 
   onclick="handleDraftClick()"
   style="background: linear-gradient(135deg, #2563eb, #1e40af); display:none;">
-  <span class="fab-icon" id="fabDraftIcon">📝</span>
-  <span class="fab-label">Simpan Draft</span>
+  <span class="fab-icon" id="fabDraftIcon">💾</span>
+  <span class="fab-label">Simpan Penilaian</span>
 </button>
 
 <!-- Modal Konfirmasi Simpan -->
@@ -828,7 +828,7 @@ document.addEventListener('click', function(e) {
   if (e.target === modal) tutupKonfirmasiSimpan();
 });
 
-// Simpan Draft - dengan konfirmasi dulu
+// Simpan Penilaian - simpan semua penilaian ke Firebase
 async function handleDraftClick() {
   const selectedInovasi = localStorage.getItem('iid2026_selected') || '';
   if (!selectedInovasi) {
@@ -867,7 +867,7 @@ async function handleDraftClick() {
     // Tampilkan notifikasi
     const notif = document.createElement('div');
     notif.style.cssText = 'position:fixed;top:80px;right:20px;background:#10b981;color:white;padding:14px 22px;border-radius:12px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);';
-    notif.textContent = '📝 Draft tersimpan! Anda bisa melanjutkan nanti melalui "Edit Penilaian".';
+    notif.textContent = '✅ Penilaian tersimpan! Data telah disimpan ke server.';
     document.body.appendChild(notif);
     setTimeout(() => {
       notif.style.opacity = '0';
@@ -876,7 +876,7 @@ async function handleDraftClick() {
     }, 3500);
 
     setTimeout(() => {
-      if (fabDraftIcon) fabDraftIcon.textContent = '📝';
+      if (fabDraftIcon) fabDraftIcon.textContent = '💾';
       if (fabDraft) {
         fabDraft.disabled = false;
         fabDraft.style.background = 'linear-gradient(135deg, #2563eb, #1e40af)';
