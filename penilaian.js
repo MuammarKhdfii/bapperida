@@ -712,25 +712,23 @@ async function saveAll(showAnim = false) {
   console.log('Original jury name:', SESSION.nama);
   console.log('Sanitized jury name:', sanitizedJuriName);
   
-  // Update state untuk juri ini dengan nama yang sudah disanitize
-  all[namaInovasi].judulState[sanitizedJuriName] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
-  all[namaInovasi].juriState[sanitizedJuriName] = JSON.parse(JSON.stringify(juriState[SESSION.nama]));
-  all[namaInovasi].notesState[sanitizedJuriName] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
-  all[namaInovasi].signatureState = all[namaInovasi].signatureState || {};
-  all[namaInovasi].signatureState[sanitizedJuriName] = signatureState[SESSION.nama] || "";
-  // Simpan state Rancang Bangun
-  all[namaInovasi].rancangState = all[namaInovasi].rancangState || {};
-  all[namaInovasi].rancangState = all[namaInovasi].rancangState || {};
-  all[namaInovasi].rancangState[sanitizedJuriName] = JSON.parse(JSON.stringify(rancangState[SESSION.nama]));
-
-  // Guard: pastikan semua field skor ada sebelum diisi
-  all[namaInovasi].skorJudulPerJuri = all[namaInovasi].skorJudulPerJuri || {};
-  all[namaInovasi].skorPerJuri      = all[namaInovasi].skorPerJuri      || {};
-  all[namaInovasi].userMetadata     = all[namaInovasi].userMetadata     || {};
+  // Guard: pastikan semua field ada sebelum diisi (entry lama mungkin tidak punya field ini)
   all[namaInovasi].judulState       = all[namaInovasi].judulState       || {};
   all[namaInovasi].juriState        = all[namaInovasi].juriState        || {};
   all[namaInovasi].notesState       = all[namaInovasi].notesState       || {};
   all[namaInovasi].signatureState   = all[namaInovasi].signatureState   || {};
+  all[namaInovasi].rancangState     = all[namaInovasi].rancangState     || {};
+  all[namaInovasi].skorJudulPerJuri = all[namaInovasi].skorJudulPerJuri || {};
+  all[namaInovasi].skorPerJuri      = all[namaInovasi].skorPerJuri      || {};
+  all[namaInovasi].userMetadata     = all[namaInovasi].userMetadata     || {};
+
+  // Update state untuk juri ini dengan nama yang sudah disanitize
+  all[namaInovasi].judulState[sanitizedJuriName] = JSON.parse(JSON.stringify(judulState[SESSION.nama]));
+  all[namaInovasi].juriState[sanitizedJuriName] = JSON.parse(JSON.stringify(juriState[SESSION.nama]));
+  all[namaInovasi].notesState[sanitizedJuriName] = JSON.parse(JSON.stringify(notesState[SESSION.nama]));
+  all[namaInovasi].signatureState[sanitizedJuriName] = signatureState[SESSION.nama] || "";
+  // Simpan state Rancang Bangun
+  all[namaInovasi].rancangState[sanitizedJuriName] = JSON.parse(JSON.stringify(rancangState[SESSION.nama]));
 
   all[namaInovasi].skorJudulPerJuri[sanitizedJuriName] = parseFloat(skorJudul.toFixed(2));
   all[namaInovasi].skorPerJuri[sanitizedJuriName]      = parseFloat(skorInd.toFixed(2));
