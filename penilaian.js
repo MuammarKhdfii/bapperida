@@ -720,9 +720,20 @@ async function saveAll(showAnim = false) {
   all[namaInovasi].signatureState[sanitizedJuriName] = signatureState[SESSION.nama] || "";
   // Simpan state Rancang Bangun
   all[namaInovasi].rancangState = all[namaInovasi].rancangState || {};
+  all[namaInovasi].rancangState = all[namaInovasi].rancangState || {};
   all[namaInovasi].rancangState[sanitizedJuriName] = JSON.parse(JSON.stringify(rancangState[SESSION.nama]));
+
+  // Guard: pastikan semua field skor ada sebelum diisi
+  all[namaInovasi].skorJudulPerJuri = all[namaInovasi].skorJudulPerJuri || {};
+  all[namaInovasi].skorPerJuri      = all[namaInovasi].skorPerJuri      || {};
+  all[namaInovasi].userMetadata     = all[namaInovasi].userMetadata     || {};
+  all[namaInovasi].judulState       = all[namaInovasi].judulState       || {};
+  all[namaInovasi].juriState        = all[namaInovasi].juriState        || {};
+  all[namaInovasi].notesState       = all[namaInovasi].notesState       || {};
+  all[namaInovasi].signatureState   = all[namaInovasi].signatureState   || {};
+
   all[namaInovasi].skorJudulPerJuri[sanitizedJuriName] = parseFloat(skorJudul.toFixed(2));
-  all[namaInovasi].skorPerJuri[sanitizedJuriName] = parseFloat(skorInd.toFixed(2));
+  all[namaInovasi].skorPerJuri[sanitizedJuriName]      = parseFloat(skorInd.toFixed(2));
   all[namaInovasi].savedAt = new Date().toISOString();
   all[namaInovasi].activeJuri = sanitizedJuriName;
   
