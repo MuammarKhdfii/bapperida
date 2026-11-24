@@ -617,14 +617,27 @@ function saveNotesLocal() {
 async function saveOral(showAnim = false) {
   if (!namaInovasi) { alert("Inovasi belum dipilih."); return; }
 
+  // Baca ulang dari DOM sebelum simpan untuk memastikan nilai terbaru
   saveStateLocal();
   saveNotesLocal();
+
+  // Verifikasi oralState tidak kosong — fallback baca langsung dari DOM
+  const stateEmpty = ORAL_PARAMS.every(p => !oralState[p.no]);
+  if (stateEmpty) {
+    ORAL_PARAMS.forEach(p => {
+      const sel = document.querySelector(`input[name="oral-${p.no}"]:checked`);
+      oralState[p.no] = sel ? sel.value : "";
+    });
+  }
 
   let totalSkor = 0;
   ORAL_PARAMS.forEach(p => {
     const v = oralState[p.no] || "";
     if (v) totalSkor += (Number(v) / 5) * p.bobot;
   });
+
+  console.log('[saveOral] oralState:', JSON.stringify(oralState));
+  console.log('[saveOral] totalSkor:', totalSkor);
 
   const all = await loadAllDraf();
   if (!all[namaInovasi]) {

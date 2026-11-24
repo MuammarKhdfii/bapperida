@@ -522,6 +522,12 @@
           <span class="skor-oral-cell">${r.avgOral>0?r.avgOral.toFixed(2):'—'}</span>
           <div style="font-size:10px;color:#9ca3af;">kontrib: ${(r.avgOral*BOBOT_ORAL).toFixed(2)}</div>
           ${r.avgOral>0?`<div class="mini-bar-wrap"><div class="mini-bar-oral" style="width:${oralPct}%"></div></div>`:''}
+          ${r.avgOral>0 ? `<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px;">
+            ${Object.entries(r.oralScores).map(([nama,skor])=>{
+              const singkat = nama.split(',')[0].replace(/Prof\.\s*Dr\.\s*(Dra\.|Ir\.)?\s*/,'').replace(/Dr\.\s*Ir\.\s*/,'').replace(/Ir\.\s*/,'').trim().split(' ').slice(0,2).join(' ');
+              return `<span title="${esc(nama)}: ${skor.toFixed(2)}" style="background:#f0fdfa;border:1px solid #99f6e4;color:#0C313A;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;cursor:default;">${esc(singkat)}</span>`;
+            }).join('')}
+          </div>` : '<div style="font-size:10px;color:#d1d5db;margin-top:4px;">Belum dinilai</div>'}
         </td>
         <td><span class="total-cell">${r.total>0?r.total.toFixed(2):'—'}</span></td>
         <td>${badge}</td>
