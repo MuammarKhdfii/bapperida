@@ -672,7 +672,20 @@ async function saveOral(showAnim = false) {
 
   all[namaInovasi].savedAt = new Date().toISOString();
 
-  await saveAllDraf(all);
+  // Simpan ke localStorage dulu (cepat)
+  const KEY_ALL = "draf_iid2026_all";
+  localStorage.setItem(KEY_ALL, JSON.stringify(all));
+
+  // Simpan HANYA 1 inovasi ini ke Firebase (bukan semua 178 inovasi)
+  if (typeof cloudStorage !== 'undefined') {
+    try {
+      await cloudStorage.saveDraf(namaInovasi, all[namaInovasi]);
+    } catch(e) {
+      console.error('[saveOral] Firebase error:', e);
+      // localStorage sudah tersimpan, tidak perlu alert
+    }
+  }
+
   setLastInovasi(namaInovasi);
 }
 
